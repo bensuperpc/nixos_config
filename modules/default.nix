@@ -1,18 +1,9 @@
-{ pkgs, inputs, vars, ... }:
+{ pkgs, pkgs-stable, pkgs-master, pkgs-unstable, inputs, vars, ... }:
 {
   imports = [
+    ./common
     ./apps
-    ./services.nix
-    ./environment.nix
-    ./nixos.nix
-    ./font.nix
-    ./locales.nix
-    ./networking.nix
+    ./services
     ./gui/kdeplasma.nix
-  ];
-
-  environment.systemPackages = [
-    (pkgs.callPackage ./custom/lib/bs-thread-pool.nix { })
-    (pkgs.callPackage ./custom/lib/fake-function-framework.nix { })
   ];
 }

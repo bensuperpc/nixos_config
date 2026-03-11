@@ -1,4 +1,4 @@
-{ pkgs, inputs, vars, ... }:
+{ pkgs, pkgs-stable, pkgs-master, pkgs-unstable, inputs, vars, ... }:
 
 {
   environment.systemPackages = with pkgs; [
@@ -17,31 +17,35 @@
     tree
     fmt
     fd
+    git
+    jq
+    tmux
     localsend
     ripgrep
-    btrfs-snap
-    btrfs-list
-    btrfs-assistant
-    adb-sync
     parallel
     onboard
-    # Hardware tools
-    pciutils
-    usbutils
+    perf
+    fzf
+    binutils
+    help2man
+    ripgrep-all
+    jp2a
+    internetarchive
     # AV
     clamtk
-    # Flashing tools
-    qFlipper
-    rpi-imager
     # Communication tools
     discord
+    mumble
     # telegram-desktop
-    yt-dlp
     thunderbird
+    cryptsetup
+    lm_sensors
+    wireshark
+    # Wikipedia
+    kiwix
+    llmfit
   ];
-
-  programs.zsh.enable = true;
-  programs.dconf.enable = true;
+  #programs.dconf.enable = true;
 
   programs.gnupg.agent = {
     enable = true;

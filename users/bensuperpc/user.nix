@@ -1,13 +1,31 @@
-{ config, pkgs, inputs, vars, ... }:
+{ config, pkgs, pkgs-stable, pkgs-master, pkgs-unstable, inputs, vars, ... }:
 
 {
-  users.users.bensuperpc = {
+  users.groups.${vars.admin.user} = {
+    members = [
+    ];
+  };
+
+  users.users.${vars.admin.user} = {
     isNormalUser = true;
-    description = "Bensuperpc";
-    extraGroups = [ "networkmanager" "wheel" "docker" "render" "audio"
-                    "input" "docker" "networkmanager" "systemd-journal" "video" ];
+    description = "${vars.admin.fullName}";
+    initialPassword = "";
+    group = "${vars.admin.user}";
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+      "render"
+      "audio"
+      "video"
+      "input"
+      "docker"
+      # "systemd-journal"
+      # "libvirt"
+      "libvirtd"
+      # "kvm"
+    ];
     openssh.authorizedKeys.keys = [
-      vars.gitKey
+      vars.admin.publicKey
     ];
     shell = pkgs.zsh;
     
@@ -16,7 +34,7 @@
   };
   security.sudo.extraRules = [
     {
-    users = [ "bensuperpc" ];
+    users = [ "${vars.admin.user}" ];
     commands = [
       { command = "ALL"; options = [ "NOPASSWD" ]; }
       { command = "${pkgs.systemd}/bin/poweroff"; options = [ "NOPASSWD" ]; }
@@ -25,9 +43,10 @@
     }
   ];
 
-  home-manager.users.bensuperpc = {
-    imports = [ ./home.nix ];
-    
-    home.stateVersion = "25.11";
+  home-manager = {
+    users.${vars.admin.user} = {
+      imports = [ ./home.nix ];
+      home.stateVersion = "25.11";
+    };
   };
 }

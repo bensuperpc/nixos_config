@@ -1,24 +1,33 @@
-{ pkgs, inputs, vars, ... }:
+{ pkgs, pkgs-stable, pkgs-master, pkgs-unstable, inputs, vars, ... }:
 
 {
   # Enable the KDE Plasma Desktop Environment.
   services.desktopManager.plasma6.enable = true;
+  services.desktopManager.plasma6.enableQt5Integration = true;
   
-  services.displayManager.sddm.autoNumlock = true;
-  services.displayManager.sddm.enable = true;
-  services.displayManager.sddm.wayland.enable = true;
-  services.displayManager.sddm.settings.General.DisplayServer = "wayland";
+  services.displayManager = {
+    plasma-login-manager = {
+      enable = true; 
+      settings = {
+      };
+    };
+    autoLogin = {
+      enable = false;
+      user = "";
+    };
+  };
 
   services.xserver.enable = true;
 
   environment.systemPackages = with pkgs;
   [
-    # KDE
     #Theme
     kdePackages.breeze
     kdePackages.breeze-gtk
     kdePackages.oxygen
     # Kde Applications
+    kdePackages.kwave
+    kdePackages.plasma-thunderbolt
     kdePackages.kdevelop
     kdePackages.ark
     kdePackages.kdenlive
@@ -45,10 +54,13 @@
     kdePackages.mpvqt
     kdePackages.flatpak-kcm
     kdePackages.extra-cmake-modules
+    kdePackages.kwallet
+    kdePackages.kwalletmanager
+    kdePackages.plasma-browser-integration
+    kdePackages.yakuake
     wayland-utils
     wl-clipboard
     kdiff3
-    hardinfo2
     # Games
     kdePackages.kpat
     kdePackages.ksudoku

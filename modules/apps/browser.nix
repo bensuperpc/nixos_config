@@ -1,8 +1,12 @@
-{ pkgs, inputs, vars, ... }:
+{ pkgs, pkgs-stable, pkgs-master, pkgs-unstable, inputs, vars, ... }:
 {
   environment.systemPackages = with pkgs; [
     tor-browser
     brave
+    chromium
+    firefox
+    ladybird
+    servo
   ];
 
   programs.firefox = {

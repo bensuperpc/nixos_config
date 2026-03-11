@@ -1,26 +1,12 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
+# My NixOS test server configuration.
 
-{ config, pkgs, vars, ... }:
-# let
-#   vars = import ./variables.nix;
-# in
+{ config, pkgs, pkgs-stable, pkgs-master, pkgs-unstable, vars, ... }:
 {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      ./../../drivers/intel-driver.nix
-      ./../../modules
-    ];  
-  # _module.args = { inherit vars; };
-  
-  # Bootloader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-
-  # Use latest kernel.
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+      ./../../drivers/gpu/intel-driver.nix
+    ];
 
   # Don't touch that unless you know what you're doing!
   system.stateVersion = "25.11"; # Did you read the comment?

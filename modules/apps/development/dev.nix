@@ -1,4 +1,4 @@
-{ pkgs, inputs, vars, ... }:
+{ pkgs, pkgs-stable, pkgs-master, pkgs-unstable, inputs, vars, ... }:
 
 {
   # List packages installed in system profile. To search, run:
@@ -6,33 +6,42 @@
   environment.systemPackages = with pkgs; [
     postman
     # Compilers and build tools
-    gcc15
+    gcc
+    nasm
+    wasmi
     clang
     clang-analyzer
     clang-tools
-    python314Packages.ninja
     gdb
     valgrind
     gcovr
     doxygen
     shellcheck
     cppcheck
+    codechecker
+    commitizen
     cmake
+    gnumake
     lomiri.cmake-extras
+    rustup
+    meson
+    # C/C++ caching tools
     ccache
     sccache
     distcc
-    mold-wrapped
-    # Python
-    python314
-    pipx
-    # 3D graphics
+    mold
     vulkan-tools
-    godot
-    # 3D modeling
-    blender
+    vulkan-cts
+    mesa.opencl
+    mesa-demos
+    virtualgl
     # Git history visualizer
     gource
-    virt-manager
+    # Nix package cache
+    cachix
+    niv
+    npins
+    nix-tree
+    nix-diff
   ];
 }

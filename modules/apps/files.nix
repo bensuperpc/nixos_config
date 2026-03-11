@@ -1,15 +1,23 @@
-{ pkgs, inputs, vars, ... }:
+{ pkgs, pkgs-stable, pkgs-master, pkgs-unstable, inputs, vars, ... }:
 {
   # https://search.nixos.org/packages?channel=25.11&query=home
   environment.systemPackages = with pkgs; [
     veracrypt
+    adb-sync
+    fsearch
+    catfish
+    recoll
+    # File management/sync
+    rclone
     filezilla
     syncthing
+    syncthingtray
     samba
     rsync
-    sshfs
     # Backup tools
     restic
-    rclone
+    resticprofile
+    restic-browser
+    rustic
   ];
 }

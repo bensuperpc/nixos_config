@@ -2,13 +2,7 @@
 
 This repository contains my NixOS configuration, it is **not perfect** but it is what i use on my machines.
 
-## Usage
-
-To use this configuration, you can copy all the files to **/etc/nixos**, **replace** `hosts/hardware-configuration.nix` with your own hardware configuration, then run the following command to build/install the config and then reboot, you have new NixOS configuration:
-
-```bash
-sudo nixos-rebuild switch --flake /etc/nixos#nixos
-```
+> **⚠️ Warning:** This configuration still in development, it may contain some bugs and issues, use it at your own risk.
 
 ## Project Structure
 
@@ -16,30 +10,40 @@ sudo nixos-rebuild switch --flake /etc/nixos#nixos
 .
 ├── drivers # Hardware drivers
 ├── flake.lock # Flake lock file
-├── flake.nix # Flake file
+├── flake.nix # Flake file and target
 ├── lib # Custom nix functions
+├── Makefile
 ├── modules
 │   ├── apps # Applications
-│   └── custom # Custom modules/nix packages
-├── README.md
+│   │   ├── development # Development tools and libraries
+│   │   ├── multimedia # Multimedia applications (Video, audio, image, etc.)
+│   │   ├── games # Games and emulators
+│   ├── common # common system configuration on every machine (Nix, systemd, etc.)
+│   ├── gui # GUI related configuration (Display manager, desktop environment, etc.)
+│   └── services # System services (SSH, printing, etc.)
+├── profiles # System profiles/presets (Desktop, server, etc.)
 ├── systems # System specific configuration
+├── tests # NixOS tests
 ├── users # User specific configuration
-├── variables.nix
-└── vars # Global variables
+└── variables # Global variables
 ```
+
+## Usage
+
+To use this configuration, you can copy all the files to **/etc/nixos**, **add** a new system in `systems*` with your own hardware configuration, then run the following command to build/install the config and then reboot, you have new NixOS configuration:
 
 ## Testing
 
 You can test the configuration in a Docker container:
 
 ```bash
-docker run --rm -v $(pwd):/etc/nixos -w /etc/nixos nixos/nix nix --extra-experimental-features "nix-command flakes"   build .#nixosConfigurations.server-1-m710q.config.system.build.toplevel --dry-run --show-trace --verbose
+make server-1-m710q.test
 ```
 
-Or:
+To update the flake lock file:
 
 ```bash
-docker run --rm -v $(pwd):/etc/nixos -w /etc/nixos nixos/nix nix --extra-experimental-features "nix-command flakes" build path:/etc/nixos#nixosConfigurations.server-1-m710q.config.system.build.toplevel --dry-run --show-trace --verbose
+make update
 ```
 
 ## Deployment
@@ -47,19 +51,7 @@ docker run --rm -v $(pwd):/etc/nixos -w /etc/nixos nixos/nix nix --extra-experim
 You can use **colmena** to deploy the configuration to your machines
 
 ```bash
-colmena apply --show-trace --verbose
-```
-
-or per machine:
-
-```bash
-colmena apply --show-trace --verbose --on server-1-m710q
-```
-
-Or with **deploy-rs**:
-
-```bash
-deploy .#server-1-m710q --skip-checks
+make server-1-m710q.push
 ```
 
 ## Sources
@@ -69,4 +61,9 @@ deploy .#server-1-m710q --skip-checks
 - [NixOS Search](https://search.nixos.org/packages)
 - [NixOS Options](https://search.nixos.org/options)
 - [NixOS Modules](https://search.nixos.org/modules)
+- [Nixpkgs PR Tracker](https://nixpk.gs/pr-tracker.html)
 - [My NixOS (packages)](https://mynixos.com/)
+- [Best of Nix](https://github.com/best-of-lists/best-of)
+- [sincorchetes's config](https://github.com/sincorchetes)
+- [Secureboot](https://jnsgr.uk/2024/04/nixos-secure-boot-tpm-fde/)
+- [CageKiosk](https://github.com/stefansebekow/CageKiosk)
