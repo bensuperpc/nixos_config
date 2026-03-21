@@ -6,7 +6,6 @@ let
     openssh
     sshfs
   ];
-  requiredTCPPorts = [ 22 ];
 in
 {
   assertions =
@@ -19,11 +18,21 @@ in
         assertion = config.services.fail2ban.enable;
         message = "Fail2Ban must be enabled";
       }
-    ]
-    ++ lib.concatMap (port: [
       {
-        assertion = lib.elem port config.networking.firewall.allowedTCPPorts;
-        message = "Port TCP ${toString port} must be allowed";
+        assertion = config.services.openssh.settings.PasswordAuthentication == false;
+        message = "Password authentication must be disabled";
       }
-    ]) requiredTCPPorts;
+      {
+        assertion = config.services.openssh.settings.PermitRootLogin == "no";
+        message = "Root login over SSH must be disabled";
+      }
+      {
+        assertion = config.services.openssh.openFirewall;
+        message = "OpenSSH firewall opening must be enabled";
+      }
+    ]
+    ++ map (pkg: {
+      assertion = lib.elem pkg config.environment.systemPackages;
+      message = "Package missing: ${pkg.name}";
+    }) requiredSSHPkgs;
 }

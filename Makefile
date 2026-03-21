@@ -1,6 +1,6 @@
 DIR := $(CURDIR)
 
-SERVERS := server-1-m710q server-2-m720q
+SERVERS := server-1-m710q
 
 DOCKER_NIX_VOL := nix-store-vol
 DOCKER_NIX := docker run -it --rm \
@@ -24,7 +24,10 @@ fmt:
 	@$(DOCKER_NIX) sh -c '$(GIT_FIX) && nix $(NIX_FLAGS) fmt'
 
 gc:
-	@$(DOCKER_NIX) sh -c 'nix-collect-garbage --delete-older-than 7d'
+	@$(DOCKER_NIX) sh -c '$(GIT_FIX) && nix-collect-garbage --delete-older-than 7d'
+
+all-systems:
+	@$(DOCKER_NIX) sh -c '$(GIT_FIX) && nix $(NIX_FLAGS) flake show path:. --all-systems --no-write-lock-file'
 
 define SERVER_RULES
 .PHONY: $(1).test $(1).build $(1).push $(1).vm

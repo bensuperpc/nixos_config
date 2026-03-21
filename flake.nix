@@ -27,8 +27,8 @@
 
     impermanence = {
       url = "github:nix-community/impermanence/master";
-      inputs.nixpkgs.follows = "";
-      inputs.home-manager.follows = "";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
     };
     disko = {
       url = "github:nix-community/disko/master";
@@ -52,20 +52,11 @@
 
   outputs = inputs@{ flake-parts, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
-      systems = [ "x86_64-linux" ]; 
+      systems = [ "x86_64-linux" "aarch64-linux" ]; 
       perSystem = { config, self', inputs', pkgs, system, ... }: {
-        # 'nix develop'
-        devShells.default = pkgs.mkShell {
-          name = "nixos-admin-shell";
-          
-          packages = [
-            pkgs.git
-            pkgs.colmena
-            pkgs.deploy-rs
-            inputs'.agenix.packages.default
-          ];
-          shellHook = ''
-          '';
+        # nix develop .#python2-shell to enter to python2-shell devshell
+        devShells = import ./devshells {
+          inherit pkgs inputs';
         };
       };
 
@@ -73,21 +64,17 @@
         lib = inputs.nixpkgs.lib;
         
         mkHostConfig = import ./lib/mksystem.nix { inherit inputs lib; };
-
-        hosts = {
-          "server-1-m710q" = { systemName = "server-1-m710q"; ip = "192.168.1.27"; profiles = [ "all" ]; users = [ "bensuperpc" ]; system = "x86_64-linux"; };
-          "celestia"       = { systemName = "celestia";       ip = "192.168.1.x";  profiles = [ "all" ]; users = [ "bensuperpc" ]; system = "x86_64-linux"; };
-          "luna"           = { systemName = "luna";           ip = "192.168.1.x";  profiles = [ "all" ]; users = [ "bensuperpc" ]; system = "x86_64-linux"; };
-          "rainbow-dash"   = { systemName = "rainbow-dash";   ip = "192.168.1.x";  profiles = [ "all" ]; users = [ "bensuperpc" ]; system = "x86_64-linux"; };
-          "fluttershy"     = { systemName = "fluttershy";     ip = "192.168.1.x";  profiles = [ "docker-server" ]; users = [ "bensuperpc" ]; system = "x86_64-linux"; };
-          "pinkie-pie"     = { systemName = "pinkie-pie";     ip = "192.168.1.x";  profiles = [ "all" ]; users = [ "bensuperpc" ]; system = "x86_64-linux"; };
-        };
+        hosts = import ./systems/systems.nix;
 
         hostConfigs = lib.mapAttrs mkHostConfig hosts;
 
         myNixosConfigurations = lib.mapAttrs (name: cfg: lib.nixosSystem {
           inherit (cfg) system;
-          specialArgs = { inherit inputs; vars = cfg.hostVars; };
+          specialArgs = {
+            inherit inputs;
+            vars = cfg.hostVars;
+            moduleHelpers = cfg.moduleHelpers;
+          };
           modules = cfg.modules;
         }) hostConfigs;
 
@@ -98,12 +85,15 @@
         colmenaHive = inputs.colmena.lib.makeHive ({
           meta = {
             nixpkgs = import inputs.nixpkgs { system = "x86_64-linux"; };
-            specialArgs = { inherit inputs; };
+            specialArgs = {
+              inherit inputs;
+              moduleHelpers = import ./lib/options.nix { inherit lib; };
+            };
           };
         } // (lib.mapAttrs (name: cfg: {
           deployment = {
             targetHost = cfg.ip;
-            targetUser = builtins.elemAt cfg.users 0;
+            targetUser = lib.head cfg.users;
             targetPort = 22;
             buildOnTarget = true;
             allowLocalDeployment = false;
@@ -116,7 +106,7 @@
           hostname = cfg.ip;
           profiles.system = {
             user = "root";
-            sshUser = builtins.elemAt cfg.users 0;
+            sshUser = lib.head cfg.users;
             path = inputs.deploy-rs.lib.${cfg.system}.activate.nixos myNixosConfigurations.${name};
           };
         }) hostConfigs;

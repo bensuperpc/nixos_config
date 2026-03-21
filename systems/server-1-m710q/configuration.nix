@@ -1,11 +1,12 @@
 # My NixOS test server configuration.
 
-{ config, pkgs, pkgs-stable, pkgs-master, pkgs-unstable, vars, ... }:
+{ config, lib, pkgs, pkgs-stable, pkgs-master, pkgs-unstable, inputs, moduleHelpers, vars, ... }:
 {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ./../../drivers/gpu/intel-driver.nix
+      ./../../drivers/bluetooth.nix
     ];
 
   # Don't touch that unless you know what you're doing!

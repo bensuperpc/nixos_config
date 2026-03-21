@@ -1,5 +1,5 @@
 # More info: https://nix-community.github.io/plasma-manager/options.xhtml
-{ config, pkgs, pkgs-stable, pkgs-master, pkgs-unstable, vars, ... }:
+{ config, osConfig, lib, pkgs, pkgs-stable, pkgs-master, pkgs-unstable, inputs, moduleHelpers, vars, ... }:
 
 {
   programs.plasma = {
@@ -24,8 +24,11 @@
         location = "bottom";
         height = 44;
         # hiding = "dodgewindows";
+
+        # Floating panel like macOS dock
+        lengthMode = "fill";
         floating = false;
-        lengthMode = "fit";
+
         widgets = [
           {
             kickoff = {
@@ -33,22 +36,29 @@
               icon = "start-here-kde-symbolic";
             };
           }
+          "org.kde.plasma.pager"
           {
             iconTasks = {
-              launchers = [
-                "applications:firefox.desktop"
-                "applications:torbrowser.desktop"
-                "applications:org.kde.konsole.desktop"
-                "applications:org.kde.dolphin.desktop"
-                "applications:steam.desktop"
-              ];
+              launchers =
+                [
+                ]
+                ++ lib.optionals osConfig.myConfig.apps.browser.core [
+                  "applications:torbrowser.desktop"
+                  "applications:firefox.desktop"
+                ]
+                ++ [
+                  "applications:org.kde.konsole.desktop"
+                  "applications:org.kde.dolphin.desktop"
+                ]
+                ++ lib.optionals osConfig.myConfig.apps.games.steam.client [
+                  "applications:steam.desktop"
+                ];
             };
           }
           "org.kde.plasma.panelspacer"
           {
             systemTray.items = {
               shown = [
-                "org.kde.plasma.systray"
                 "org.kde.plasma.networkmanagement"
                 "org.kde.plasma.volume"
                 "org.kde.plasma.virtualkeyboard"
@@ -56,13 +66,8 @@
                 "org.kde.plasma.clipboard"
                 "org.kde.plasma.brightness"
                 "org.kde.plasma.devicenotifier"
-                "org.kde.plasma.marginsseparator"
-                "org.kde.plasma.digitalclock"
-                "org.kde.plasma.showdesktop"
               ];
               hidden = [
-                "org.kde.plasma.battery"
-                "org.kde.plasma.bluetooth"
               ];
               configs.battery.showPercentage = true;
             };
@@ -74,6 +79,7 @@
               time.format = "24h";
             };
           }
+          "org.kde.plasma.showdesktop"
         ];
       }
     ];

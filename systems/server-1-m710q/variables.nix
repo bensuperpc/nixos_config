@@ -1,3 +1,5 @@
 {
-  hostname = "server-1-m710q";
+  system = {
+    hostname = "server-1-m710q";
+  };
 }

@@ -1,38 +1,73 @@
-{ pkgs, pkgs-stable, pkgs-master, pkgs-unstable, inputs, vars, ... }:
+{ config, lib, pkgs, pkgs-stable, pkgs-master, pkgs-unstable, inputs, moduleHelpers, vars, ... }:
 
-{
-  environment.systemPackages = with pkgs; [
-    # Image editing/drawing
+let
+  cfg = config.myConfig.apps.multimedia.image;
+  basePackages = with pkgs; [ ];
+  editingPackages = with pkgs; [
     krita
     gimp
     imagemagick
     darktable
     inkscape
+  ];
+  graphingPackages = with pkgs; [
     gnuplot
     graphviz
-    # Photo management
+    drawio
+  ];
+  managementPackages = with pkgs; [
     digikam
     photoprism
     kphotoalbum
-    # Image viewers
     vipsdisp
-    # PDF tools
-    pdftk
-    # Media tools
-    mediainfo
-    # 2D animation
-    pencil2d
-    # HDR
-    openexr_2
-    # JPEG
+  ];
+  formatsPackages = with pkgs; [
     libjpeg-tools
-    # AVIF
     libavif
-    # WebP
     libwebp
-    # JPEG XL
     libjxl
-    # SVG
     librsvg
+  ];
+  utilitiesPackages = with pkgs; [
+    pdftk
+    mediainfo
+    pencil2d
+  ];
+
+  enabledOptionalsPackages =
+    lib.optionals cfg.editing editingPackages
+    ++ lib.optionals cfg.graphing graphingPackages
+    ++ lib.optionals cfg.management managementPackages
+    ++ lib.optionals cfg.formats formatsPackages
+    ++ lib.optionals cfg.utilities utilitiesPackages;
+
+  anyEnabled = lib.any (x: x) [
+    cfg.editing
+    cfg.graphing
+    cfg.management
+    cfg.formats
+    cfg.utilities
+  ];
+in
+{
+  options.myConfig.apps.multimedia.image = {
+    editing = moduleHelpers.mkEnabledOption "Install image editing and drawing tools";
+
+    graphing = moduleHelpers.mkEnabledOption "Install plotting and diagram tooling";
+
+    management = moduleHelpers.mkEnabledOption "Install photo management and viewing tools";
+
+    formats = moduleHelpers.mkEnabledOption "Install image format conversion and codec tools";
+
+    utilities = moduleHelpers.mkEnabledOption "Install media and animation utilities";
+  };
+
+  config = lib.mkMerge [
+    {
+      environment.systemPackages = basePackages;
+    }
+    (lib.mkIf anyEnabled {
+      environment.systemPackages = enabledOptionalsPackages;
+    })
   ];
 }

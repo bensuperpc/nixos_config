@@ -1,20 +1,12 @@
-# profiles/server.nix
-{ lib, pkgs, pkgs-stable, pkgs-master, pkgs-unstable, inputs, vars, ... }: 
+# profiles/docker-server.nix
+{ config, lib, pkgs, pkgs-stable, pkgs-master, pkgs-unstable, inputs, moduleHelpers, vars, ... }:
 
 {
   imports = [
-    ../modules/common
-    ../modules/services/sshd.nix
-    ../modules/apps/docker.nix
-    # Even headless servers can have GUI
-    ../modules/gui/kdeplasma.nix
+    ./base.nix
     # Tests
-    ../tests/check-common.nix
     ../tests/check-docker.nix
-    ../tests/check-ssh.nix
-    ../tests/check-network.nix
   ];
 
-  # Use latest kernel.
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  myConfig.apps.docker.engine = true;
 }

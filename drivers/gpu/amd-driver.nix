@@ -1,10 +1,9 @@
 # More info: https://wiki.nixos.org/wiki/AMD_GPU
-{ pkgs, pkgs-stable, pkgs-master, pkgs-unstable, inputs, vars, ... }:
+{ config, lib, pkgs, pkgs-stable, pkgs-master, pkgs-unstable, inputs, moduleHelpers, vars, ... }:
 
 {
   hardware.graphics = {
-    enable = true;
-    enable32Bit = true;
+    enable = lib.mkForce true;
     extraPackages = with pkgs; [
       # For older AMD GPUs
       #mesa.opencl

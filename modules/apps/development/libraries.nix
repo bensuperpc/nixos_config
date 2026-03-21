@@ -1,81 +1,112 @@
-{ pkgs, pkgs-stable, pkgs-master, pkgs-unstable, inputs, vars, ... }:
+{ config, lib, pkgs, pkgs-stable, pkgs-master, pkgs-unstable, inputs, moduleHelpers, vars, ... }:
 
 let
-  qtEnv = pkgs.qt6.env "qt6-simc-${pkgs.qt6.qtbase.version}" [
-      # https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/libraries/qt-6/default.nix
-      pkgs.qt6.qtbase
-      pkgs.qt6.qtwebengine
-      pkgs.qt6.qttools
-      pkgs.qt6.qtdeclarative
-      pkgs.qt6.qt5compat
-      pkgs.qt6.qtwebchannel
-      pkgs.qt6.qtpositioning
-      pkgs.qt6.qtsvg
-      pkgs.qt6.qtmultimedia
-      pkgs.qt6.qtimageformats
-      pkgs.qt6.qtquick3d
-      pkgs.qt6.qt3d
-      pkgs.qt6.qtcharts
-      pkgs.qt6.qtgraphs
-      pkgs.qt6.qtscxml
-      pkgs.qt6.qtwayland
-      pkgs.qt6.qtspeech
-      pkgs.qt6.qtsensors
-      pkgs.qt6.qmake
-      pkgs.qt6.qtmqtt
-    ];
-in
-{
-  environment.systemPackages = with pkgs; [
-    # Libraries
+  cfg = config.myConfig.apps.development.libraries;
+  basePackages = with pkgs; [ ];
+  commonPackages = with pkgs; [
     boost
-    gtest
     abseil-cpp
-    can-utils
-    physac
-    protobufc
     qpdf
-    kompute
     loguru
+    fmt
+  ];
+  dataFormatPackages = with pkgs; [
+    libxml2
+    expat
+    jsoncpp
+    simdjson
+    nlohmann_json
+    simdutf
+  ];
+  embeddedPackages = with pkgs; [
+    can-utils
+    pico-sdk
+    pioasm
+  ];
+  numericPackages = with pkgs; [
+    openblas
+    physac
+    imath
+    muparser
+    eigen
+  ];
+  graphicsPackages = with pkgs; [
     waylandpp
-    blas
-    # Crypto/SSL libraries
-    mbedtls
-    openssl
-    wolfssl
-    libressl
-    # Image/video libraries
+    libdrm
     sdl3
     sdl2-compat
     opencv
     tesseract
     raylib
-    # Json libraries
-    jsoncpp
-    simdjson
-    nlohmann_json
-    # Qt environment
-    qtEnv
-    qt6.qtbase
-    # Vulkan
-    vulkan-loader
-    # OpenGL
     glew
-    # OpenCL
+    pkgs-stable.imgui
+  ];
+  computePackages = with pkgs; [
+    kompute
+    vulkan-loader
     ocl-icd
     opencl-headers
     opencl-clhpp
-    # Snes
-    # pvsneslib
-    # Raspberry pico
-    pico-sdk
-    pioasm
+  ];
+  cryptoPackages = with pkgs; [
+    mbedtls
+    openssl
+    wolfssl
+    libressl
+    xxHash
+  ];
+  testingPackages = with pkgs; [
+    catch2
+    doctest
+    gtest
   ];
 
-  environment.sessionVariables = {
-    QT_PLUGIN_PATH = "${qtEnv}/lib/qt-6/plugins";
-    QML_IMPORT_PATH = "${qtEnv}/lib/qt-6/qml";
-    QT_QPA_PLATFORM_PLUGIN_PATH = "${qtEnv}/lib/qt-6/plugins/platforms";
-    PKG_CONFIG_PATH = "${qtEnv}/lib/pkgconfig:$PKG_CONFIG_PATH";
+  enabledOptionalsPackages =
+    lib.optionals cfg.common commonPackages
+    ++ lib.optionals cfg.dataFormats dataFormatPackages
+    ++ lib.optionals cfg.embedded embeddedPackages
+    ++ lib.optionals cfg.numeric numericPackages
+    ++ lib.optionals cfg.graphics graphicsPackages
+    ++ lib.optionals cfg.compute computePackages
+    ++ lib.optionals cfg.crypto cryptoPackages
+    ++ lib.optionals cfg.testing testingPackages;
+
+  anyEnabled = lib.any (x: x) [
+    cfg.common
+    cfg.dataFormats
+    cfg.embedded
+    cfg.numeric
+    cfg.graphics
+    cfg.compute
+    cfg.crypto
+    cfg.testing
+  ];
+in
+{
+  options.myConfig.apps.development.libraries = {
+    common = moduleHelpers.mkEnabledOption "Install common native development libraries";
+
+    dataFormats = moduleHelpers.mkEnabledOption "Install structured data and parsing libraries (JSON/XML/UTF)";
+
+    embedded = moduleHelpers.mkEnabledOption "Install embedded and hardware-oriented development libraries";
+
+    numeric = moduleHelpers.mkEnabledOption "Install numeric and scientific development libraries";
+
+    graphics = moduleHelpers.mkEnabledOption "Install graphics, multimedia, and UI libraries";
+
+    compute = moduleHelpers.mkEnabledOption "Install compute, Vulkan, and OpenCL libraries";
+
+    crypto = moduleHelpers.mkEnabledOption "Install crypto and TLS libraries";
+
+    testing = moduleHelpers.mkEnabledOption "Install C/C++ testing libraries";
   };
+
+  config = lib.mkMerge [
+    {
+      environment.systemPackages = basePackages;
+    }
+    (lib.mkIf anyEnabled {
+      environment.systemPackages = lib.unique enabledOptionalsPackages;
+    })
+  ];
 }

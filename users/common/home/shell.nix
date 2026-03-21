@@ -1,7 +1,12 @@
 # More info: https://nix-community.github.io/plasma-manager/options.xhtml
-{ config, pkgs, pkgs-stable, pkgs-master, pkgs-unstable, vars, ... }:
+{ config, lib, pkgs, pkgs-stable, pkgs-master, pkgs-unstable, inputs, moduleHelpers, vars, ... }:
 
 {
+  programs.direnv = {
+    enable = true;
+    nix-direnv.enable = true;
+  };
+
   programs.zsh = {
     enable = true;
     enableCompletion = true;
@@ -9,10 +14,10 @@
     syntaxHighlighting.enable = true;
 
     shellAliases = {
-      ll = "ls -lah";
+      ll = "eza -lah --git --icons";
       ".." = "cd ..";
-      "dl-audio" = "yt-dlp -f bestaudio --extract-audio --embed-thumbnail --embed-metadata --embed-chapters --output \"%\(title)s.%\(ext)s\"";
-      "dl-video" = "yt-dlp -f bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio --embed-thumbnail --embed-metadata --embed-chapters --output \"%\(title)s.%\(ext)s\"";
+      "dl-audio" = "yt-dlp -f bestaudio --extract-audio --embed-thumbnail --restrict-filenames --embed-metadata --embed-chapters --output \"%(title).200B [%(id)s].%(ext)s\"";
+      "dl-video" = "yt-dlp -f bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio --restrict-filenames --embed-thumbnail --embed-metadata --embed-chapters --output \"%(title).200B [%(id)s].%(ext)s\"";
       "git-log" = "git log --oneline --decorate --graph";
     };
 
@@ -21,10 +26,17 @@
       plugins = [ 
         "git"
         "docker"
+        "podman"
+        # "ansible"
         "docker-compose"
         "sudo"
-        "command-not-found"
+        "command-not-found"  # programs.command-not-found.enable ?
+        "extract"
         "history"
+        "ssh"
+        # "ssh-agent"
+        # "gpg-agent"
+        "python"
 #        "zsh-autosuggestions"
 #        "zsh-syntax-highlighting"
         "z"
@@ -33,7 +45,7 @@
 
     history = {
       size = 1000000;
-      path = "${config.xdg.dataHome}/zsh/history";
+      path = "${config.home.homeDirectory}/.zsh_history";
       extended = true;
       ignoreDups = true;
       ignoreSpace = true;
@@ -79,12 +91,12 @@
       git_branch = {
         symbol = "";
         style = "bg:#FCA17D fg:black";
-        format = "[[ $symbol $branch ]($style)]";
+        format = "[ $symbol $branch ]($style)";
       };
 
       git_status = {
         style = "bg:#FCA17D fg:black";
-        format = "[[($all_status$ahead_behind )]($style)]";
+        format = "[($all_status$ahead_behind )]($style)";
       };
 
       nix_shell = {

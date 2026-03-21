@@ -1,3 +1,5 @@
 {
-  hostname = "fluttershy";
+  system = {
+    hostname = "fluttershy";
+  };
 }

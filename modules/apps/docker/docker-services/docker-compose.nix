@@ -1,32 +1,35 @@
 { config, lib, pkgs, ... }:
 
-with lib;
-
 let
   cfg = config.services.my-docker-compose;
-in {
+
+  serviceAfter = [ "network.target" "docker.service" "docker.socket" ];
+  serviceRequires = [ "docker.service" "docker.socket" ];
+  serviceWantedBy = [ "multi-user.target" ];
+in
+{
   options.services.my-docker-compose = {
-    services = mkOption {
+    services = lib.mkOption {
       default = {};
-      type = types.attrsOf (types.submodule {
+      type = lib.types.attrsOf (lib.types.submodule {
         options = {
-          directory = mkOption { type = types.path; };
-          ports = mkOption { type = types.listOf types.int; default = []; };
+          directory = lib.mkOption { type = lib.types.path; };
+          ports = lib.mkOption { type = lib.types.listOf lib.types.int; default = []; };
         };
       });
     };
   };
 
   config = {
-    environment.etc = mapAttrs' (name: value: nameValuePair 
-      "docker-services/${name}" 
+    environment.etc = lib.mapAttrs' (name: value: lib.nameValuePair
+      "docker-services/${name}"
       { source = value.directory; }
     ) cfg.services;
 
-    systemd.services = mapAttrs' (name: value: nameValuePair "docker-compose-${name}" {
+    systemd.services = lib.mapAttrs' (name: value: lib.nameValuePair "docker-compose-${name}" {
       description = "Docker Compose Service: ${name}";
-      after = [ "network.target" "docker.service" "docker.socket" ];
-      requires = [ "docker.service" "docker.socket" ];
+      after = serviceAfter;
+      requires = serviceRequires;
       
       serviceConfig = {
         Type = "oneshot";
@@ -35,7 +38,7 @@ in {
         ExecStartPre = "${pkgs.docker-compose}/bin/docker-compose down --remove-orphans";
         # ExecStartPre = "${pkgs.docker-compose}/bin/docker-compose pull";
         ExecStart = "${pkgs.docker-compose}/bin/docker-compose up -d --wait";
-        ExecStop  = "${pkgs.docker-compose}/bin/docker-compose down";
+        ExecStop = "${pkgs.docker-compose}/bin/docker-compose down";
         # journalctl -u docker-compose-ollama.service
         # StandardOutput = "journal";
         # StandardError = "journal";
@@ -46,9 +49,9 @@ in {
         StartLimitIntervalSec = 60;
         StartLimitBurst = 5;
       };
-      wantedBy = [ "multi-user.target" ];
+      wantedBy = serviceWantedBy;
     }) cfg.services;
 
-    networking.firewall.allowedTCPPorts = flatten (mapAttrsToList (name: value: value.ports) cfg.services);
+    networking.firewall.allowedTCPPorts = lib.flatten (lib.mapAttrsToList (name: value: value.ports) cfg.services);
   };
 }

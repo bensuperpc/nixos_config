@@ -1,26 +1,44 @@
-# NixOS
+# NixOS Configuration
 
-This repository contains my NixOS configuration, it is **not perfect** but it is what i use on my machines.
+Multi-host NixOS flake configuration for personal machines and servers.
 
-> **⚠️ Warning:** This configuration still in development, it may contain some bugs and issues, use it at your own risk.
+> **⚠️ Warning:** This repository is still under active development, expect changes and occasional breakage.
 
-## Project Structure
+## Features
+
+- Multi-host setup
+- Profile/preset-based composition
+- Independent user modules
+- Separation of variables and configuration
+- Shared modules and hardware drivers as separate modules
+- Home Manager and **Plasma-manager** integration
+- Colmena for remote deployment
+- Docker-based helper commands via `Makefile`
+
+![my desktop environment](assets/image.webp)
+
+## Repository Layout
 
 ```bash
 .
+├── devshells # Development shells
 ├── drivers # Hardware drivers
 ├── flake.lock # Flake lock file
 ├── flake.nix # Flake file and target
-├── lib # Custom nix functions
+├── lib # Custom nix functions and helpers
 ├── Makefile
 ├── modules
-│   ├── apps # Applications
+│   ├── apps # Applications and services
 │   │   ├── development # Development tools and libraries
 │   │   ├── multimedia # Multimedia applications (Video, audio, image, etc.)
 │   │   ├── games # Games and emulators
-│   ├── common # common system configuration on every machine (Nix, systemd, etc.)
-│   ├── gui # GUI related configuration (Display manager, desktop environment, etc.)
-│   └── services # System services (SSH, printing, etc.)
+│   │   ├── custom # Custom applications
+│   │   ├── desktop # Desktop-related configuration
+│   │   ├── utilities # Utility applications
+│   │   ├── network # Network-related configuration
+│   │   ├── system # System-related configuration
+│   │   └── docker # Docker-related configuration
+│   └── gui # GUI related configuration (Display manager, desktop environment, etc.)
 ├── profiles # System profiles/presets (Desktop, server, etc.)
 ├── systems # System specific configuration
 ├── tests # NixOS tests
@@ -28,42 +46,119 @@ This repository contains my NixOS configuration, it is **not perfect** but it is
 └── variables # Global variables
 ```
 
-## Usage
+## Hosts Defined in `systems/systems.nix`
 
-To use this configuration, you can copy all the files to **/etc/nixos**, **add** a new system in `systems*` with your own hardware configuration, then run the following command to build/install the config and then reboot, you have new NixOS configuration:
+- `server-1-m710q`
+- `celestia` (WIP)
+- `luna` (WIP)
+- `rainbow-dash` (WIP)
+- `fluttershy` (WIP)
+- `pinkie-pie` (WIP)
 
-## Testing
+## Prerequisites
 
-You can test the configuration in a Docker container:
+- Linux machine with Nix installed
+- Flakes enabled (`nix-command` + `flakes`)
+- Optional for deployment:
+  - `colmena`
+  - `deploy-rs`
+- Optional for Makefile workflow:
+  - Docker
+
+## Quick Start
+
+### Validate the flake
 
 ```bash
-make server-1-m710q.test
+nix flake show
+nix flake check -L
 ```
 
-To update the flake lock file:
+### Build a host locally
 
 ```bash
-make update
+nix build --extra-experimental-features "nix-command flakes" .#nixosConfigurations.server-1-m710q.config.system.build.toplevel
 ```
+
+### Switch on a NixOS host
+
+```bash
+sudo nixos-rebuild switch --flake .#server-1-m710q
+```
+
+## Makefile Commands
+
+General commands:
+
+```bash
+make update    # flake update
+```
+
+Host commands (for hosts listed in `SERVERS` inside `Makefile`):
+
+```bash
+make <host>.test   # dry-run build
+make <host>.build  # build toplevel
+make <host>.vm     # build VM
+make <host>.push   # deploy with Colmena
+```
+
+> Note: `Makefile` host list and `systems/default.nix` host list should be kept in sync.
 
 ## Deployment
 
-You can use **colmena** to deploy the configuration to your machines
+### Colmena
+
+This flake exports `colmenaHive`.  
+Example:
 
 ```bash
-make server-1-m710q.push
+colmena apply --on server-1-m710q --show-trace --verbose
 ```
 
-## Sources
+## How Host Configuration Is Composed
+
+`lib/mksystem.nix` builds each host from:
+
+1. `systems/<host>/configuration.nix` (with hardware configuration)
+2. Selected profiles from `profiles/*.nix`
+3. Selected users from `users/<name>/user.nix`
+4. Shared modules from `modules/`
+5. Hardware drivers from `drivers/`
+
+Variable precedence is:
+
+`global variables < system variables < user variables`
+
+## Adding a New Host
+
+1. Create:
+   - `systems/<host>/configuration.nix` (with hardware configuration)
+   - `systems/<host>/variables.nix`
+2. Add the host entry in `systems/systems.nix`.
+3. Optionally add it to `SERVERS` in `Makefile`.
+4. Run:
+
+```bash
+make <host>.test
+make <host>.push
+```
+
+## Useful Resources
 
 - [NixOS](https://nixos.org/)
 - [NixOS Wiki](https://nixos.wiki/)
-- [NixOS Search](https://search.nixos.org/packages)
-- [NixOS Options](https://search.nixos.org/options)
-- [NixOS Modules](https://search.nixos.org/modules)
-- [Nixpkgs PR Tracker](https://nixpk.gs/pr-tracker.html)
-- [My NixOS (packages)](https://mynixos.com/)
+- [NixOS Search (Packages)](https://search.nixos.org/packages)
+- [NixOS Search (Options)](https://search.nixos.org/options)
+- [MyNixOS](https://mynixos.com/)
 - [Best of Nix](https://github.com/best-of-lists/best-of)
-- [sincorchetes's config](https://github.com/sincorchetes)
-- [Secureboot](https://jnsgr.uk/2024/04/nixos-secure-boot-tpm-fde/)
+- [Nix Gaming](https://github.com/fufexan/nix-gaming/)
+
+# Other NixOS Configurations
+
 - [CageKiosk](https://github.com/stefansebekow/CageKiosk)
+- [Midna](https://git.midna.dev/mjm/nix-config)
+- [Natto1784](https://github.com/natto1784/dotfiles)
+- [Fufexan](https://github.com/fufexan/dotfiles)
+- [Tejing1](https://github.com/tejing1/nixos-config)
+- [Ryan4yin](https://github.com/ryan4yin/nix-config)

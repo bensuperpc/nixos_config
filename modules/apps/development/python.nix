@@ -1,38 +1,99 @@
-{ pkgs, pkgs-stable, pkgs-master, pkgs-unstable, inputs, vars, ... }:
+{ config, lib, pkgs, pkgs-stable, pkgs-master, pkgs-unstable, inputs, moduleHelpers, vars, ... }:
 
+let
+  cfg = config.myConfig.apps.development.python;
+
+  basePackages = with pkgs; [
+  ];
+
+  corePythonPackages = ps: with ps; [
+    numpy
+    loguru
+    qrcode
+    isort
+    environs
+    virtualenv
+    sh
+    av
+    pipx
+    ninja
+  ];
+
+  dataSciencePythonPackages = ps: with ps; [
+    matplotlib
+    mpmath
+    pandas
+    scikit-learn
+    scipy
+    sympy
+    seaborn
+  ];
+
+  webPythonPackages = ps: with ps; [
+    flask
+    fastapi
+    uvicorn
+    requests
+    scrapy
+    beautifulsoup4
+    boto3
+    internetarchive
+  ];
+
+  automationPythonPackages = ps: with ps; [
+    celery
+    cantools
+    canopen
+  ];
+
+  testingPythonPackages = ps: with ps; [
+    pytest
+    pytest-bdd
+    sphinx
+    robotframework
+    robotframework-seleniumlibrary
+    robotframework-requests
+    robotframework-pythonlibcore
+    robotframework-databaselibrary
+    robotframework-assertion-engine
+  ];
+
+
+  enabledOptionalsPackages = ps: with ps;
+    lib.optionals cfg.core (corePythonPackages ps)
+    ++ lib.optionals cfg.dataScience (dataSciencePythonPackages ps)
+    ++ lib.optionals cfg.web (webPythonPackages ps)
+    ++ lib.optionals cfg.automation (automationPythonPackages ps)
+    ++ lib.optionals cfg.testing (testingPythonPackages ps);
+
+    anyEnabled = lib.any (x: x) [
+      cfg.core
+      cfg.dataScience
+      cfg.web
+      cfg.automation
+      cfg.testing
+    ];
+in
 {
-
-  environment.shellAliases = {
-    python = "python3.14";
+  options.myConfig.apps.development.python = {
+    core = moduleHelpers.mkEnabledOption "Install core Python development packages";
+    dataScience = moduleHelpers.mkEnabledOption "Install Python data science and math packages";
+    web = moduleHelpers.mkEnabledOption "Install Python web, scraping, and API packages";
+    automation = moduleHelpers.mkEnabledOption "Install Python automation, CAN, and Robot Framework packages";
+    testing = moduleHelpers.mkEnabledOption "Install Python testing and documentation packages";
   };
 
-  environment.systemPackages = with pkgs; [
-    (python314.withPackages (ps: with ps; [
-      ninja
-      numpy
-      loguru
-    #   ipython
-    #   ipykernel
-    #   jupyter
-      matplotlib
-      mpmath
-      pandas
-      scikit-learn
-      scipy
-      sympy
-      seaborn
-    #   celery
-      robotframework
-      beautifulsoup4
-      boto3
-      pipx
-      # HTTP/Web libraries
-      flask
-      fastapi
-      uvicorn
-      requests
-      scrapy
-      internetarchive 
-    ]))
+  config = lib.mkMerge [ 
+    {
+      environment.systemPackages = basePackages;
+    }
+    (lib.mkIf anyEnabled {
+      environment.systemPackages = [
+        (pkgs.python314.withPackages enabledOptionalsPackages)
+      ];
+      environment.shellAliases = {
+        python = "python3.14";
+      };
+    })
   ];
 }

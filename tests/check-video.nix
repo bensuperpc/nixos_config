@@ -3,29 +3,52 @@
 
 let
   requiredVideoPkgs = with pkgs; [
-    # Video players
+    # video.playback
     vlc
     haruna
-    # Video editing/recording
+    mpv
+    # video.editing
     obs-studio
     handbrake
-    # DVD things
+    video2x
+    subtitleedit
+    # video.opticalMedia
     libdvdnav
     libdvdcss
     libdvdread
-    # Blu-ray
     makemkv
     libaacs
     libbdplus
-    # Video codecs
+    # video.codecs
     ffmpeg-full
-    # Video upscaling
-    video2x
+    svt-av1
+    # video.downloaders
+    yt-dlp
   ];
 in
 {
   assertions =
     [
+      {
+        assertion = config.myConfig.apps.multimedia.video.editing;
+        message = "Multimedia video editing group must be enabled";
+      }
+      {
+        assertion = config.myConfig.apps.multimedia.video.playback;
+        message = "Multimedia video playback group must be enabled";
+      }
+      {
+        assertion = config.myConfig.apps.multimedia.video.codecs;
+        message = "Multimedia video codecs group must be enabled";
+      }
+      {
+        assertion = config.myConfig.apps.multimedia.video.opticalMedia;
+        message = "Multimedia video optical media group must be enabled";
+      }
+      {
+        assertion = config.myConfig.apps.multimedia.video.downloaders;
+        message = "Multimedia video downloaders group must be enabled";
+      }
     ]
     ++ map (pkg: {
       assertion = lib.elem pkg config.environment.systemPackages;

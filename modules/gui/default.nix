@@ -1,4 +1,4 @@
-{ pkgs, pkgs-stable, pkgs-master, pkgs-unstable, inputs, vars, ... }:
+{ config, lib, pkgs, pkgs-stable, pkgs-master, pkgs-unstable, inputs, moduleHelpers, vars, ... }:
 
 {
   imports = [

@@ -1,11 +1,12 @@
-# tests/check-docker.nix
+# tests/check-common.nix
 { config, pkgs, lib, vars, ... }:
 
 let
   requiredCommonPkgs = with pkgs; [
-    docker-compose
-    docker-buildx
-    docker-color-output
+    inetutils
+    iproute2
+    ethtool
+    dig
   ];
 in
 {
@@ -22,6 +23,14 @@ in
       {
         assertion = config.zramSwap.enable;
         message = "Zram must be enabled";
+      }
+      {
+        assertion = config.networking.networkmanager.enable;
+        message = "NetworkManager must be enabled";
+      }
+      {
+        assertion = config.networking.firewall.enable;
+        message = "Firewall must be enabled";
       }
     ]
     ++ map (pkg: {

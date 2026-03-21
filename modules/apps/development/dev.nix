@@ -1,47 +1,64 @@
-{ pkgs, pkgs-stable, pkgs-master, pkgs-unstable, inputs, vars, ... }:
+{ config, lib, pkgs, pkgs-stable, pkgs-master, pkgs-unstable, inputs, moduleHelpers, vars, ... }:
 
-{
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
-  environment.systemPackages = with pkgs; [
-    postman
-    # Compilers and build tools
-    gcc
-    nasm
-    wasmi
-    clang
+let
+  cfg = config.myConfig.apps.development.dev;
+  basePackages = with pkgs; [
+    git
+  ];
+  corePackages = with pkgs; [
+  ];
+  toolingPackages = with pkgs; [
     clang-analyzer
     clang-tools
-    gdb
-    valgrind
-    gcovr
-    doxygen
     shellcheck
-    cppcheck
     codechecker
     commitizen
-    cmake
-    gnumake
-    lomiri.cmake-extras
-    rustup
-    meson
-    # C/C++ caching tools
-    ccache
-    sccache
-    distcc
-    mold
+    gource
+  ];
+  graphicsPackages = with pkgs; [
     vulkan-tools
     vulkan-cts
     mesa.opencl
     mesa-demos
     virtualgl
-    # Git history visualizer
-    gource
-    # Nix package cache
-    cachix
-    niv
-    npins
-    nix-tree
-    nix-diff
   ];
+  dotnetPackages = with pkgs; [
+    mono
+    dotnet-sdk
+  ];
+  miscPackages = with pkgs; [
+    postman
+  ];
+
+  enabledOptionalsPackages =
+    lib.optionals cfg.core corePackages
+    ++ lib.optionals cfg.tooling toolingPackages
+    ++ lib.optionals cfg.graphics graphicsPackages
+    ++ lib.optionals cfg.dotnet dotnetPackages
+    ++ lib.optionals cfg.misc miscPackages;
+
+  anyEnabled = lib.any (x: x) [
+    cfg.core
+    cfg.tooling
+    cfg.graphics
+    cfg.dotnet
+    cfg.misc
+  ];
+in
+{
+  options.myConfig.apps.development.dev = {
+    core = moduleHelpers.mkEnabledOption "Install base development system tools";
+
+    tooling = moduleHelpers.mkEnabledOption "Install general development CLIs and review tools";
+
+    graphics = moduleHelpers.mkEnabledOption "Install graphics, Vulkan, and OpenCL diagnostics";
+
+    dotnet = moduleHelpers.mkEnabledOption "Install Mono and .NET development tooling";
+
+    misc = moduleHelpers.mkEnabledOption "Install auxiliary developer applications";
+  };
+
+  config = lib.mkIf anyEnabled {
+    environment.systemPackages = enabledOptionalsPackages;
+  };
 }

@@ -1,4 +1,4 @@
-{ pkgs, pkgs-stable, pkgs-master, pkgs-unstable, inputs, vars, ... }:
+{ config, lib, pkgs, pkgs-stable, pkgs-master, pkgs-unstable, inputs, moduleHelpers, vars, ... }:
 {
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
@@ -8,19 +8,12 @@
     ./development
     ./games
     ./docker
-    ./kvm.nix
-    ./compress.nix
-    ./office.nix
-    ./tools.nix
-    ./browser.nix
-    ./files.nix
-    ./math.nix
-    ./filesystem.nix
-    ./hardware.nix
-    ./terminal.nix
-    ./flashing.nix
+    ./files
+    ./system
+    ./network
+    ./desktop
+    ./utilities
   ];
-  # ./ollama.nix
 
   environment.systemPackages = [
     (pkgs.callPackage ./custom/lib/bs-thread-pool.nix { })

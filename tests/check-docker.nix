@@ -12,8 +12,20 @@ in
   assertions =
     [
       {
+        assertion = config.myConfig.apps.docker.engine;
+        message = "Docker engine option must be enabled";
+      }
+      {
+        assertion = config.virtualisation.containers.enable;
+        message = "Container support must be enabled";
+      }
+      {
         assertion = config.virtualisation.docker.enable;
         message = "Docker must be enabled";
+      }
+      {
+        assertion = config.virtualisation.docker.autoPrune.enable;
+        message = "Docker auto-prune must be enabled";
       }
     ]
     ++ map (pkg: {
@@ -22,7 +34,7 @@ in
     }) requiredDockerPkgs
     ++ [
       {
-        assertion = lib.elem "docker" config.users.users.${vars.admin.name}.extraGroups;
+        assertion = lib.elem "docker" config.users.users.${vars.admin.user}.extraGroups;
         message = "User must be in docker group";
       }
     ];

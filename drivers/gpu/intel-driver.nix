@@ -1,5 +1,5 @@
 # More info: https://wiki.nixos.org/wiki/Intel_Graphics
-{ pkgs, pkgs-stable, pkgs-master, pkgs-unstable, inputs, vars, ... }:
+{ config, lib, pkgs, pkgs-stable, pkgs-master, pkgs-unstable, inputs, moduleHelpers, vars, ... }:
 
 {
   hardware.graphics = {
@@ -9,6 +9,8 @@
       intel-vaapi-driver # For older processors. LIBVA_DRIVER_NAME=i965
       vpl-gpu-rt
       libvdpau-va-gl
+      libva
+      libva-vdpau-driver
       # For Arc/Xe GPU support
       intel-compute-runtime
     ];
