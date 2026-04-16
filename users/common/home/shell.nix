@@ -1,5 +1,5 @@
 # More info: https://nix-community.github.io/plasma-manager/options.xhtml
-{ config, lib, pkgs, pkgs-stable, pkgs-master, pkgs-unstable, inputs, moduleHelpers, vars, ... }:
+{ config, lib, pkgs, ... }:
 
 {
   programs.direnv = {

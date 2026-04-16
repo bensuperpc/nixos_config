@@ -1,5 +1,5 @@
 # tests/check-video.nix
-{ config, pkgs, lib, vars, ... }:
+{ config, pkgs, lib, ... }:
 
 let
   requiredVideoPkgs = with pkgs; [

@@ -1,5 +1,5 @@
 # tests/check-docker.nix
-{ config, pkgs, lib, vars, ... }:
+{ config, pkgs, lib, ... }:
 
 let
   requiredDockerPkgs = with pkgs; [
@@ -7,6 +7,8 @@ let
     docker-buildx
     docker-color-output
   ];
+  mainUser =
+    if config.myConfig.vars.host.users == [] then null else lib.head config.myConfig.vars.host.users;
 in
 {
   assertions =
@@ -34,7 +36,7 @@ in
     }) requiredDockerPkgs
     ++ [
       {
-        assertion = lib.elem "docker" config.users.users.${vars.admin.user}.extraGroups;
+        assertion = mainUser != null && lib.elem "docker" config.users.users.${mainUser}.extraGroups;
         message = "User must be in docker group";
       }
     ];

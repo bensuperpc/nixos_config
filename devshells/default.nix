@@ -1,4 +1,4 @@
-{ pkgs, inputs', ... }:
+{ pkgs, ... }:
 
 {
   python2 = import ./python2.nix {

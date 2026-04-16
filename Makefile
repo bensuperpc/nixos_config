@@ -1,6 +1,6 @@
 DIR := $(CURDIR)
 
-SERVERS := server-1-m710q
+SERVERS := server-1-m710q fluttershy
 
 DOCKER_NIX_VOL := nix-store-vol
 DOCKER_NIX := docker run -it --rm \
@@ -40,6 +40,9 @@ $(1).build:
 
 $(1).push:
 	@colmena apply $(COLMENA_FLAGS) --on $(1)
+
+$(1).boot:
+	@colmena apply boot $(COLMENA_FLAGS) --reboot --on $(1)
 
 $(1).vm:
 	@$(DOCKER_NIX) sh -c '$(GIT_FIX) && nix $(NIX_FLAGS) build path:/etc/nixos#nixosConfigurations.$(1).config.system.build.vm --show-trace'

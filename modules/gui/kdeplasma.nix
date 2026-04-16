@@ -1,10 +1,11 @@
-{ config, lib, pkgs, pkgs-stable, pkgs-master, pkgs-unstable, inputs, moduleHelpers, vars, ... }:
+{ config, lib, pkgs, moduleHelpers, ... }:
 
 let
   cfg = config.myConfig.apps.gui.kdeplasma;
 in {
   options.myConfig.apps.gui.kdeplasma = {
-    enable = lib.mkEnableOption "Activate KDE Plasma Desktop Environment";
+    enable = moduleHelpers.mkDisabledOption "Activate KDE Plasma Desktop Environment";
+    extraPackages = moduleHelpers.mkDisabledOption "Install additional KDE Plasma applications and utilities";
   };
 
   config = lib.mkIf cfg.enable {
@@ -32,7 +33,7 @@ in {
 
     # Disable udiskie, already include in plasma
 
-    environment.systemPackages = with pkgs;
+    environment.systemPackages = with pkgs; lib.optionals cfg.extraPackages
     [
       # Theme and icons
       kdePackages.breeze
@@ -205,7 +206,5 @@ in {
       wayland-utils
       wl-clipboard
     ];
-
-    hardware.graphics.enable = true; 
   };
 }

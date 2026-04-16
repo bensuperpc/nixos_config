@@ -1,5 +1,5 @@
 # tests/check-openssh.nix
-{ config, pkgs, lib, vars, ... }:
+{ config, pkgs, lib, ... }:
 
 let
   requiredSSHPkgs = with pkgs; [
@@ -29,6 +29,14 @@ in
       {
         assertion = config.services.openssh.openFirewall;
         message = "OpenSSH firewall opening must be enabled";
+      }
+      {
+        assertion = config.networking.firewall.enable;
+        message = "Firewall must be enabled";
+      }
+      {
+        assertion = config.networking.networkmanager.enable;
+        message = "NetworkManager must be enabled";
       }
     ]
     ++ map (pkg: {

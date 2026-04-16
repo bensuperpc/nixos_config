@@ -1,5 +1,5 @@
 # tests/check-common.nix
-{ config, pkgs, lib, vars, ... }:
+{ config, pkgs, lib, ... }:
 
 let
   requiredCommonPkgs = with pkgs; [

@@ -1,18 +1,22 @@
 # NixOS Configuration
 
-Multi-host NixOS flake configuration for personal machines and servers.
+Multi-host NixOS flake configuration for personal machines, family desktops and servers.
 
 > **⚠️ Warning:** This repository is still under active development, expect changes and occasional breakage.
 
 ## Features
 
-- Multi-host setup
-- Profile/preset-based composition
-- Independent user modules
-- Separation of variables and configuration
-- Shared modules and hardware drivers as separate modules
-- Home Manager and **Plasma-manager** integration
-- Colmena for remote deployment
+- Multi-host setup (personal, family, server)
+- Role-based host composition (`minimal`, `server`, `desktop`, `workstation`, `family`)
+- Platform / application module split for clear layering
+- Dedicated policy profiles for system-wide defaults (kernel, storage)
+- Profile-based capabilities (`appProfiles`, `platformProfiles`, `hwProfiles`, `policyProfiles`)
+- Per-host user list (`users`) with per-user modules
+- Validated host schema with early error reporting (`lib/host-schema.nix`)
+- Clear variable inputs via `varsSystem`, `varsUsers`, `varsHost`
+- Hardware drivers as composable profiles (Intel/AMD/Bluetooth/Wireless)
+- Home Manager and Plasma Manager integration
+- Colmena and deploy-rs for remote deployment (hosts with a known IP are auto-included)
 - Docker-based helper commands via `Makefile`
 
 ![my desktop environment](assets/image.webp)
@@ -21,39 +25,46 @@ Multi-host NixOS flake configuration for personal machines and servers.
 
 ```bash
 .
-├── devshells # Development shells
-├── drivers # Hardware drivers
-├── flake.lock # Flake lock file
-├── flake.nix # Flake file and target
-├── lib # Custom nix functions and helpers
+├── devshells           # Development shells
+├── flake.lock          # Flake lock file
+├── flake.nix           # Flake outputs and host wiring
+├── lib
+│   ├── host-schema.nix # Role defaults, host normalization and validation
+│   ├── mksystem.nix    # Per-host NixOS configuration builder
+│   └── options.nix     # Shared option helpers (mkEnabledOption, etc.)
 ├── Makefile
 ├── modules
-│   ├── apps # Applications and services
-│   │   ├── development # Development tools and libraries
-│   │   ├── multimedia # Multimedia applications (Video, audio, image, etc.)
-│   │   ├── games # Games and emulators
-│   │   ├── custom # Custom applications
-│   │   ├── desktop # Desktop-related configuration
-│   │   ├── utilities # Utility applications
-│   │   ├── network # Network-related configuration
-│   │   ├── system # System-related configuration
-│   │   └── docker # Docker-related configuration
-│   └── gui # GUI related configuration (Display manager, desktop environment, etc.)
-├── profiles # System profiles/presets (Desktop, server, etc.)
-├── systems # System specific configuration
-├── tests # NixOS tests
-├── users # User specific configuration
-└── variables # Global variables
+│   ├── common      # Boot, network, audio, filesystem, SSH, …
+│   ├── drivers     # GPU (Intel/AMD), Bluetooth, Wireless
+│   ├── gui         # Display manager, KDE Plasma
+│   └── applications # Layer 2 — User-facing software
+│       ├── development  # IDEs, compilers, languages, tools
+│       ├── multimedia   # Video, audio, image
+│       ├── games        # Steam, emulators, Minecraft
+│       ├── desktop      # Desktop integration, fonts, printing
+│       ├── network      # Browsers, communication, torrent
+│       ├── files        # Backup, sync, crypto
+│       ├── utilities    # Misc tools, KVM, math, antivirus
+│       ├── docker       # Docker and Compose services
+│       └── custom       # Local custom packages
+├── profiles            # Composable presets for platform, apps and policy
+├── systems             # Per-host hardware configuration and variables
+├── tests               # NixOS assertions (check-*.nix)
+└── users               # Per-user system and Home Manager configuration
 ```
 
-## Hosts Defined in `systems/systems.nix`
+## Hosts
 
-- `server-1-m710q`
-- `celestia` (WIP)
-- `luna` (WIP)
-- `rainbow-dash` (WIP)
-- `fluttershy` (WIP)
-- `pinkie-pie` (WIP)
+Defined in `systems/systems.nix`. Hosts without an IP are built but excluded from remote deployment targets.
+
+| Host | Role | Status |
+|---|---|---|
+| `server-1-m710q` | workstation | active |
+| `celestia` | family | WIP |
+| `luna` | family | WIP |
+| `rainbow-dash` | family | WIP |
+| `fluttershy` | minimal | WIP |
+| `pinkie-pie` | desktop | WIP |
 
 ## Prerequisites
 
@@ -103,14 +114,15 @@ make <host>.vm     # build VM
 make <host>.push   # deploy with Colmena
 ```
 
-> Note: `Makefile` host list and `systems/default.nix` host list should be kept in sync.
+Current `SERVERS` value in `Makefile`: `server-1-m710q fluttershy`.
+
+> Note: `Makefile` host list and `systems/systems.nix` host list should be kept in sync.
 
 ## Deployment
 
-### Colmena
+Hosts with a defined `ip` field are automatically included in Colmena and deploy-rs outputs. WIP hosts simply omit the `ip` field.
 
-This flake exports `colmenaHive`.  
-Example:
+### Colmena
 
 ```bash
 colmena apply --on server-1-m710q --show-trace --verbose
@@ -120,29 +132,95 @@ colmena apply --on server-1-m710q --show-trace --verbose
 
 `lib/mksystem.nix` builds each host from:
 
-1. `systems/<host>/configuration.nix` (with hardware configuration)
-2. Selected profiles from `profiles/*.nix`
-3. Selected users from `users/<name>/user.nix`
-4. Shared modules from `modules/`
-5. Hardware drivers from `drivers/`
+1. `systems/<host>/configuration.nix` (hardware + `system.stateVersion`)
+2. All profiles resolved from role defaults + host `platformProfiles` + `appProfiles` + `hwProfiles` + `policyProfiles`
+3. User modules from `users/<name>/system.nix` for each user in `users`
+4. Core modules (`modules/common/`, `modules/drivers/`, `modules/gui/`) and application modules (`modules/applications/`)
 
-Variable precedence is:
+Configuration inputs exposed to modules (`_module.args`):
 
-`global variables < system variables < user variables`
+- `varsSystem`: values from `systems/<host>/variables.nix`
+- `varsUsers.<username>`: values from each `users/<name>/variables.nix`
+- `varsHost`: host metadata (`name`, `role`, `users`, `deployUser`)
+
+## Host Roles
+
+Roles are defined in `lib/host-schema.nix` and provide default `platformProfiles`, `appProfiles`, `hwProfiles` and `policyProfiles`. Hosts can extend or override them.
+
+| Role | Platform profiles | App profiles | Policy / extra profiles |
+|---|---|---|---|
+| `minimal` | `platform/base` | _(none)_ | _(none)_ |
+| `server` | `platform/base`, `platform/no-gpu` | `apps/docker` | _(none)_ |
+| `desktop` | `platform/base`, `platform/kde-plasma` | `apps/custom`, `apps/desktop-runtime`, `apps/desktop`, `apps/multimedia`, `apps/utilities`, `apps/office` | `policy/kernel-zen` |
+| `workstation` | `platform/base`, `platform/kde-plasma` | `apps/custom`, `apps/desktop-runtime`, `apps/desktop`, `apps/development`, `apps/multimedia`, `apps/utilities`, `apps/office` | `policy/kernel-zen` |
+| `family` | `platform/base`, `platform/kde-plasma` | `apps/desktop`, `apps/communication`, `apps/multimedia`, `apps/office`, `apps/files`, `apps/utilities` | `policy/kernel-zen` |
 
 ## Adding a New Host
 
-1. Create:
-   - `systems/<host>/configuration.nix` (with hardware configuration)
-   - `systems/<host>/variables.nix`
-2. Add the host entry in `systems/systems.nix`.
+1. Create four files under `systems/<host>/`:
+   - `definition.nix` — role, profiles, IP, users (see example below)
+   - `configuration.nix` — hardware + `system.stateVersion`
+   - `hardware-configuration.nix` — generated by `nixos-generate-config`
+   - `variables.nix` — host-specific variables (hostname, timezone, locale…)
+2. Register the host in `systems/systems.nix`:
+
+```nix
+"my-host" = import ./my-host/definition.nix;
+```
+
+Example `definition.nix`:
+
+```nix
+{
+  role = "desktop";           # minimal | server | desktop | workstation | family
+  system = "x86_64-linux";
+  # ip = "192.168.1.x";       # add when known — enables remote deployment
+
+  users = [ "bensuperpc" ];
+  # deployUser = "bensuperpc"; # optional — defaults to the first entry in users
+                               # must be one of the users above
+
+  appProfiles    = [ "apps/games" "apps/docker" ]; # optional extras on top of the role
+  hwProfiles     = [ "platform/gpu-amd" "platform/wireless" ]; # hardware/driver profiles
+  policyProfiles = [ "policy/kernel-zen" ]; # kernel and system-wide policies
+}
+```
+
+`users` is required and must be a list (not `user` and not `userGroups`).
+
+`hwProfiles` is for hardware/driver profiles (`platform/gpu-*`, `platform/bluetooth`, etc.).
+`policyProfiles` is for system-wide policies (`policy/kernel-*`, etc.).
+
 3. Optionally add it to `SERVERS` in `Makefile`.
 4. Run:
 
 ```bash
 make <host>.test
-make <host>.push
+make <host>.push   # once ip is set
 ```
+
+## Driver Profiles
+
+Hardware drivers are activated via `hwProfiles`:
+
+| Profile | Description |
+|---|---|
+| `platform/gpu-intel` | Intel GPU (VA-API, compute) |
+| `platform/gpu-amd` | AMD GPU |
+| `platform/bluetooth` | Bluetooth stack |
+| `platform/wireless` | Wireless networking |
+| `platform/no-gpu` | Headless / server (explicit no-GPU marker) |
+
+## Policy Profiles
+
+Policy profiles are activated via role defaults or `policyProfiles`:
+
+| Profile | Description |
+|---|---|
+| `policy/kernel-latest` | Follow the latest kernel track |
+| `policy/kernel-zen` | Prefer the Zen kernel for desktop-oriented hosts |
+| `policy/kernel-latest-libre` | Follow the latest libre kernel track (no binary blobs) |
+| `policy/kernel-latest-hardened` | Follow the latest hardened kernel track (security-focused) |
 
 ## Useful Resources
 

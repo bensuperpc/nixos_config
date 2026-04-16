@@ -1,5 +1,5 @@
 # tests/check-game.nix
-{ config, pkgs, lib, vars, ... }:
+{ config, pkgs, lib, ... }:
 
 let
   requiredGamePkgs = with pkgs; [
@@ -20,10 +20,6 @@ in
 {
   assertions =
     [
-      {
-        assertion = config.myConfig.apps.games.enableAll;
-        message = "Games meta-module must be enabled";
-      }
       {
         assertion = config.myConfig.apps.games.emulator.nintendo;
         message = "Emulator Nintendo group must be enabled";

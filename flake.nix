@@ -62,17 +62,18 @@
 
       flake = let
         lib = inputs.nixpkgs.lib;
-        
+        moduleHelpers = import ./lib/options.nix { inherit lib; };
+
         mkHostConfig = import ./lib/mksystem.nix { inherit inputs lib; };
-        hosts = import ./systems/systems.nix;
+        hosts = import ./systems/systems.nix { inherit lib; };
 
         hostConfigs = lib.mapAttrs mkHostConfig hosts;
+        deployableHostConfigs = lib.filterAttrs (_: cfg: cfg.ip != null) hostConfigs;
 
         myNixosConfigurations = lib.mapAttrs (name: cfg: lib.nixosSystem {
           inherit (cfg) system;
           specialArgs = {
             inherit inputs;
-            vars = cfg.hostVars;
             moduleHelpers = cfg.moduleHelpers;
           };
           modules = cfg.modules;
@@ -86,30 +87,29 @@
           meta = {
             nixpkgs = import inputs.nixpkgs { system = "x86_64-linux"; };
             specialArgs = {
-              inherit inputs;
-              moduleHelpers = import ./lib/options.nix { inherit lib; };
+              inherit inputs moduleHelpers;
             };
           };
         } // (lib.mapAttrs (name: cfg: {
           deployment = {
             targetHost = cfg.ip;
-            targetUser = lib.head cfg.users;
+            targetUser = cfg.deployUser;
             targetPort = 22;
             buildOnTarget = true;
             allowLocalDeployment = false;
           };
           imports = cfg.modules; 
-        }) hostConfigs));
+        }) deployableHostConfigs));
 
         # Export de Deploy-rs
         deploy.nodes = lib.mapAttrs (name: cfg: {
           hostname = cfg.ip;
           profiles.system = {
             user = "root";
-            sshUser = lib.head cfg.users;
+            sshUser = cfg.deployUser;
             path = inputs.deploy-rs.lib.${cfg.system}.activate.nixos myNixosConfigurations.${name};
           };
-        }) hostConfigs;
+        }) deployableHostConfigs;
       };
     };
 }

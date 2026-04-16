@@ -1,5 +1,5 @@
 # tests/check-dev.nix
-{ config, pkgs, lib, vars, ... }:
+{ config, pkgs, lib, ... }:
 
 let
   requiredDevPkgs = with pkgs; [
@@ -24,10 +24,6 @@ in
       {
         assertion = config.programs.vscode.enable;
         message = "VSCode must be enabled";
-      }
-      {
-        assertion = config.myConfig.apps.development.enableAll;
-        message = "Development meta-module must be enabled";
       }
       {
         assertion = config.myConfig.apps.development.dev.core;

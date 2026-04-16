@@ -1,7 +1,9 @@
 # More info: https://nix-community.github.io/plasma-manager/options.xhtml
-{ config, osConfig, lib, pkgs, pkgs-stable, pkgs-master, pkgs-unstable, inputs, moduleHelpers, vars, ... }:
+{ config, osConfig, lib, pkgs, ... }:
 
 let
+  userVars = osConfig.myConfig.vars.users.bensuperpc;
+
   chromiumExtensions = [
     "ddkjiahejlhfcafbddmgiahcphecmpfh" # uBlock Origin Lite
     "nngceckbapebfimnlniiiahkandclblb" # Bitwarden
@@ -11,6 +13,17 @@ let
     "kdbmhfkmnlmbkgbabkdealhhbfhlmmon" # SteamDB
     # "lclgfmnljgacfdpmmmjmfpdelndbbfhk" # SealSkin Isolation
   ];
+  vscodeExtensions = with pkgs.vscode-extensions; [
+    ms-vscode.cpptools
+    ms-vscode.cpptools-extension-pack
+    ms-vscode-remote.remote-containers
+    ms-vscode.makefile-tools
+    ms-python.python
+    ms-azuretools.vscode-docker
+    yzhang.markdown-all-in-one
+    redhat.vscode-yaml
+    jnoortheen.nix-ide
+  ];
 in
 {
   imports = [
@@ -18,13 +31,20 @@ in
   ];
 
   home = {
-    username = "${vars.admin.user}";
-    homeDirectory = "/home/${vars.admin.user}";
+    username = "${userVars.user}";
+    homeDirectory = "/home/${userVars.user}";
     packages = with pkgs; [
+    ] ++ lib.optionals osConfig.myConfig.apps.development.ctools.caching [
+      pkgs.ccache
     ];
-  };
 
-  home.sessionVariables = {
+    sessionVariables = {
+      CCACHE_DIR = "$HOME/.cache/ccache";
+    };
+
+    activation.setupCcache = ''
+      mkdir -p $HOME/.cache/ccache
+    '';
   };
 
   home.file = {
@@ -42,40 +62,31 @@ in
 
   # Generate SSH key if it doesn't exist
   home.activation.generateSshKey = config.lib.dag.entryAfter ["writeBoundary"] ''
-    if [ ! -f "$HOME/.ssh/${vars.admin.mainSshKeyName}" ]; then
+    if [ ! -f "$HOME/.ssh/${userVars.mainSshKeyName}" ]; then
       install -d -m 700 "$HOME/.ssh"
-      ${pkgs.openssh}/bin/ssh-keygen -t ed25519 -a 256 -f "$HOME/.ssh/${vars.admin.mainSshKeyName}" -N "" -C "${vars.admin.email}"
+      ${pkgs.openssh}/bin/ssh-keygen -t ed25519 -a 256 -f "$HOME/.ssh/${userVars.mainSshKeyName}" -N "" -C "${userVars.email}"
     fi
   '';
   
-  programs.git = {
+  programs.git = lib.mkIf osConfig.myConfig.apps.development.dev.tooling {
     enable = true;
     settings = {
       user = {
-        name = "${vars.admin.fullName}";
-        email = "${vars.admin.email}";
+        name = "${userVars.fullName}";
+        email = "${userVars.email}";
       };
       init.defaultBranch = "main";
     };
   };
 
-  programs.vscode = {
+  programs.vscode = lib.mkIf osConfig.myConfig.apps.development.ide.enable {
     enable = true;
-    profiles.default.extensions = with pkgs.vscode-extensions; [
-      ms-vscode.cpptools
-      ms-vscode.cpptools-extension-pack
-      ms-vscode-remote.remote-containers
-      ms-vscode.makefile-tools
-      ms-python.python
-      ms-vscode-remote.remote-containers
-      ms-azuretools.vscode-docker
-      yzhang.markdown-all-in-one
-      redhat.vscode-yaml
-    ];
+    profiles.default.extensions = vscodeExtensions;
   };
 
-  programs.firefox = {
+  programs.firefox = lib.mkIf osConfig.myConfig.apps.browser.core {
     enable = true;
+    configPath = "${config.xdg.configHome}/mozilla/firefox";
     policies = {
       DisableTelemetry = true;
       EnableTrackingProtection = {
@@ -87,7 +98,7 @@ in
     };
   };
 
-  programs.chromium = {
+  programs.chromium = lib.mkIf osConfig.myConfig.apps.browser.core{
     enable = true;
     extensions = chromiumExtensions;
   };
@@ -102,29 +113,29 @@ in
     matchBlocks = {
       "*" = {
         serverAliveInterval = 60;
-        identityFile = "~/.ssh/${vars.admin.mainSshKeyName}";
+        identityFile = "~/.ssh/${userVars.mainSshKeyName}";
       };
 
       "github.com" = {
         hostname = "github.com";
-        user = "${vars.admin.user}";
+        user = "${userVars.user}";
         port = 22;
         compression = true;
-        identityFile = "~/.ssh/${vars.admin.mainSshKeyName}";
+        identityFile = "~/.ssh/${userVars.mainSshKeyName}";
       };
       "gitlab.com" = {
         hostname = "gitlab.com";
-        user = "${vars.admin.user}";
+        user = "${userVars.user}";
         port = 22;
         compression = true;
-        identityFile = "~/.ssh/${vars.admin.mainSshKeyName}";
+        identityFile = "~/.ssh/${userVars.mainSshKeyName}";
       };
       "codeberg.org" = {
         hostname = "codeberg.org";
-        user = "${vars.admin.user}";
+        user = "${userVars.user}";
         port = 22;
         compression = true;
-        identityFile = "~/.ssh/${vars.admin.mainSshKeyName}";
+        identityFile = "~/.ssh/${userVars.mainSshKeyName}";
       };
     };
   };

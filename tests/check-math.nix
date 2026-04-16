@@ -1,5 +1,5 @@
 # tests/check-math.nix
-{ config, pkgs, lib, vars, ... }:
+{ config, pkgs, lib, ... }:
 
 let
   requiredPkgs = with pkgs; [

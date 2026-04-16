@@ -1,5 +1,5 @@
 # tests/check-audio.nix
-{ config, pkgs, lib, vars, ... }:
+{ config, pkgs, lib, ... }:
 
 let
   requiredAudioPkgs = with pkgs; [
