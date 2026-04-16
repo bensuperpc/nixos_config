@@ -1,5 +1,5 @@
 # tests/check-browser.nix
-{ config, pkgs, lib, vars, ... }:
+{ config, pkgs, lib, ... }:
 
 let
   requiredBrowserPkgs = with pkgs; [

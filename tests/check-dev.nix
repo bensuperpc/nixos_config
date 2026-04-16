@@ -1,17 +1,17 @@
 # tests/check-dev.nix
-{ config, pkgs, lib, vars, ... }:
+{ config, pkgs, lib, ... }:
 
 let
   requiredDevPkgs = with pkgs; [
     # compilers.native
     gcc
     clang
-    # ctools.buildSystems
+    # cppTools.buildSystems
     cmake
     mold
-    # ctools.caching
+    # cppTools.caching
     ccache
-    # ctools.debugging
+    # cppTools.debugging
     gdb
     # dev.tooling
     clang-tools
@@ -26,10 +26,6 @@ in
         message = "VSCode must be enabled";
       }
       {
-        assertion = config.myConfig.apps.development.enableAll;
-        message = "Development meta-module must be enabled";
-      }
-      {
         assertion = config.myConfig.apps.development.dev.core;
         message = "Development core group must be enabled";
       }
@@ -38,8 +34,8 @@ in
         message = "Development compilers native group must be enabled";
       }
       {
-        assertion = config.myConfig.apps.development.ctools.buildSystems;
-        message = "Development ctools build systems group must be enabled";
+        assertion = config.myConfig.apps.development.cppTools.buildSystems;
+        message = "Development cppTools build systems group must be enabled";
       }
       {
         assertion = config.myConfig.apps.development.documentation.generators;

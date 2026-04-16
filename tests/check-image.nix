@@ -1,5 +1,5 @@
 # tests/check-image.nix
-{ config, pkgs, lib, vars, ... }:
+{ config, pkgs, lib, ... }:
 
 let
   requiredImagePkgs = with pkgs; [

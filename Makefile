@@ -1,6 +1,6 @@
 DIR := $(CURDIR)
 
-SERVERS := server-1-m710q
+SERVERS := server-1-m710q fluttershy discord-wsl
 
 DOCKER_NIX_VOL := nix-store-vol
 DOCKER_NIX := docker run -it --rm \
@@ -11,6 +11,8 @@ DOCKER_NIX := docker run -it --rm \
 NIX_FLAGS := --extra-experimental-features "nix-command flakes"
 GIT_FIX := git config --global --add safe.directory /etc/nixos
 COLMENA_FLAGS := --show-trace --verbose
+# --no-build-on-target
+COLMENA_BUILD_FLAGS ?=
 
 .PHONY: help update update-input check fmt clean repl gc
 
@@ -39,7 +41,10 @@ $(1).build:
 	@$(DOCKER_NIX) sh -c '$(GIT_FIX) && nix $(NIX_FLAGS) build path:/etc/nixos#nixosConfigurations.$(1).config.system.build.toplevel --show-trace --verbose'
 
 $(1).push:
-	@colmena apply $(COLMENA_FLAGS) --on $(1)
+	@colmena apply $(COLMENA_FLAGS) $(COLMENA_BUILD_FLAGS) --on $(1)
+
+$(1).boot:
+	@colmena apply boot $(COLMENA_FLAGS) $(COLMENA_BUILD_FLAGS) --reboot --on $(1)
 
 $(1).vm:
 	@$(DOCKER_NIX) sh -c '$(GIT_FIX) && nix $(NIX_FLAGS) build path:/etc/nixos#nixosConfigurations.$(1).config.system.build.vm --show-trace'

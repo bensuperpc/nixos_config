@@ -1,4 +1,4 @@
-{ config, lib, pkgs, pkgs-stable, pkgs-master, pkgs-unstable, inputs, moduleHelpers, vars, ... }:
+{ config, lib, pkgs, ... }:
 {
   users = {
     defaultUserShell = pkgs.zsh;

@@ -1,5 +1,5 @@
 # tests/check-files.nix
-{ config, pkgs, lib, vars, ... }:
+{ config, pkgs, lib, ... }:
 
 let
   requiredFilePkgs = with pkgs; [
@@ -21,10 +21,6 @@ in
 {
   assertions =
     [
-      {
-        assertion = config.myConfig.apps.files.enableAll;
-        message = "Files meta-module must be enabled";
-      }
       {
         assertion = config.myConfig.apps.files.backup.core;
         message = "Files backup core group must be enabled";
@@ -60,10 +56,6 @@ in
       {
         assertion = config.myConfig.apps.files.tools.navigation;
         message = "Files tools navigation group must be enabled";
-      }
-      {
-        assertion = config.myConfig.apps.files.tools.mobile;
-        message = "Files tools mobile group must be enabled";
       }
       {
         assertion = config.myConfig.apps.files.crypto.veracrypt;

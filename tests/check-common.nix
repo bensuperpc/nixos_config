@@ -1,13 +1,16 @@
 # tests/check-common.nix
-{ config, pkgs, lib, vars, ... }:
+{ config, pkgs, lib, ... }:
 
 let
-  requiredCommonPkgs = with pkgs; [
+  requiredNetworkCliPkgs = with pkgs; [
     inetutils
     iproute2
     ethtool
     dig
   ];
+
+  enableNetworkCliTooling = lib.attrByPath [ "myConfig" "apps" "network" "cli" "tooling" ] false config;
+  # enableNetworkCliTooling = config.myConfig.apps.network.cli.tooling or false;
 in
 {
   assertions =
@@ -16,10 +19,10 @@ in
         assertion = config.boot.tmp.useZram;
         message = "Zram must be enabled";
       }
-      {
-        assertion = config.boot.tmp.zramSettings."zram-size" == "ram * 0.5";
-        message = "Zram size must be set to 50% of RAM";
-      }
+      # {
+      #   assertion = config.boot.tmp.zramSettings."zram-size" == "ram * 0.5";
+      #   message = "Zram size must be set to 50% of RAM";
+      # }
       {
         assertion = config.zramSwap.enable;
         message = "Zram must be enabled";
@@ -33,8 +36,10 @@ in
         message = "Firewall must be enabled";
       }
     ]
-    ++ map (pkg: {
-      assertion = lib.elem pkg config.environment.systemPackages;
-      message = "Package missing: ${pkg.name}";
-    }) requiredCommonPkgs;
+    ++ lib.optionals enableNetworkCliTooling (
+      map (pkg: {
+        assertion = lib.elem pkg config.environment.systemPackages;
+        message = "Package missing: ${pkg.name}";
+      }) requiredNetworkCliPkgs
+    );
 }

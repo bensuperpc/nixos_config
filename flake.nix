@@ -5,7 +5,7 @@
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-25.11";
     nixpkgs-master.url = "github:NixOS/nixpkgs/master";
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixpkgs.follows = "nixpkgs-unstable";
 
     flake-parts = {
       url = "github:hercules-ci/flake-parts/main";
@@ -13,7 +13,7 @@
     };
 
     # Hardware support
-    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    # nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     
     home-manager = {
       url = "github:nix-community/home-manager/master";
@@ -39,6 +39,13 @@
     agenix = {
       url = "github:ryantm/agenix/main";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
+    };
+
+    # WSL support
+    nixos-wsl = {
+      url = "github:nix-community/NixOS-WSL/main";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # Deployment tools
@@ -52,64 +59,11 @@
 
   outputs = inputs@{ flake-parts, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
-      systems = [ "x86_64-linux" "aarch64-linux" ]; 
-      perSystem = { config, self', inputs', pkgs, system, ... }: {
-        # nix develop .#python2-shell to enter to python2-shell devshell
-        devShells = import ./devshells {
-          inherit pkgs inputs';
-        };
-      };
-
-      flake = let
-        lib = inputs.nixpkgs.lib;
-        
-        mkHostConfig = import ./lib/mksystem.nix { inherit inputs lib; };
-        hosts = import ./systems/systems.nix;
-
-        hostConfigs = lib.mapAttrs mkHostConfig hosts;
-
-        myNixosConfigurations = lib.mapAttrs (name: cfg: lib.nixosSystem {
-          inherit (cfg) system;
-          specialArgs = {
-            inherit inputs;
-            vars = cfg.hostVars;
-            moduleHelpers = cfg.moduleHelpers;
-          };
-          modules = cfg.modules;
-        }) hostConfigs;
-
-      in {
-        nixosConfigurations = myNixosConfigurations;
-
-        # Export de Colmena
-        colmenaHive = inputs.colmena.lib.makeHive ({
-          meta = {
-            nixpkgs = import inputs.nixpkgs { system = "x86_64-linux"; };
-            specialArgs = {
-              inherit inputs;
-              moduleHelpers = import ./lib/options.nix { inherit lib; };
-            };
-          };
-        } // (lib.mapAttrs (name: cfg: {
-          deployment = {
-            targetHost = cfg.ip;
-            targetUser = lib.head cfg.users;
-            targetPort = 22;
-            buildOnTarget = true;
-            allowLocalDeployment = false;
-          };
-          imports = cfg.modules; 
-        }) hostConfigs));
-
-        # Export de Deploy-rs
-        deploy.nodes = lib.mapAttrs (name: cfg: {
-          hostname = cfg.ip;
-          profiles.system = {
-            user = "root";
-            sshUser = lib.head cfg.users;
-            path = inputs.deploy-rs.lib.${cfg.system}.activate.nixos myNixosConfigurations.${name};
-          };
-        }) hostConfigs;
+      imports = [ ./flake-module.nix ];
+      systems = [ "x86_64-linux" "aarch64-linux" ];
+      perSystem = { pkgs, inputs', ... }: {
+        # nix develop .#python314 to enter the Python 3.14 devshell
+        devShells = import ./devshells { inherit pkgs inputs'; };
       };
     };
 }

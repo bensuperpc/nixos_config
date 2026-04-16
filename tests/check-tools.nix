@@ -1,5 +1,5 @@
 # tests/check-tools.nix
-{ config, pkgs, lib, vars, ... }:
+{ config, pkgs, lib, ... }:
 
 let
   requiredToolsPkgs = with pkgs; [

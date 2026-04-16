@@ -1,7 +1,6 @@
-{ config, lib, pkgs, pkgs-stable, pkgs-master, pkgs-unstable, inputs, moduleHelpers, vars, ... }:
-
+{ ... }:
 {
   imports = [
-    ./kdeplasma.nix
+    ./kde-plasma.nix
   ];
 }

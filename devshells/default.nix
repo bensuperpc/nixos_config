@@ -1,11 +1,7 @@
-{ pkgs, inputs', ... }:
+{ pkgs, ... }:
 
 {
-  python2 = import ./python2.nix {
-    inherit pkgs;
-  };
-
-  default = import ./python2.nix {
+  python314 = import ./python314.nix {
     inherit pkgs;
   };
 }

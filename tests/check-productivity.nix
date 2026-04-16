@@ -1,5 +1,5 @@
 # tests/check-productivity.nix
-{ config, pkgs, lib, vars, ... }:
+{ config, pkgs, lib, ... }:
 
 let
   requiredProductivityPkgs = with pkgs; [
