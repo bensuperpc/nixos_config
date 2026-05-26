@@ -1,14 +1,9 @@
-{ config, lib, pkgs, moduleHelpers, ... }:
+{ config, lib, pkgs, ... }:
 
 let
-  cfg = config.myConfig.apps.gui.kdeplasma;
+  cfg = config.myConfig.gui;
 in {
-  options.myConfig.apps.gui.kdeplasma = {
-    enable = moduleHelpers.mkDisabledOption "Activate KDE Plasma Desktop Environment";
-    extraPackages = moduleHelpers.mkDisabledOption "Install additional KDE Plasma applications and utilities";
-  };
-
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf (cfg.desktop == "plasma") {
     security = {
         # Needed for KDE/Gnome GUI
         polkit.enable = true;
@@ -33,7 +28,7 @@ in {
 
     # Disable udiskie, already include in plasma
 
-    environment.systemPackages = with pkgs; lib.optionals cfg.extraPackages
+    environment.systemPackages = with pkgs; lib.optionals (cfg.desktop == "plasma" && cfg.extraPackages)
     [
       # Theme and icons
       kdePackages.breeze

@@ -1,4 +1,4 @@
-{ config, ... }:
+{ ... }:
 {
-  config.myConfig.drivers.gpu.intel.enableOldDriver = true;
+  myConfig.drivers.gpu.intel = "old";
 }

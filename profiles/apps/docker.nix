@@ -1,4 +1,3 @@
-# profiles/docker.nix — Docker engine (standalone, no server preset).
 { config, lib, pkgs, ... }:
 {
   imports = [

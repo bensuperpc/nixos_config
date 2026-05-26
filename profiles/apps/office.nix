@@ -1,4 +1,3 @@
-# profiles/office.nix — office suite, printing and fonts.
 { config, lib, pkgs, ... }:
 {
   imports = [

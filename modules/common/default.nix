@@ -1,17 +1,19 @@
 { ... }:
 {
   imports = [
-    ./network.nix
+    ./network
+    ./nixos
     ./boot.nix
+    ./kernel.nix
     ./audio.nix
     ./environment.nix
     ./filesystem.nix
     ./firmware.nix
-    ./hardware.nix
+    ./hardware-tools.nix
     ./locales.nix
-    ./nixos.nix
     ./tools.nix
     ./power-management.nix
     ./ssh.nix
+    ./user.nix
   ];
 }

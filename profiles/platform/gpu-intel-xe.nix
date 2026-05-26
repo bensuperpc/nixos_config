@@ -1,4 +1,4 @@
-{ config, ... }:
+{ ... }:
 {
-  config.myConfig.drivers.gpu.intel.enableXeDriver = true;
+  myConfig.drivers.gpu.intel = "xe";
 }

@@ -1,4 +1,3 @@
-# profiles/communication.nix — browsers, messaging, voice and torrenting.
 { config, lib, pkgs, ... }:
 {
   imports = [

@@ -1,4 +1,4 @@
-{ config, lib, pkgs, pkgsSets, moduleHelpers, ... }:
+{ config, lib, pkgs, moduleHelpers, ... }:
 
 let
   cfg = config.myConfig.apps.multimedia.video;
@@ -31,7 +31,7 @@ let
     libvpx
     xeve
     xevd
-    pkgsSets.stable.av1an
+    av1an
     libcamera
   ];
   opticalMediaPackages = with pkgs; [

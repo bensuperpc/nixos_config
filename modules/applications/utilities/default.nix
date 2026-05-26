@@ -9,5 +9,6 @@
     ./kvm.nix
     ./math.nix
     ./misc.nix
+    ./hardware-infos.nix
   ];
 }

@@ -1,4 +1,4 @@
-{ config, lib, pkgs, pkgsSets, moduleHelpers, ... }:
+{ config, lib, pkgs, moduleHelpers, ... }:
 
 let
   cfg = config.myConfig.apps.development.libraries;
@@ -41,7 +41,7 @@ let
     raylib
     glew
     xdg-utils-cxx
-    pkgsSets.stable.imgui
+    imgui
   ];
   computePackages = with pkgs; [
     kompute

@@ -6,8 +6,8 @@ let
     f2fs-tools
     ssdfs-utils
     # BTRFS tools
-    btrfs-snap
-    btrfs-list
+    # btrfs-snap
+    # btrfs-list
     # btrfs-assistant
     # Fat32 tools
     dosfstools

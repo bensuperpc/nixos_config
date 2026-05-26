@@ -1,7 +1,8 @@
 { config, lib, pkgs, ... }:
+
 {
   imports = [
+    ./home.nix
+    ./programs.nix
   ];
-
-  myConfig.apps.kvm.host = true;
 }

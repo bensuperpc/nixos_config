@@ -1,4 +1,4 @@
-{ config, lib, pkgs, moduleHelpers, ... }:
+{ config, lib, pkgs, pkgsSets, moduleHelpers, ... }:
 
 let
   cfg = config.myConfig.apps.browser;
@@ -12,7 +12,7 @@ let
   extraBrowserPackages = with pkgs; [
     ungoogled-chromium
     brave
-    ladybird
+    # ladybird # build fails
     servo
     librewolf
     dillo
@@ -22,10 +22,7 @@ let
     lib.optionals cfg.core corePackages
     ++ lib.optionals cfg.extra extraBrowserPackages;
 
-  anyEnabled = lib.any (x: x) [
-    cfg.core
-    cfg.extra
-  ];
+  anyEnabled = cfg.core || cfg.extra;
 in
 {
   options.myConfig.apps.browser = {
@@ -33,13 +30,10 @@ in
     extra = moduleHelpers.mkDisabledOption "Install extra browsers";
   };
 
-  config = lib.mkMerge [ 
-    {
-    }
-    (lib.mkIf anyEnabled {
-      environment.systemPackages = enabledOptionalsPackages;
+  config = lib.mkIf anyEnabled {
+    environment.systemPackages = enabledOptionalsPackages;
 
-      programs.firefox = {
+    programs.firefox = {
         enable = true;
         policies = {
           DisableTelemetry = true;
@@ -66,8 +60,7 @@ in
         # define in home config
         #extensions = [];
       };
-    })
-  ];
+  };
 }
 
 

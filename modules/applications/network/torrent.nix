@@ -22,11 +22,7 @@ let
     ++ lib.optionals cfg.transmission transmissionPackages
     ++ lib.optionals cfg.helpers helperPackages;
 
-    anyEnabled = lib.any (x: x) [
-      cfg.qbittorrent
-      cfg.transmission
-      cfg.helpers
-    ];
+  anyEnabled = cfg.qbittorrent || cfg.transmission || cfg.helpers;
 in
 {
   options.myConfig.apps.torrent = {
@@ -36,15 +32,13 @@ in
     openFirewall = moduleHelpers.mkDisabledOption "Open firewall for torrent clients";
   };
 
-  config = lib.mkMerge [ 
-    {
-    }
+  config = lib.mkMerge [
     (lib.mkIf anyEnabled {
       environment.systemPackages = enabledOptionalsPackages;
     })
     (lib.mkIf cfg.openFirewall {
-      services.qbittorrent.openFirewall = lib.mkIf cfg.qbittorrent cfg.openFirewall;
-      services.transmission.openFirewall = lib.mkIf cfg.transmission cfg.openFirewall;
+      services.qbittorrent.openFirewall = lib.mkIf cfg.qbittorrent true;
+      services.transmission.openFirewall = lib.mkIf cfg.transmission true;
     })
   ];
 }

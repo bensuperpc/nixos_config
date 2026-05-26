@@ -10,9 +10,11 @@ in
 
   config = lib.mkIf cfg.enable {
     wsl.enable = true;
-    wsl.defaultUser = (lib.head (lib.attrValues config.myConfig.vars.users)).user;
 
-    boot.loader.systemd-boot.enable = lib.mkForce false;
+    boot.loader = {
+      systemd-boot.enable = lib.mkForce false;
+      efi.canTouchEfiVariables = lib.mkForce false;
+    };
   };
 }
 

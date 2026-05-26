@@ -7,13 +7,6 @@ let
     "2.pool.ntp.org"
     "3.pool.ntp.org"
   ];
-
-  defaultNameservers = [
-    "1.1.1.1"
-    "1.0.0.1"
-    "8.8.8.8"
-    "8.8.4.4"
-  ];
 in
 {
   # Configure network proxy if necessary
@@ -22,7 +15,7 @@ in
 
   services.timesyncd = {
     enable = lib.mkDefault true;
-    servers = ntpServers;
+    servers = lib.mkDefault ntpServers;
   };
 
   # Open ports in the firewall.
@@ -30,9 +23,10 @@ in
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
   networking = {
-    networkmanager.enable = true;
+    networkmanager = {
+      enable = true;
+    };
     nftables.enable = true;
-    nameservers = defaultNameservers;
     firewall = {
       enable = true;
       allowPing = true;

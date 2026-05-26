@@ -7,8 +7,8 @@ let
     docker-buildx
     docker-color-output
   ];
-  mainUser =
-    if config.myConfig.vars.host.users == [] then null else lib.head config.myConfig.vars.host.users;
+  normalUsers = builtins.attrNames (lib.filterAttrs (_: u: u.isNormalUser) config.users.users);
+  mainUser = if normalUsers == [] then null else lib.head normalUsers;
 in
 {
   assertions =

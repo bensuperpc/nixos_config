@@ -20,14 +20,14 @@ let
   # Import profiles from normalized host schema.
   profilesModules = map (p: requirePath "profile" ../profiles/${p}.nix) allProfiles;
 
-  # Import user modules
-  usersModules = map (u: requirePath "user system module" ../users/${u}/system.nix) (cfg.users or []);
   varsUsers = lib.genAttrs (cfg.users or []) (u: import (requirePath "user variables" ../users/${u}/variables.nix));
 
-  # Import and merge variables (global defaults overridden by host-specific values).
-  varsSystemGlobals = import ../systems/global-variables.nix;
-  varsSystemRaw = import (requirePath "system variables" ../systems/${cfg.systemName}/variables.nix);
-  varsSystem = lib.recursiveUpdate varsSystemGlobals varsSystemRaw;
+  # Wrap each user module to inject its own variables as a NixOS module argument.
+  usersModules = map (u: {
+    _module.args.userVars = varsUsers.${u};
+    imports = [ (requirePath "user system module" ../users/${u}/system.nix) ];
+  }) (cfg.users or []);
+
   varsHost = {
     name = cfg.systemName;
     role = cfg.role;
@@ -50,7 +50,7 @@ let
     inputs.home-manager.nixosModules.home-manager
     inputs.impermanence.nixosModules.impermanence
     inputs.disko.nixosModules.disko
-    {
+    ({ config, ... }: {
       home-manager = {
         useGlobalPkgs = true;
         useUserPackages = true;
@@ -58,15 +58,13 @@ let
         extraSpecialArgs = {
           inherit inputs;
           inherit pkgsSets moduleHelpers;
-          # inherit (moduleHelpers) mkEnabledOption; # Avoid to write moduleHelpers.mkEnabledOption (and {mkEnabledOption, })
         };
       };
       _module.args = {
-        inherit varsSystem varsUsers varsHost;
+        inherit varsUsers;
         inherit pkgsSets moduleHelpers;
-        # inherit (moduleHelpers) mkEnabledOption; # Avoid to write moduleHelpers.mkEnabledOption (and {mkEnabledOption, })
       };
-    }
+    })
     inputs.agenix.nixosModules.default
     inputs.nixos-wsl.nixosModules.wsl
   ] ++ profilesModules ++ usersModules ++ mainPkgs;

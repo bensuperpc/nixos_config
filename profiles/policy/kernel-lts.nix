@@ -1,0 +1,4 @@
+{ ... }:
+{
+  myConfig.boot.kernel = "lts";
+}

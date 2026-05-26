@@ -4,22 +4,12 @@ let
   cfgGui = config.myConfig.apps.hardware.gui;
   cfgCli = config.myConfig.apps.hardware.cli;
 
-  commonPackages = with pkgs; [
-    # Common hardware tools/info
-    pciutils
-    usbutils
-    nvme-cli
-    dmidecode
-    #lshw
-    #inxi
-  ];
-
   guiPackages = with pkgs; [
     # Hardware tools/info
     hardinfo2
     hwinfo
     lshw-gui
-    lact
+    # lact # AMD GPU info tool
   ];
 
   cliPackages = with pkgs; [
@@ -28,21 +18,22 @@ let
     cpuid
     smartmontools
     inxi
+    #lshw
+    #inxi
   ];
+
+  enabledPackages = lib.optionals cfgGui.tools guiPackages
+    ++ lib.optionals cfgCli.tools cliPackages;
 in
 {
   options.myConfig.apps.hardware = {
     gui.tools = moduleHelpers.mkDisabledOption "Install hardware GUI tools";
-    cli.tools = moduleHelpers.mkEnabledOption "Install hardware CLI tools";
+    cli.tools = moduleHelpers.mkDisabledOption "Install hardware CLI tools";
   };
 
   config = lib.mkMerge [
-    (lib.mkIf cfgGui.tools {
-      environment.systemPackages = guiPackages;
-    })
-
-    (lib.mkIf cfgCli.tools {
-      environment.systemPackages = cliPackages;
-    })
+    {
+      environment.systemPackages = enabledPackages;
+    }
   ];
 }

@@ -1,9 +1,6 @@
 { config, lib, pkgs, ... }:
-{
-
-  # programs.dconf.enable = true;
-
-  environment.systemPackages = with pkgs; [
+let
+  toolsPackages = with pkgs; [
     wget
     curl
     tree
@@ -20,6 +17,12 @@
     fio # Benchmarking tool for storage devices
     yazi # CLI file manager
   ];
+in
+{
+
+  # programs.dconf.enable = true;
+
+  environment.systemPackages = toolsPackages;
 
   programs.yazi = {
     enable = true;

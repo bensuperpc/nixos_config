@@ -19,7 +19,7 @@ let
   ];
 
   notesPackages = with pkgs; [
-    logseq
+    # logseq # electron-39 EOL
   ];
 
   enabledOptionalsPackages =

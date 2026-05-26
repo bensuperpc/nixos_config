@@ -1,21 +1,27 @@
 # More info: https://wiki.nixos.org/wiki/Intel_Graphics
-{ config, lib, pkgs, moduleHelpers, ... }:
+{ config, lib, pkgs, ... }:
 
 let
-  cfg = config.myConfig.drivers.gpu.intel;
-  anyEnabled = cfg.enableOldDriver || cfg.enableSkylakeDriver || cfg.enableXeDriver;
+  variant = config.myConfig.drivers.gpu.intel;
+  isIntel  = variant != "none";
 in
 {
-  options.myConfig.drivers.gpu = {
-    intel.enableOldDriver = moduleHelpers.mkDisabledOption "Enable Intel old driver stack for Haswell and older GPUs.";
-    intel.enableSkylakeDriver = moduleHelpers.mkDisabledOption "Enable Intel driver stack for Skylake to Comet Lake GPUs.";
-    intel.enableXeDriver = moduleHelpers.mkDisabledOption "Enable Intel Xe driver stack for Alder Lake and newer GPUs.";
+  options.myConfig.drivers.gpu.intel = lib.mkOption {
+    type    = lib.types.enum [ "none" "old" "skylake" "xe" ];
+    default = "none";
+    description = ''
+      Intel iGPU driver variant:
+        none     - no Intel GPU driver
+        old      - iHD/VA-API for Haswell and older
+        skylake  - iHD for Skylake to Comet Lake
+        xe       - Xe driver for Alder Lake and newer
+    '';
   };
 
   config = lib.mkMerge [
-    (lib.mkIf anyEnabled {
+    (lib.mkIf isIntel {
       hardware.graphics = {
-        enable = true;
+        enable      = true;
         enable32Bit = true;
         extraPackages = with pkgs; [
           libvdpau-va-gl
@@ -23,27 +29,24 @@ in
           libva-vdpau-driver
         ];
       };
-
       environment.systemPackages = with pkgs; [
         intel-gpu-tools
         mesa
       ];
     })
 
-    (lib.mkIf cfg.enableOldDriver {
-      hardware.graphics.extraPackages = with pkgs; [
-        intel-vaapi-driver
-      ];
+    (lib.mkIf (variant == "old") {
+      hardware.graphics.extraPackages = with pkgs; [ intel-vaapi-driver ];
     })
 
-    (lib.mkIf cfg.enableSkylakeDriver {
+    (lib.mkIf (variant == "skylake") {
       hardware.graphics.extraPackages = with pkgs; [
         intel-media-driver
         intel-compute-runtime-legacy1
       ];
     })
 
-    (lib.mkIf cfg.enableXeDriver {
+    (lib.mkIf (variant == "xe") {
       hardware.graphics.extraPackages = with pkgs; [
         intel-media-driver
         vpl-gpu-rt

@@ -2,13 +2,8 @@
 {
   assertions = [
     {
-      assertion = !(
-        config.myConfig.drivers.gpu.intel.enableOldDriver
-        || config.myConfig.drivers.gpu.intel.enableSkylakeDriver
-        || config.myConfig.drivers.gpu.intel.enableXeDriver
-        || config.myConfig.drivers.gpu.amd.enable
-      );
-      message = "platform/no-gpu conflicts with GPU presets: disable any platform/gpu-intel* profile and platform/gpu-amd.";
+      assertion = config.myConfig.drivers.gpu.intel == "none" && !config.myConfig.drivers.gpu.amd.enable;
+      message = "platform/no-gpu conflicts with a GPU profile: set myConfig.drivers.gpu.intel to \"none\" and disable myConfig.drivers.gpu.amd.enable.";
     }
   ];
 }

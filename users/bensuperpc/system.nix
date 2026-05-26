@@ -1,11 +1,5 @@
-{ config, lib, pkgs, ... }:
-
-let
-  userVars = config.myConfig.vars.users.bensuperpc;
-in
+{ config, lib, pkgs, userVars, ... }:
 {
-  imports = [ ../common/system ];
-
   users.groups.${userVars.user} = {
     members = [];
   };
@@ -33,7 +27,8 @@ in
   ];
 
   home-manager.users.${userVars.user} = {
-    imports = [ ./home.nix ];
-    home.stateVersion = "25.11";
+    imports = [ ./home ];
+    _module.args.userVars = userVars;
+    home.stateVersion = "25.11"; # config.system.stateVersion;
   };
 }

@@ -3,9 +3,10 @@
 
   inputs = {
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-25.11";
+    nixpkgs-2605.url = "github:NixOS/nixpkgs/nixos-26.05";
+    nixpkgs-2511.url = "github:NixOS/nixpkgs/nixos-25.11";
     nixpkgs-master.url = "github:NixOS/nixpkgs/master";
-    nixpkgs.follows = "nixpkgs-unstable";
+    nixpkgs.follows = "nixpkgs-2605";
 
     flake-parts = {
       url = "github:hercules-ci/flake-parts/main";
@@ -35,6 +36,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    flake-compat = {
+      url = "github:edolstra/flake-compat";
+      flake = false;
+    };
+
     # For secrets management
     agenix = {
       url = "github:ryantm/agenix/main";
@@ -46,14 +52,19 @@
     nixos-wsl = {
       url = "github:nix-community/NixOS-WSL/main";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-compat.follows = "flake-compat";
     };
 
     # Deployment tools
-    colmena.url = "github:zhaofengli/colmena/main";
+    colmena = {
+      url = "github:zhaofengli/colmena/main";
+      inputs.flake-compat.follows = "flake-compat";
+    };
 
     deploy-rs = {
       url = "github:serokell/deploy-rs/master";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-compat.follows = "flake-compat";
     };
   };
 
@@ -64,6 +75,9 @@
       perSystem = { pkgs, inputs', ... }: {
         # nix develop .#python314 to enter the Python 3.14 devshell
         devShells = import ./devshells { inherit pkgs inputs'; };
+
+        # nix fmt
+        formatter = pkgs.nixfmt;
       };
     };
 }

@@ -1,4 +1,4 @@
-{ config, ... }:
+{ ... }:
 {
-  config.myConfig.drivers.gpu.amd.enable = true;
+  myConfig.drivers.gpu.amd.enable = true;
 }

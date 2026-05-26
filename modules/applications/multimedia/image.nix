@@ -3,7 +3,6 @@
 let
   cfg = config.myConfig.apps.multimedia.image;
 
-
   editingPackages = with pkgs; [
     krita
     gimp

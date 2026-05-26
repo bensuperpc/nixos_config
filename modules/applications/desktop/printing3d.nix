@@ -6,8 +6,8 @@ let
   printing3dPackages = with pkgs; [
     prusa-slicer
     klipper
-    pkgsSets.stable.cura
-    pkgsSets.stable.curaengine
+    # cura
+    # curaengine
   ];
 in
 {

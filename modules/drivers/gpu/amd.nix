@@ -5,13 +5,11 @@ let
   cfg = config.myConfig.drivers.gpu.amd;
 in
 {
-  options.myConfig.drivers.gpu = {
-    amd.enable = moduleHelpers.mkDisabledOption "Enable AMD GPU driver stack.";
-  };
+  options.myConfig.drivers.gpu.amd.enable = moduleHelpers.mkDisabledOption "Enable AMD GPU driver stack.";
 
   config = lib.mkIf cfg.enable {
     hardware.graphics = {
-      enable = lib.mkForce true;
+      enable = lib.mkDefault true;
       extraPackages = with pkgs; [
         # For older AMD GPUs
         #mesa.opencl

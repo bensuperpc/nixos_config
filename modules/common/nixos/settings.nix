@@ -1,7 +1,8 @@
-{ config, lib, moduleHelpers, ... }:
+{ config, lib, moduleHelpers, inputs, ... }:
 
 let
   trustedUsers = [
+    "root"
     "@wheel"
   ];
 
@@ -32,13 +33,22 @@ in
 
     services.fstrim.enable = true;
 
+    environment.etc.nixos-current-system-flake-src.source = inputs.self;
+
     nix = {
       settings = {
         experimental-features = [ "nix-command" "flakes" ];
-        download-buffer-size = 268435456;
+        connect-timeout = 3;
+        log-lines = 25;
+        download-buffer-size = 268435456; # 256 MiB
+        min-free = 268435456; # 256 MiB
+        max-free = 1073741824; # 1 GiB
+
         auto-optimise-store = true;
         max-jobs = "auto";
         cores = 0;
+        http-connections = 48;
+        max-substitution-jobs = 32;
 
         #build-dir = "/var/tmp";
 

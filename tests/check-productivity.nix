@@ -6,7 +6,6 @@ let
     # office
     libreoffice-qt-fresh
     languagetool
-    logseq
     # communication
     discord
     thunderbird

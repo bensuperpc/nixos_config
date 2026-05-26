@@ -1,4 +1,3 @@
-# profiles/development.nix — compilers, IDEs, languages and dev tooling.
 { config, lib, pkgs, ... }:
 {
   imports = [
@@ -59,6 +58,7 @@
   myConfig.apps.development.documentation = {
     manpages = lib.mkDefault true;
     generators = lib.mkDefault true;
+    nixosDocumentation = lib.mkDefault true;
   };
 
   myConfig.apps.development.benchmark.enable = lib.mkDefault true;

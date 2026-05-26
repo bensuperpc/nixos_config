@@ -1,17 +1,14 @@
-# flake-module.nix — NixOS host configurations, Colmena hive and deploy-rs nodes.
-# Imported by flake.nix via flake-parts `imports`.
 { inputs, lib, self, ... }:
 let
   # Map of nixpkgs source inputs, keyed by channel name.
   nixpkgsSources = {
-    stable   = inputs.nixpkgs-stable;
+    stable-2605 = inputs.nixpkgs-2605;
+    stable-2511 = inputs.nixpkgs-2511;
     unstable = inputs.nixpkgs-unstable;
     master   = inputs.nixpkgs-master;
   };
 
-  # Pre-built pkgs sets per architecture, keyed by system then channel.
-  # Shape: { "x86_64-linux" = { stable = pkgs; unstable = pkgs; master = pkgs; }; ... }
-  pkgsCache = lib.genAttrs [ "x86_64-linux" ] (system:
+  pkgsCache = lib.genAttrs [ "x86_64-linux" "aarch64-linux" ] (system:
     lib.mapAttrs (_: src: import src {
       inherit system;
       config.allowUnfree = true;
@@ -49,6 +46,15 @@ in {
     };
     imports = cfg.modules;
   }) deployableHostConfigs));
+
+  perSystem = { pkgs, ... }: {
+    checks.deadnix = pkgs.runCommand "deadnix-check" {
+      nativeBuildInputs = [ pkgs.deadnix ];
+    } ''
+      deadnix -f -L ${self}
+      touch $out
+    '';
+  };
 
   flake.deploy = {
     nodes = lib.mapAttrs (name: cfg: {

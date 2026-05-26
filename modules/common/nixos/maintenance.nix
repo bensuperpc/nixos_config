@@ -40,7 +40,7 @@ in
           # };
           runGarbageCollection = true;
           persistent = true;
-          flake = "github:bensuperpc/nix_config";
+          flake = "github:bensuperpc/nixos_config";
           randomizedDelaySec = "45min";
         };
       };

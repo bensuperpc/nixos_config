@@ -25,7 +25,7 @@
 
   workstation = {
     platformProfiles = [ "platform/base" "platform/kde-plasma" ];
-    appProfiles      = [ "apps/custom" "apps/desktop-runtime" "apps/desktop" "apps/development" "apps/multimedia" "apps/utilities" "apps/office" ];
+    appProfiles      = [ "apps/custom" "apps/desktop-runtime" "apps/desktop" "apps/development" "apps/multimedia" "apps/utilities" "apps/office" "apps/virtualization" ];
     policyProfiles   = [ "policy/kernel-zen" ];
   };
 

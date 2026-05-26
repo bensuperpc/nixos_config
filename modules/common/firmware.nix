@@ -3,9 +3,12 @@
 
 {
   boot.loader.efi.canTouchEfiVariables = true;
-  services.fwupd.enable = true;
+  nixpkgs.config.allowUnfree = true;
 
+  hardware.enableAllFirmware = true;
   hardware.enableRedistributableFirmware = true;
+  
+  services.fwupd.enable = true;
   environment.systemPackages = with pkgs; [
     fwupd-efi
   ];

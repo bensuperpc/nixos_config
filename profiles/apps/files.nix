@@ -1,4 +1,3 @@
-# profiles/files.nix — file management, backup, sync and crypto tools.
 { config, lib, pkgs, ... }:
 {
   imports = [

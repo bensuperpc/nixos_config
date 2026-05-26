@@ -1,5 +1,5 @@
 # More info: https://nix-community.github.io/plasma-manager/options.xhtml
-{ config, lib, pkgs, ... }:
+{ config, osConfig, lib, pkgs, ... }:
 
 {
   programs.direnv = {
@@ -23,24 +23,23 @@
 
     oh-my-zsh = {
       enable = true;
-      plugins = [ 
+      plugins = [
         "git"
-        "docker"
-        "podman"
-        # "ansible"
-        "docker-compose"
         "sudo"
-        "command-not-found"  # programs.command-not-found.enable ?
+        "command-not-found"
         "extract"
         "history"
         "ssh"
-        # "ssh-agent"
-        # "gpg-agent"
         "python"
+        "z"
 #        "zsh-autosuggestions"
 #        "zsh-syntax-highlighting"
-        "z"
-        ];
+        # "ssh-agent"
+        # "gpg-agent"
+      ] ++ lib.optionals osConfig.myConfig.apps.docker.engine [
+        "docker"
+        "docker-compose"
+      ];
     };
 
     history = {

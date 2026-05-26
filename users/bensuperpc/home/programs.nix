@@ -1,9 +1,7 @@
 # More info: https://nix-community.github.io/plasma-manager/options.xhtml
-{ config, osConfig, lib, pkgs, ... }:
+{ config, osConfig, lib, pkgs, userVars, ... }:
 
 let
-  userVars = osConfig.myConfig.vars.users.bensuperpc;
-
   chromiumExtensions = [
     "ddkjiahejlhfcafbddmgiahcphecmpfh" # uBlock Origin Lite
     "nngceckbapebfimnlniiiahkandclblb" # Bitwarden
@@ -26,56 +24,29 @@ let
   ];
 in
 {
-  imports = [
-    ../common/home
-  ];
-
-  home = {
-    username = "${userVars.user}";
-    homeDirectory = "/home/${userVars.user}";
-    packages = with pkgs; [
-    ] ++ lib.optionals osConfig.myConfig.apps.development.cppTools.caching [
-      pkgs.ccache
+  programs.tmux = { 
+    enable = true;
+    plugins = with pkgs; [
+      tmuxPlugins.sensible
     ];
-
-    sessionVariables = {
-      CCACHE_DIR = "$HOME/.cache/ccache";
-    };
-
-    activation.setupCcache = ''
-      mkdir -p $HOME/.cache/ccache
-    '';
+    extraConfig = builtins.readFile ./asset/tmux.cfg;
   };
 
-  home.file = {
-    "test_home.txt" = {
-      source = ./asset/test_home.txt;
-      target = ".test_home.txt";
-      force = true;
-      recursive = true;
-    };
-
-    "Repository/work/.keep".text = "";
-    "Repository/personal/.keep".text = "";
-    "Repository/opensource/.keep".text = "";
-  };
-
-  # Generate SSH key if it doesn't exist
-  home.activation.generateSshKey = config.lib.dag.entryAfter ["writeBoundary"] ''
-    if [ ! -f "$HOME/.ssh/${userVars.mainSshKeyName}" ]; then
-      install -d -m 700 "$HOME/.ssh"
-      ${pkgs.openssh}/bin/ssh-keygen -t ed25519 -a 256 -f "$HOME/.ssh/${userVars.mainSshKeyName}" -N "" -C "${userVars.email}"
-    fi
-  '';
-  
   programs.git = lib.mkIf osConfig.myConfig.apps.development.dev.tooling {
     enable = true;
+    lfs.enable = true;
     settings = {
       user = {
         name = "${userVars.fullName}";
         email = "${userVars.email}";
       };
-      init.defaultBranch = "main";
+      maintenance = {
+        auto = true;
+        strategy = "incremental";
+      };
+      init = {
+        defaultBranch = "main";
+      };
     };
   };
 
@@ -98,7 +69,7 @@ in
     };
   };
 
-  programs.chromium = lib.mkIf osConfig.myConfig.apps.browser.core{
+  programs.chromium = lib.mkIf osConfig.myConfig.apps.browser.core {
     enable = true;
     extensions = chromiumExtensions;
   };

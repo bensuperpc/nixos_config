@@ -43,26 +43,22 @@ in
     enableNtsync = moduleHelpers.mkDisabledOption "Enable the ntSync kernel module for improved input latency in games";
   };
 
-  config = lib.mkMerge [
-    {
-    }
-    (lib.mkIf anyEnabled {
-      programs.steam = {
-        enable = true;
-        protontricks.enable = true;
-        remotePlay.openFirewall = true;
-        #dedicatedServer.openFirewall = true;
-        localNetworkGameTransfers.openFirewall = true;
+  config = lib.mkIf anyEnabled {
+    programs.steam = {
+      enable = true;
+      protontricks.enable = true;
+      remotePlay.openFirewall = true;
+      #dedicatedServer.openFirewall = true;
+      localNetworkGameTransfers.openFirewall = true;
 
-        extraPackages =
-          lib.optionals cfg.performanceTools performancePackages
-          ++ lib.optionals cfg.useProtonGE protonPackages;
-      };
+      extraPackages =
+        lib.optionals cfg.performanceTools performancePackages
+        ++ lib.optionals cfg.useProtonGE protonPackages;
+    };
 
-      boot.kernelModules = lib.optionals cfg.enableNtsync [ "ntsync" ];
+    boot.kernelModules = lib.optionals cfg.enableNtsync [ "ntsync" ];
 
-      environment.systemPackages = enabledOptionalsPackages
+    environment.systemPackages = enabledOptionalsPackages
       ++ lib.optionals (!cfg.client) steamClientPackages;
-    })
-  ];
+  };
 }

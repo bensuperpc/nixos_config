@@ -5,8 +5,8 @@ let
 in {
   assertions = [
     {
-      assertion = !config.myConfig.apps.gui.kdeplasma.enable;
-      message = "platform/no-gui conflicts with GUI presets: disable platform/kde-plasma.";
+      assertion = config.myConfig.gui.desktop == "none";
+      message = "platform/no-gui conflicts with GUI presets: myConfig.gui.desktop must be \"none\".";    
     }
     {
       assertion = !config.services.xserver.enable;

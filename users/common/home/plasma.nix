@@ -1,5 +1,5 @@
 # More info: https://nix-community.github.io/plasma-manager/options.xhtml
-{ config, osConfig, lib, pkgs, ... }:
+{ config, osConfig, lib, ... }:
 
 {
 
@@ -23,7 +23,7 @@
   #   done
   # '';
 
-  programs.plasma = lib.mkIf osConfig.myConfig.apps.gui.kdeplasma.enable {
+  programs.plasma = lib.mkIf (osConfig.myConfig.gui.desktop == "plasma") {
     enable = true;
     overrideConfig = true;
     immutableByDefault = false;

@@ -29,7 +29,7 @@ let
 
   launchersPackages = with pkgs; [
     heroic
-    #pkgsSets.stable.lutris
+    #pkgsSets.stable-2511.lutris
   ];
 
   enabledOptionalsPackages =

@@ -7,8 +7,8 @@ let
     restic
     rustic
   ];
-  profileManagerPackages = with pkgs; [
-    pkgsSets.stable.resticprofile
+  profileManagerPackages = [
+    (pkgsSets.stable-2605.resticprofile.overrideAttrs (_: { doCheck = false; }))
   ];
   guiPackages = with pkgs; [
     restic-browser

@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ lib, pkgs, ... }:
 
 let
   bootKernelParams = [
@@ -15,6 +15,5 @@ in
     };
 
     kernelParams = lib.mkDefault bootKernelParams;
-    kernelPackages = lib.mkDefault pkgs.linuxPackages_latest;
   };
 }

@@ -10,7 +10,7 @@ in {
 
   config = lib.mkMerge [
     {
-      myConfig.apps.desktop.integration.services = lib.mkDefault config.myConfig.apps.gui.kdeplasma.enable;
+      myConfig.apps.desktop.integration.services = lib.mkDefault (config.myConfig.gui.desktop != "none");
 
       services.logrotate.enable = true;
 

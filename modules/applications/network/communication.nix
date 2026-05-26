@@ -44,12 +44,8 @@ in
     terminal = moduleHelpers.mkDisabledOption "Install terminal communication tools";
   };
 
-  config = lib.mkMerge [
-    {
-    }
-    (lib.mkIf anyEnabled {
-      environment.systemPackages = enabledOptionalsPackages;
-    })
-  ];
+  config = lib.mkIf anyEnabled {
+    environment.systemPackages = enabledOptionalsPackages;
+  };
 }
 

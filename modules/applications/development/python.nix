@@ -12,7 +12,7 @@ let
     virtualenv
     sh
     av
-    pipx
+    # pipx # buggy in 1.8.0 with python 3.14
     ninja
   ];
 
@@ -80,16 +80,12 @@ in
     testing = moduleHelpers.mkDisabledOption "Install Python testing and documentation packages";
   };
 
-  config = lib.mkMerge [ 
-    {
-    }
-    (lib.mkIf anyEnabled {
-      environment.systemPackages = [
-        (pkgs.python314.withPackages enabledOptionalsPackages)
-      ];
-      environment.shellAliases = {
-        python = "python3.14";
-      };
-    })
-  ];
+  config = lib.mkIf anyEnabled {
+    environment.systemPackages = [
+      (pkgs.python314.withPackages enabledOptionalsPackages)
+    ];
+    environment.shellAliases = {
+      python = "python3.14";
+    };
+  };
 }

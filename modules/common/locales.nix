@@ -1,23 +1,22 @@
-{ config, lib, pkgs, ... }:
+{ lib, ... }:
 
 {
-  # Set your time zone.
-  time.timeZone = config.myConfig.vars.system.timezone;
+  # Defaults can be overridden per-host directly in systems/<host>/configuration.nix
+  # using the standard NixOS options (e.g. time.timeZone = "America/New_York").
+  time.timeZone = lib.mkDefault "Europe/Paris";
 
-  # Configure keymap in X11
   services.xserver.xkb = {
-    layout = config.myConfig.vars.system.layout;
-    variant = "";
+    layout  = lib.mkDefault "fr";
+    variant = lib.mkDefault "";
   };
-  console.keyMap = config.myConfig.vars.system.layout;
+  console.keyMap = lib.mkDefault "fr";
 
-  # Select internationalisation properties.
   i18n = {
-    defaultLocale = config.myConfig.vars.system.locale;
+    defaultLocale = lib.mkDefault "fr_FR.UTF-8";
 
     extraLocaleSettings = lib.genAttrs [
       "LC_ADDRESS" "LC_IDENTIFICATION" "LC_MEASUREMENT" "LC_MONETARY"
       "LC_NAME" "LC_NUMERIC" "LC_PAPER" "LC_TELEPHONE" "LC_TIME"
-    ] (_: config.myConfig.vars.system.locale);
+    ] (_: lib.mkDefault "fr_FR.UTF-8");
   };
 }

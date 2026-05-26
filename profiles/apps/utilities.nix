@@ -1,4 +1,3 @@
-# profiles/utilities.nix — system utilities, math tools and antivirus.
 { config, lib, pkgs, ... }:
 {
   imports = [

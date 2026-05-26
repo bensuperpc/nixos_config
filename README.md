@@ -14,7 +14,7 @@ Multi-host NixOS flake for personal machines, family desktops, and servers.
 - Optional shared user configuration across hosts via `users/<name>/`
 - Early validation through the host schema in `lib/host-schema.nix`
 - Stable package selection via architecture-scoped `pkgsSets`
-- Ongoing option namespace cleanup under `myConfig.apps.*`
+- Enum-based selection for kernel (`myConfig.boot.kernel`), GPU driver (`myConfig.drivers.gpu.intel`), desktop environment (`myConfig.gui.desktop`), and power backend (`myConfig.apps.power.management.backend`)
 - Kebab-case module naming across desktop, GUI, and network components
 - Makefile helpers for common maintenance and deployment tasks
 
@@ -37,7 +37,7 @@ Multi-host NixOS flake for personal machines, family desktops, and servers.
 ├── modules
 │   ├── common      # Boot, network, audio, filesystem, SSH, …
 │   ├── drivers     # GPU (Intel/AMD), Bluetooth, Wireless
-│   ├── gui         # Display manager, KDE Plasma
+│   ├── gui         # Desktop environment options (gui.nix) and implementations (kde-plasma.nix, …)
 │   └── applications # Layer 2: user-facing software
 │       ├── development  # IDEs, compilers, languages, tools
 │       ├── multimedia   # Video, audio, image
@@ -65,10 +65,11 @@ Defined in `systems/systems.nix`.
 | Host | Role | Status |
 |---|---|---|
 | `server-1-m710q` | workstation | active |
+| `fluttershy` | minimal | WIP |
+| `discord-wsl` | wsl | active |
 | `celestia` | family | WIP (disabled) |
 | `luna` | family | WIP (disabled) |
 | `rainbow-dash` | family | WIP (disabled) |
-| `fluttershy` | minimal | WIP |
 | `pinkie-pie` | desktop | WIP (disabled) |
 
 ## Prerequisites
@@ -124,7 +125,7 @@ make <host>.push   # deploy with Colmena (switch)
 make <host>.boot   # deploy with Colmena (boot, then reboot)
 ```
 
-Current `SERVERS` value: `server-1-m710q fluttershy`.
+Current `SERVERS` value: `server-1-m710q fluttershy discord-wsl`.
 
 > Note: `Makefile` host list and `systems/systems.nix` host list should be kept in sync.
 
@@ -156,22 +157,31 @@ deploy-rs deploy server-1-m710q
 
 Modules receive the following inputs through `_module.args`:
 
-- `varsSystem`: merged values from `systems/global-variables.nix` overridden by `systems/<host>/variables.nix`
 - `varsUsers.<username>`: values from each `users/<name>/variables.nix`
 - `varsHost`: host metadata (`name`, `role`, `enabled`, `users`, `deployUser`, `ip`, `port`)
 - `pkgsSets.<channel>`: per-channel package sets (`stable`, `master`, `unstable`) resolved once per architecture
+
+Locale and timezone settings use native NixOS options with `lib.mkDefault` in `modules/common/locales.nix`. Per-host overrides go directly in `systems/<host>/configuration.nix` using the standard NixOS option names:
+
+```nix
+time.timeZone                = "America/New_York";
+i18n.defaultLocale           = "en_US.UTF-8";
+services.xserver.xkb.layout = "us";
+```
 
 ## Conventions
 
 - Prefer lowercase hierarchical paths under `myConfig.apps.*` for new and refactored modules.
 - Prefer `myConfig.apps.network.servers` over mixed camelCase names like `myConfig.apps.webServers`.
 - Prefer `myConfig.apps.desktop.fonts` over broad names like `myConfig.apps.additionalFonts`.
-- Some legacy camelCase options can still exist temporarily during migration, for example `myConfig.apps.powerManagement`.
+- Desktop environment selection lives under `myConfig.gui.*` (not `myConfig.apps.*`).
 - Module filenames use kebab-case when the name contains multiple words.
 
 Preferred option paths:
 
 ```nix
+myConfig.gui.desktop = "plasma";        # enum: none | plasma | lxqt
+myConfig.gui.extraPackages = true;
 myConfig.apps.power.management.services = true;
 myConfig.apps.hardware.gui.tools = true;
 myConfig.apps.network.cli.tooling = true;
@@ -182,7 +192,8 @@ myConfig.apps.desktop.fonts.nerdFonts = true;
 Typical matching filenames:
 
 ```text
-modules/gui/kde-plasma.nix
+modules/gui/gui.nix                                  # myConfig.gui.* option declarations
+modules/gui/kde-plasma.nix                           # plasma implementation
 modules/applications/desktop/desktop-integration.nix
 modules/applications/desktop/fonts.nix
 modules/applications/network/web-servers.nix
@@ -195,7 +206,8 @@ Roles are defined in `lib/host-schema.nix` and provide default `platformProfiles
 | Role | Platform profiles | App profiles | Policy / extra profiles |
 |---|---|---|---|
 | `minimal` | `platform/base` | _(none)_ | _(none)_ |
-| `server` | `platform/base`, `platform/no-gpu` | `apps/docker` | _(none)_ |
+| `server` | `platform/base` | `apps/docker` | _(none)_ |
+| `wsl` | `platform/base`, `platform/no-gpu`, `platform/no-gui`, `platform/wsl` | `apps/docker` | _(none)_ |
 | `desktop` | `platform/base`, `platform/kde-plasma` | `apps/custom`, `apps/desktop-runtime`, `apps/desktop`, `apps/multimedia`, `apps/utilities`, `apps/office` | `policy/kernel-zen` |
 | `workstation` | `platform/base`, `platform/kde-plasma` | `apps/custom`, `apps/desktop-runtime`, `apps/desktop`, `apps/development`, `apps/multimedia`, `apps/utilities`, `apps/office` | `policy/kernel-zen` |
 | `family` | `platform/base`, `platform/kde-plasma` | `apps/desktop`, `apps/communication`, `apps/multimedia`, `apps/office`, `apps/files`, `apps/utilities` | `policy/kernel-zen` |
@@ -208,7 +220,7 @@ Roles are defined in `lib/host-schema.nix` and provide default `platformProfiles
   - `hardware-configuration.nix` - generated by `nixos-generate-config`
   - `variables.nix` - host-specific values such as hostname, timezone, locale, or keyboard layout overrides
 
-   Global defaults for timezone, locale and keyboard layout are in `systems/global-variables.nix`; override per-host in `systems/<host>/variables.nix`.
+   Global defaults for timezone, locale and keyboard layout are in `modules/common/locales.nix`; override per-host in `systems/<host>/configuration.nix` using standard NixOS option names (see the Host Composition section).
 
 2. Register the host in `systems/systems.nix`:
 
@@ -254,26 +266,42 @@ make <host>.push   # once ip is set
 
 Hardware drivers are activated via `platformProfiles`:
 
-| Profile | Description |
-|---|---|
-| `platform/gpu-intel-old` | Intel GPU (older generations like Sandy Bridge, Haswell etc...) |
-| `platform/gpu-intel-skylake` | Intel GPU (Skylake to Raptor Lake) |
-| `platform/gpu-intel-xe` | Intel GPU (Xe Arc) |
-| `platform/gpu-amd` | AMD GPU |
-| `platform/bluetooth` | Bluetooth stack |
-| `platform/wireless` | Wireless networking |
-| `platform/no-gpu` | Headless / server (explicit no-GPU marker) |
+| Profile | NixOS option set | Description |
+|---|---|---|
+| `platform/gpu-intel-old` | `myConfig.drivers.gpu.intel = "old"` | Intel iGPU (Sandy Bridge, Ivy Bridge, Haswell…) |
+| `platform/gpu-intel-skylake` | `myConfig.drivers.gpu.intel = "skylake"` | Intel iGPU (Skylake to Raptor Lake) |
+| `platform/gpu-intel-xe` | `myConfig.drivers.gpu.intel = "xe"` | Intel GPU (Xe / Arc, Alder Lake and newer) |
+| `platform/gpu-amd` | `myConfig.drivers.gpu.amd.enable = true` | AMD GPU — combinable with an Intel profile |
+| `platform/bluetooth` | `myConfig.drivers.bluetooth.enable = true` | Bluetooth stack |
+| `platform/wireless` | `myConfig.drivers.wireless.enable = true` | Wireless networking |
+| `platform/no-gpu` | _(assertion only)_ | Headless / server — asserts no GPU profile is active |
+
+> `myConfig.drivers.gpu.intel` and `myConfig.drivers.gpu.amd.enable` can be set directly in `systems/<host>/configuration.nix` without a profile.
+
+## GUI Profiles
+
+Desktop environment is activated via `platformProfiles`:
+
+| Profile | `myConfig.gui.desktop` value | Description |
+|---|---|---|
+| `platform/kde-plasma` | `"plasma"` | KDE Plasma 6 — sets `myConfig.gui.desktop = "plasma"` and `myConfig.gui.extraPackages = true` |
+| `platform/no-gui` | _(assertion only)_ | Headless — asserts `myConfig.gui.desktop == "none"` and no Xorg/Wayland services active |
+
+> `myConfig.gui.desktop` can also be set directly in `systems/<host>/configuration.nix` without a profile.
 
 ## Policy Profiles
 
 Policy profiles are activated via role defaults or `policyProfiles`:
 
-| Profile | Description |
-|---|---|
-| `policy/kernel-latest` | Follow the latest kernel track |
-| `policy/kernel-zen` | Prefer the Zen kernel for desktop-oriented hosts |
-| `policy/kernel-latest-libre` | Follow the latest libre kernel track (no binary blobs) |
-| `policy/kernel-latest-hardened` | Follow the latest hardened kernel track (security-focused) |
+| Profile | `myConfig.boot.kernel` value | Description |
+|---|---|---|
+| `policy/kernel-latest` | `"latest"` | Latest upstream kernel |
+| `policy/kernel-zen` | `"zen"` | Zen kernel — desktop/gaming optimised |
+| `policy/kernel-latest-libre` | `"libre"` | Latest libre kernel (no binary blobs) |
+| `policy/kernel-latest-hardened` | `"hardened"` | Latest hardened kernel (security-focused) |
+| `policy/kernel-lts` | `"lts"` | LTS kernel — set `myConfig.boot.kernel = "lts"` directly |
+
+> `myConfig.boot.kernel` can also be set directly in `systems/<host>/configuration.nix` without a profile.
 
 ## Contributing
 
@@ -304,3 +332,5 @@ Before opening a change:
 - [Fufexan](https://github.com/fufexan/dotfiles)
 - [Tejing1](https://github.com/tejing1/nixos-config)
 - [Ryan4yin](https://github.com/ryan4yin/nix-config)
+- [Phip1611](https://github.com/phip1611/nixos-configs)
+- [Haseeb Majid](https://haseebmajid.dev/posts/2024-07-30-how-i-setup-btrfs-and-luks-on-nixos-using-disko/)

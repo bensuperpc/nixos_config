@@ -1,4 +1,5 @@
 {
+  enabled = true;
   role = "workstation";
   system = "x86_64-linux";
   ip = "192.168.1.27";

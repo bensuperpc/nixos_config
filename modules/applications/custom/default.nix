@@ -26,10 +26,10 @@ in
   # nixpkgs.overlays = [
   #   (final: prev: {
   #     lager = prev.lager.override {
-  #       boost = pkgsSets.stable.boost;
+  #       boost = pkgsSets.stable-2605.boost;
   #     };
   #     gource = prev.gource.override {
-  #       boost = pkgsSets.stable.boost;
+  #       boost = pkgsSets.stable-2605.boost;
   #     };
   #   })
   # ];

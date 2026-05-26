@@ -33,18 +33,12 @@ in
 {
   options.myConfig.apps.games.minecraft = {
     launcher = moduleHelpers.mkDisabledOption "Install Prism Launcher and default Java runtime";
-
     installJres = moduleHelpers.mkDisabledOption "Install multiple Java runtimes for modpack compatibility";
-
     installTools = moduleHelpers.mkDisabledOption "Install Minecraft tools";
   };
 
-  config = lib.mkMerge [
-    {
-    }
-    (lib.mkIf anyEnabled {
-      environment.systemPackages = enabledOptionalsPackages;
-      programs.java.enable = true;
-    })
-  ];
+  config = lib.mkIf anyEnabled {
+    environment.systemPackages = enabledOptionalsPackages;
+    programs.java.enable = true;
+  };
 }

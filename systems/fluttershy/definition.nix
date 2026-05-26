@@ -1,4 +1,5 @@
 {
+  enabled = true;
   role = "minimal";
   system = "x86_64-linux";
 

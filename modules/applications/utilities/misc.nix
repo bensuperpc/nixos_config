@@ -30,6 +30,7 @@ let
     llmfit
     colorls
     eza
+    jhead
   ];
 
   securityPackages = with pkgs; [
@@ -67,22 +68,17 @@ in
     archive = moduleHelpers.mkDisabledOption "Install backup and archive tools";
   };
 
-  config = lib.mkMerge [ 
-    {
-      # btop to add CPU/GPU monitoring
-      # Also need: boot.kernelModules = [ "kvm-intel" "coretemp" "msr" "intel_rapl_msr" "intel_rapl_common" ]; # k10temp for AMD
-      # security.wrappers.btop = {
-      #   owner = "root";
-      #   group = "root";
-      #   capabilities = "cap_perfmon,cap_sys_rawio,cap_sys_admin+ep";
-      #   source = "${pkgs.btop}/bin/btop";
-      # };
-    }
-    (lib.mkIf anyEnabled {
-      environment.systemPackages = enabledOptionalsPackages;
-    })
-    (lib.mkIf cfg.system {
-    })
-  ];
+  config = lib.mkIf anyEnabled {
+    environment.systemPackages = enabledOptionalsPackages;
+
+    # btop to add CPU/GPU monitoring
+    # Also need: boot.kernelModules = [ "kvm-intel" "coretemp" "msr" "intel_rapl_msr" "intel_rapl_common" ]; # k10temp for AMD
+    # security.wrappers.btop = {
+    #   owner = "root";
+    #   group = "root";
+    #   capabilities = "cap_perfmon,cap_sys_rawio,cap_sys_admin+ep";
+    #   source = "${pkgs.btop}/bin/btop";
+    # };
+  };
 }
 

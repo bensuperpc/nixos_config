@@ -1,4 +1,3 @@
-# profiles/games.nix — games, emulators and minecraft launchers.
 { config, lib, pkgs, ... }:
 {
   imports = [
