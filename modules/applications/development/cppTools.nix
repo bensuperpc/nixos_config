@@ -3,7 +3,6 @@
 let
   cfg = config.myConfig.apps.development.cppTools;
 
-
   cachingPackages = with pkgs; [
     ccache
     sccache
@@ -11,11 +10,11 @@ let
     icecream
   ];
   buildSystemsPackages = with pkgs; [
-    gnumake
     cmake
     lomiri.cmake-extras
     meson
     mold
+    gnumake
   ];
   qualityPackages = with pkgs; [
     gcovr
@@ -26,7 +25,6 @@ let
     lldb
     ltrace
     valgrind
-    binutils
   ];
 
   enabledOptionalsPackages =

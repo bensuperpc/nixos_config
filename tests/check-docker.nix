@@ -14,7 +14,7 @@ in
   assertions =
     [
       {
-        assertion = config.myConfig.apps.docker.engine;
+        assertion = config.myConfig.apps.docker.enable;
         message = "Docker engine option must be enabled";
       }
       {

@@ -16,5 +16,6 @@
     ./compilers.nix
     ./rust.nix
     ./go.nix
+    ./base.nix
   ];
 }

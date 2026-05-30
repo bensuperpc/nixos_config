@@ -1,18 +1,17 @@
 { config, lib, pkgs, ... }:
 {
   imports = [
-    # Tests
-    ../../tests/check-productivity.nix
+    ../../tests/check-office.nix
   ];
 
   myConfig.apps.office = {
-    suite = true;
-    writing = true;
-    notes = true;
+    suite = lib.mkDefault true;
+    writing = lib.mkDefault true;
+    notes = lib.mkDefault true;
   };
 
-  myConfig.apps.printing.service = true;
-  myConfig.apps.printing3d.tools = true;
+  myConfig.apps.printing.service = lib.mkDefault true;
+  myConfig.apps.printing3d.tools = lib.mkDefault true;
 
-  myConfig.apps.desktop.fonts.nerdFonts = true;
+  myConfig.apps.desktop.fonts.nerdFonts = lib.mkDefault true;
 }

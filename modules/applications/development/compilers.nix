@@ -2,20 +2,18 @@
 
 let
   cfg = config.myConfig.apps.development.compilers;
-
-
-  nativePackages = with pkgs; [
-    gcc
-    libgcc
+  
+  clangPackages = with pkgs; [
     clang
     llvm
     libllvm
-    binutils
   ];
   lowLevelPackages = with pkgs; [
     byacc
     nasm
     dtc
+  ];
+  protobufPackages = with pkgs; [
     protobuf
     protobufc
     nanopb
@@ -24,7 +22,7 @@ let
   wasmPackages = with pkgs; [
     emscripten
     wasmi
-    #wasmer
+    wasmer
     emscriptenStdenv
   ];
   embeddedPackages = with pkgs; [
@@ -37,29 +35,33 @@ let
     clangStdenv
     distccStdenv
     ccacheStdenv
-    gcc15Stdenv
+    gccStdenv
   ];
 
   enabledOptionalsPackages =
-    lib.optionals cfg.native nativePackages
+    lib.optionals cfg.clang clangPackages
     ++ lib.optionals cfg.lowLevel lowLevelPackages
     ++ lib.optionals cfg.wasm wasmPackages
     ++ lib.optionals cfg.embedded embeddedPackages
+    ++ lib.optionals cfg.protobuf protobufPackages
     ++ lib.optionals cfg.stdenvs stdenvsPackages;
 
   anyEnabled = lib.any (x: x) [
-    cfg.native
+    cfg.clang
     cfg.lowLevel
     cfg.wasm
     cfg.embedded
     cfg.stdenvs
+    cfg.protobuf
   ];
 in
 {
   options.myConfig.apps.development.compilers = {
-    native = moduleHelpers.mkDisabledOption "Install GCC/Clang/LLVM native toolchains";
+    clang = moduleHelpers.mkDisabledOption "Install Clang/LLVM toolchains";
 
     lowLevel = moduleHelpers.mkDisabledOption "Install low-level code generation and parser tools";
+
+    protobuf = moduleHelpers.mkDisabledOption "Install Protocol Buffers compilers and libraries";
 
     wasm = moduleHelpers.mkDisabledOption "Install WebAssembly toolchains and runtimes";
 

@@ -16,12 +16,12 @@ in
 {
   # DNS over TLS via systemd-resolved
   services.resolved = {
-    enable = lib.mkDefault true;
+    enable = true;
     settings.Resolve = {
-      DNSSEC = lib.mkDefault "allow-downgrade";
-      DNSOverTLS = lib.mkDefault "opportunistic";
-      Domains = lib.mkDefault [ "~." ];
-      FallbackDNS = lib.mkDefault fallbackNameservers;
+      DNSSEC = "allow-downgrade";
+      DNSOverTLS = "allow-downgrade";
+      Domains = [ "~." ];
+      FallbackDNS = fallbackNameservers;
     };
   };
 
@@ -36,6 +36,6 @@ in
         "ipv6.ignore-auto-dns" = true;
       };
     };
-    nameservers = lib.mkDefault defaultNameservers;
+    nameservers = defaultNameservers;
   };
 }

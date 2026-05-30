@@ -3,9 +3,7 @@
 {
   imports = [
     # Tests
-    ../../tests/check-network.nix
-    ../../tests/check-tools.nix
-    ../../tests/check-terminal.nix
+    ../../tests/check-gui.nix
   ];
 
   myConfig.gui.desktop = "plasma";

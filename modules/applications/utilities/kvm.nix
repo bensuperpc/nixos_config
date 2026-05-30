@@ -51,6 +51,12 @@ in
         qemu.vhostUserPackages = vhostPackages;
       };
 
+      systemd.services.libvirtd.serviceConfig = {
+        StateDirectory = "libvirt";
+        RuntimeDirectory = "libvirt";
+        LoadCredentialEncrypted = lib.mkForce [ "" ];
+      };
+
       # For guest only
       services.qemuGuest.enable = cfg.enableGuestServices;
       services.spice-vdagentd.enable = cfg.enableGuestServices;

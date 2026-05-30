@@ -8,6 +8,7 @@ let
     docker-compose
     docker-buildx
     docker-color-output
+    lazydocker
   ];
 in
 {
@@ -15,22 +16,26 @@ in
     ./docker-services/docker-compose.nix
   ];
   options.myConfig.apps.docker = {
-    engine = moduleHelpers.mkDisabledOption "Enable Docker engine and tooling";
+    enable = moduleHelpers.mkDisabledOption "Enable Docker engine and tooling";
   };
 
-  config = lib.mkIf cfg.engine {
+  config = lib.mkIf cfg.enable {
 
     virtualisation = {
       containers.enable = true;
       docker = {
         enable = true;
-        autoPrune.enable = true;
-        autoPrune.dates = "weekly";
+        enableOnBoot = true;
+        autoPrune = {
+          randomizedDelaySec = "45min";
+          enable = true;
+          dates = "weekly";
+        };
       };
     };
 
     environment.systemPackages = lib.mkIf config.virtualisation.docker.enable dockerPackages;
-
+  
     services.my-docker-compose.services = {
       # ollama = {
       #   directory = ./docker-services/docker-ollama;
@@ -40,6 +45,10 @@ in
       #     WEBUI_DOCKER_TAG = "main";
       #     OPEN_WEBUI_PORT = "3000";
       #   };
+      # };
+      # searcng = {
+      #   directory = ./docker-services/docker-searcng;
+      #   ports = [ 8080 ];
       # };
 
       watchtower = {

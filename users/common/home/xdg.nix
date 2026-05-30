@@ -1,8 +1,8 @@
 # More info: https://nix-community.github.io/plasma-manager/options.xhtml
-{ config, lib, pkgs, ... }:
+{ config, lib, osConfig, pkgs, ... }:
 
 {
-  xdg = {
+  xdg = lib.mkIf (osConfig.myConfig.gui.desktop != "none") {
     # KDE already have their own services
     #autostart.enable = true;
     

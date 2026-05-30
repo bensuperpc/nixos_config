@@ -13,21 +13,7 @@
   #  "coretemp" "msr" "intel_rapl_msr" "intel_rapl_common" # k10temp for AMD
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
-
-  fileSystems."/" =
-    { device = "/dev/mapper/luks-e8c212b7-ddcf-498d-879b-921894748214";
-      fsType = "ext4";
-    };
-
-  boot.initrd.luks.devices."luks-e8c212b7-ddcf-498d-879b-921894748214".device = "/dev/disk/by-uuid/e8c212b7-ddcf-498d-879b-921894748214";
-
-  fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/BB29-388D";
-      fsType = "vfat";
-      options = [ "fmask=0077" "dmask=0077" ];
-    };
-
-  swapDevices = [ ];
+  # swapDevices = [ ];
   # stdenv.hostPlatform
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;

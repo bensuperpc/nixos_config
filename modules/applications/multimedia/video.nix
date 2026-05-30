@@ -33,6 +33,7 @@ let
     xevd
     av1an
     libcamera
+    openjph
   ];
   opticalMediaPackages = with pkgs; [
     libdvdcss

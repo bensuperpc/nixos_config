@@ -17,12 +17,17 @@ let
     fio # Benchmarking tool for storage devices
     yazi # CLI file manager
   ];
+  
+  nixToolsPackages = with pkgs; [
+    nix-du
+    nix-ld
+  ];
 in
 {
 
   # programs.dconf.enable = true;
 
-  environment.systemPackages = toolsPackages;
+  environment.systemPackages = toolsPackages ++ nixToolsPackages;
 
   programs.yazi = {
     enable = true;

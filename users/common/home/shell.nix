@@ -36,7 +36,7 @@
 #        "zsh-syntax-highlighting"
         # "ssh-agent"
         # "gpg-agent"
-      ] ++ lib.optionals osConfig.myConfig.apps.docker.engine [
+      ] ++ lib.optionals osConfig.myConfig.apps.docker.enable [
         "docker"
         "docker-compose"
       ];
@@ -56,7 +56,7 @@
     enableZshIntegration = true;
     settings = {
       add_newline = false;
-
+      scan_timeout = 1500;
       format = ''
   [░▒▓](#9A348E)$os$username$hostname[](bg:#DA627D fg:#9A348E)$directory[](fg:#DA627D bg:#FCA17D)$git_branch$git_status[](fg:#FCA17D bg:#86BBD8)$c$elixir$elm$golang$haskell$java$julia$nodejs$nim$rust$scala[](fg:#86BBD8 bg:#06969A)$nix_shell[](fg:#06969A bg:#33658A)$time[ ](fg:#33658A)
   $character'';

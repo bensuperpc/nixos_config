@@ -4,5 +4,5 @@
     ../../tests/check-docker.nix
   ];
 
-  myConfig.apps.docker.engine = true;
+  myConfig.apps.docker.enable = true;
 }

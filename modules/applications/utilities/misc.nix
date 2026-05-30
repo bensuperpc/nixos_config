@@ -17,9 +17,10 @@ let
   cliPackages = with pkgs; [
     ripgrep
     ripgrep-all
-    pwgen
+    # pwgen # Abandoned
     fd
     jq
+    yq
     dos2unix
     fdupes
     flex
@@ -44,12 +45,19 @@ let
     kiwix
   ];
 
+  crackingPasswordPackages = with pkgs; [
+    cracklib
+    hashcat
+  ];
+
+
   enabledOptionalsPackages =
     lib.optionals cfg.system systemPackages
     ++ lib.optionals cfg.network networkPackages
     ++ lib.optionals cfg.cli cliPackages
     ++ lib.optionals cfg.security securityPackages
-    ++ lib.optionals cfg.archive archivePackages;
+    ++ lib.optionals cfg.archive archivePackages
+    ++ lib.optionals cfg.crackingPassword crackingPasswordPackages;
 
     anyEnabled = lib.any (x: x) [
       cfg.system
@@ -57,6 +65,7 @@ let
       cfg.cli
       cfg.security
       cfg.archive
+      cfg.crackingPassword
     ];
 in
 {
@@ -66,6 +75,7 @@ in
     cli = moduleHelpers.mkDisabledOption "Install CLI tools and utilities";
     security = moduleHelpers.mkDisabledOption "Install security and encryption tools";
     archive = moduleHelpers.mkDisabledOption "Install backup and archive tools";
+    crackingPassword = moduleHelpers.mkDisabledOption "Install password cracking tools (for security auditing and recovery purposes only)";
   };
 
   config = lib.mkIf anyEnabled {

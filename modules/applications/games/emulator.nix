@@ -62,11 +62,7 @@ in
     sega = moduleHelpers.mkDisabledOption "Install Sega family emulators";
   };
 
-  config = lib.mkMerge [ 
-    {
-    }
-    (lib.mkIf anyEnabled {
-      environment.systemPackages = enabledOptionalsPackages;
-    })
-  ];
+  config = lib.mkIf anyEnabled {
+    environment.systemPackages = enabledOptionalsPackages;
+  };
 }

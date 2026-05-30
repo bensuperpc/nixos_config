@@ -53,7 +53,6 @@ let
   cryptoPackages = with pkgs; [
     mbedtls
     openssl
-    # wolfssl # Licensing issues
     libressl
     xxhash
   ];
@@ -61,6 +60,7 @@ let
     catch2
     doctest
     gtest
+    gbenchmark
   ];
 
   enabledOptionalsPackages =

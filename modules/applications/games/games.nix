@@ -29,7 +29,7 @@ let
 
   launchersPackages = with pkgs; [
     heroic
-    #pkgsSets.stable-2511.lutris
+    lutris
   ];
 
   enabledOptionalsPackages =
@@ -64,11 +64,7 @@ in
     launchers = moduleHelpers.mkDisabledOption "Install game store launchers (Heroic, Lutris)";
   };
 
-  config = lib.mkMerge [
-    {
-    }
-    (lib.mkIf anyEnabled {
-      environment.systemPackages = enabledOptionalsPackages;
-    })
-  ];
+  config = lib.mkIf anyEnabled {
+    environment.systemPackages = enabledOptionalsPackages;
+  };
 }

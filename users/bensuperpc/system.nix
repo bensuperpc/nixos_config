@@ -11,9 +11,9 @@
     group = userVars.user;
     extraGroups = userVars.extraGroups;
     openssh.authorizedKeys.keys = userVars.sshPubKeyAccess;
-    shell = pkgs.${userVars.shell};
+    shell = pkgs.zsh;
   };
-
+  
   security.sudo.extraRules = [
     {
       users = [ userVars.user ];
@@ -29,6 +29,6 @@
   home-manager.users.${userVars.user} = {
     imports = [ ./home ];
     _module.args.userVars = userVars;
-    home.stateVersion = "25.11"; # config.system.stateVersion;
+    home.stateVersion = "26.05"; # config.system.stateVersion;
   };
 }

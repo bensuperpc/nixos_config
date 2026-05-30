@@ -9,7 +9,7 @@ in
 
   config = lib.mkIf cfg.enable {
     hardware.graphics = {
-      enable = lib.mkDefault true;
+      enable = true;
       extraPackages = with pkgs; [
         # For older AMD GPUs
         #mesa.opencl

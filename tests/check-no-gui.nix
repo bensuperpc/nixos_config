@@ -1,8 +1,6 @@
+# tests/check-no-gui.nix
 { config, ... }:
-
-let
-
-in {
+{
   assertions = [
     {
       assertion = config.myConfig.gui.desktop == "none";

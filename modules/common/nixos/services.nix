@@ -4,8 +4,8 @@
   services.dbus.implementation = "broker";
 
   zramSwap = {
-    enable = lib.mkDefault true;
-    algorithm = lib.mkDefault "zstd";
-    memoryPercent = lib.mkDefault 50;
+    enable = true;
+    algorithm = "zstd";
+    memoryPercent = 50;
   };
 }

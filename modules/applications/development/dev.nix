@@ -12,7 +12,7 @@ let
     codechecker
     commitizen
     gource
-    git
+    lazygit
   ];
   graphicsPackages = with pkgs; [
     vulkan-tools

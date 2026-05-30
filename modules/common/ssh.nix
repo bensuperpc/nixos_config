@@ -20,7 +20,7 @@ in
 
     services.openssh = {
       enable      = true;
-      ports       = lib.mkDefault [ 22 ];
+      ports       = [ 22 ];
       openFirewall = cfg.openFirewall;
       settings = {
         PasswordAuthentication        = false;
@@ -32,7 +32,7 @@ in
     services.fail2ban = lib.mkIf cfg.useFail2ban {
       enable    = true;
       maxretry  = 5;
-      ignoreIP  = lib.mkDefault [ "127.0.0.0/8" "192.168.1.0/24" ];
+      ignoreIP  = [ "127.0.0.0/8" "192.168.1.0/24" ];
       bantime   = "24h";
       bantime-increment = {
         enable      = true;

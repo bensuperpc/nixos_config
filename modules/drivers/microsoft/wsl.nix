@@ -15,6 +15,15 @@ in
       systemd-boot.enable = lib.mkForce false;
       efi.canTouchEfiVariables = lib.mkForce false;
     };
+
+    services.resolved.enable = lib.mkForce false; 
+
+    networking.nameservers = lib.mkForce []; 
+    networking.nftables.enable = lib.mkForce false; 
+    networking.firewall.enable = lib.mkForce false; 
+    networking.networkmanager.enable = lib.mkForce false; 
+
+    services.timesyncd.enable = lib.mkForce false;
   };
 }
 

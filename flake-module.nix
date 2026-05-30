@@ -4,6 +4,7 @@ let
   nixpkgsSources = {
     stable-2605 = inputs.nixpkgs-2605;
     stable-2511 = inputs.nixpkgs-2511;
+    stable-2505 = inputs.nixpkgs-2505;
     unstable = inputs.nixpkgs-unstable;
     master   = inputs.nixpkgs-master;
   };

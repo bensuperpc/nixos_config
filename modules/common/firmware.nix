@@ -1,15 +1,36 @@
 
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, moduleHelpers, ... }:
 
-{
-  boot.loader.efi.canTouchEfiVariables = true;
-  nixpkgs.config.allowUnfree = true;
+let
+  cfg = config.myConfig.apps.firmware;
 
-  hardware.enableAllFirmware = true;
-  hardware.enableRedistributableFirmware = true;
-  
-  services.fwupd.enable = true;
-  environment.systemPackages = with pkgs; [
+  firmwarePackages = with pkgs; [
     fwupd-efi
+  ];
+
+  enabledOptionalsPackages =
+    lib.optionals cfg.enable firmwarePackages;
+
+  anyEnabled = lib.any (x: x) [
+    cfg.enable
+  ];
+in
+{
+  options.myConfig.apps.firmware = {
+    enable = moduleHelpers.mkEnabledOption "Enable firmware management";
+  };
+
+  config = lib.mkMerge [
+    {
+      nixpkgs.config.allowUnfree = true;
+    }
+    (lib.mkIf anyEnabled {
+      hardware.enableAllFirmware = true;
+      hardware.enableRedistributableFirmware = true;
+      
+      services.fwupd.enable = true;
+
+      environment.systemPackages = enabledOptionalsPackages;
+    })
   ];
 }

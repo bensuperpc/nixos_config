@@ -3,8 +3,7 @@
 
 let
   requiredDevPkgs = with pkgs; [
-    # compilers.native
-    gcc
+    # compilers.clang
     clang
     # cppTools.buildSystems
     cmake
@@ -16,22 +15,19 @@ let
     # dev.tooling
     clang-tools
     shellcheck
+    vscode
   ];
 in
 {
   assertions =
     [
       {
-        assertion = config.programs.vscode.enable;
-        message = "VSCode must be enabled";
-      }
-      {
         assertion = config.myConfig.apps.development.dev.core;
         message = "Development core group must be enabled";
       }
       {
-        assertion = config.myConfig.apps.development.compilers.native;
-        message = "Development compilers native group must be enabled";
+        assertion = config.myConfig.apps.development.compilers.clang;
+        message = "Development compilers Clang/LLVM group must be enabled";
       }
       {
         assertion = config.myConfig.apps.development.cppTools.buildSystems;

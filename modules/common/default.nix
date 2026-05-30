@@ -15,5 +15,8 @@
     ./power-management.nix
     ./ssh.nix
     ./user.nix
+    ./tpm.nix
+    ./logs.nix
+    ./impermanence
   ];
 }

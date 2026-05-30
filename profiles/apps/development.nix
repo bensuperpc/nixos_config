@@ -10,6 +10,7 @@
     graphics = lib.mkDefault true;
     dotnet = lib.mkDefault true;
     misc = lib.mkDefault true;
+    base = lib.mkDefault true;
   };
 
   myConfig.apps.development.libraries = {
@@ -24,8 +25,9 @@
   };
 
   myConfig.apps.development.compilers = {
-    native = lib.mkDefault true;
+    clang = lib.mkDefault true;
     lowLevel = lib.mkDefault true;
+    protobuf = lib.mkDefault true;
     wasm = lib.mkDefault true;
     embedded = lib.mkDefault true;
     stdenvs = lib.mkDefault true;

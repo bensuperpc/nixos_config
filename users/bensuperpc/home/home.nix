@@ -1,26 +1,13 @@
-# More info: https://nix-community.github.io/plasma-manager/options.xhtml
 { config, osConfig, lib, pkgs, userVars, ... }:
 
 let
-  chromiumExtensions = [
-    "ddkjiahejlhfcafbddmgiahcphecmpfh" # uBlock Origin Lite
-    "nngceckbapebfimnlniiiahkandclblb" # Bitwarden
-    "neebplgakaahbhdphmkckjjcegoiijjo" # Keepa (amazon price tracker)
-    "cimiefiiaegbelhefglklhhakcgmhkai" # Plasma integration
-    "fpnmgdkabkmnadcjpehmlllkndpkmiak" # Wayback Machine
-    "kdbmhfkmnlmbkgbabkdealhhbfhlmmon" # SteamDB
-    # "lclgfmnljgacfdpmmmjmfpdelndbbfhk" # SealSkin Isolation
-  ];
-  vscodeExtensions = with pkgs.vscode-extensions; [
-    ms-vscode.cpptools
-    ms-vscode.cpptools-extension-pack
-    ms-vscode-remote.remote-containers
-    ms-vscode.makefile-tools
-    ms-python.python
-    ms-azuretools.vscode-docker
-    yzhang.markdown-all-in-one
-    redhat.vscode-yaml
-    jnoortheen.nix-ide
+  sshKeys = lib.unique [
+    userVars.localSSHKeyName
+    userVars.githubSSHKeyName
+    userVars.gitlabSSHKeyName
+    userVars.codebergSSHKeyName
+    userVars.forgejoSSHKeyName
+    userVars.defaultOnlineSSHKeyName
   ];
 in
 {
@@ -33,13 +20,7 @@ in
     homeDirectory = "/home/${userVars.user}";
 
     packages = with pkgs; [
-    ] ++ lib.optionals osConfig.myConfig.apps.development.cppTools.caching [
-      pkgs.ccache
     ];
-
-    sessionVariables = {
-      CCACHE_DIR = "$HOME/.cache/ccache";
-    };
 
     file = {
       "test_home.txt" = {
@@ -56,15 +37,25 @@ in
   };
 
   home.activation = {
-    setupCcache = config.lib.dag.entryAfter ["writeBoundary"] ''
-      mkdir -p $HOME/.cache/ccache
-    '';
+    generateSshKey = lib.hm.dag.entryAfter ["installPackages"] (
+      lib.concatMapStringsSep "\n" (keyName: ''
+        if [ ! -f "$HOME/.ssh/${keyName}" ]; then
+          install -d -m 700 "$HOME/.ssh"
+          ${pkgs.openssh}/bin/ssh-keygen -t ed25519 -a 256 -f "$HOME/.ssh/${keyName}" -N "" -C "${userVars.email}"
+          chmod 600 "$HOME/.ssh/${keyName}"
+          chmod 644 "$HOME/.ssh/${keyName}.pub"
+        fi
+      '') sshKeys
+    );
 
-    # Generate SSH key if it doesn't exist
-    generateSshKey = config.lib.dag.entryAfter ["writeBoundary"] ''
-      if [ ! -f "$HOME/.ssh/${userVars.mainSshKeyName}" ]; then
-        install -d -m 700 "$HOME/.ssh"
-        ${pkgs.openssh}/bin/ssh-keygen -t ed25519 -a 256 -f "$HOME/.ssh/${userVars.mainSshKeyName}" -N "" -C "${userVars.email}"
+    cloneNixosConfig = lib.hm.dag.entryAfter [ "installPackages" ] ''
+      TARGET_DIR="$HOME/Repository/nixos_config"
+      if [ ! -d "$TARGET_DIR" ]; then
+        echo "Cloning the NixOS configuration repository into $TARGET_DIR..."
+        mkdir -p "$(dirname "$TARGET_DIR")"
+        ${pkgs.git}/bin/git clone https://github.com/bensuperpc/nixos_config.git "$TARGET_DIR"
+      else
+        echo "The repository already exists in $TARGET_DIR, skipping this step."
       fi
     '';
   };

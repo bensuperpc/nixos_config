@@ -2,33 +2,33 @@
 {
   imports = [
     ../../tests/check-math.nix
+    ../../tests/check-tools.nix
   ];
 
   myConfig.apps.electronic = {
-    design = true;
-    diagnostics = true;
+    design = lib.mkDefault true;
+    diagnostics = lib.mkDefault true;
   };
-  myConfig.apps.flashing.tools = true;
+  myConfig.apps.flashing.tools = lib.mkDefault true;
 
   myConfig.apps.math = {
-    geometry = true;
-    plotting = true;
+    geometry = lib.mkDefault true;
+    plotting = lib.mkDefault true;
   };
 
-  myConfig.apps.kvm.host = true;
-
   myConfig.apps.tools = {
-    system = true;
-    network = true;
-    cli = true;
-    security = true;
-    archive = true;
+    system = lib.mkDefault true;
+    network = lib.mkDefault true;
+    cli = lib.mkDefault true;
+    security = lib.mkDefault true;
+    archive = lib.mkDefault true;
+    crackingPassword = lib.mkDefault true;
   };
 
   myConfig.apps.compress = {
-    base = true;
-    tools = true;
+    base = lib.mkDefault true;
+    tools = lib.mkDefault true;
   };
 
-  myConfig.apps.antivirus.scanner = true;
+  myConfig.apps.antivirus.scanner = lib.mkDefault true;
 }

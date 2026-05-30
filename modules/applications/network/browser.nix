@@ -12,28 +12,37 @@ let
   extraBrowserPackages = with pkgs; [
     ungoogled-chromium
     brave
-    # ladybird # build fails
+    ladybird
     servo
     librewolf
     dillo
   ];
 
+  cliBrowserPackages = with pkgs; [
+    w3m
+    lynx
+    links2
+    elinks
+  ];
+
   enabledOptionalsPackages =
     lib.optionals cfg.core corePackages
+    ++ lib.optionals cfg.cli cliBrowserPackages
     ++ lib.optionals cfg.extra extraBrowserPackages;
 
-  anyEnabled = cfg.core || cfg.extra;
+  anyEnabled = cfg.core || cfg.extra || cfg.cli;
 in
 {
   options.myConfig.apps.browser = {
     core = moduleHelpers.mkDisabledOption "Install core browsers";
     extra = moduleHelpers.mkDisabledOption "Install extra browsers";
+    cli = moduleHelpers.mkDisabledOption "Install CLI browsers";
   };
 
   config = lib.mkIf anyEnabled {
     environment.systemPackages = enabledOptionalsPackages;
 
-    programs.firefox = {
+    programs.firefox = lib.mkIf (cfg.core) {
         enable = true;
         policies = {
           DisableTelemetry = true;
@@ -46,7 +55,7 @@ in
         };
       };
 
-      programs.chromium = {
+      programs.chromium = lib.mkIf (cfg.core) {
         enable = true;
         #homepageLocation = "";
         extraOpts = {

@@ -3,7 +3,6 @@
 let
   cfg = config.myConfig.apps.development.databases;
 
-
   relationalPackages = with pkgs; [
     sqlite
     postgresql

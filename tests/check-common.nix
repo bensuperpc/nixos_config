@@ -35,6 +35,10 @@ in
         assertion = config.networking.firewall.enable;
         message = "Firewall must be enabled";
       }
+      {
+        assertion = config.boot.loader.systemd-boot.enable;
+        message = "Systemd-boot must be enabled";
+      }
     ]
     ++ lib.optionals enableNetworkCliTooling (
       map (pkg: {
