@@ -50,6 +50,9 @@ let
     inputs.home-manager.nixosModules.home-manager
     inputs.impermanence.nixosModules.impermanence
     inputs.disko.nixosModules.disko
+    inputs.agenix.nixosModules.default
+    inputs.nixos-wsl.nixosModules.wsl
+    inputs.nix-ld.nixosModules.nix-ld
     ({ config, ... }: {
       home-manager = {
         useGlobalPkgs = true;
@@ -65,8 +68,6 @@ let
         inherit pkgsSets moduleHelpers;
       };
     })
-    inputs.agenix.nixosModules.default
-    inputs.nixos-wsl.nixosModules.wsl
   ] ++ profilesModules ++ usersModules ++ mainPkgs;
 in {
   inherit modules;

@@ -4,49 +4,16 @@ Multi-host NixOS flake for personal machines, family desktops, and servers.
 
 > **⚠️ Warning:** This repository is under active development. Expect changes and occasional breakage.
 
-## Table of Contents
-
-- [NixOS Configuration](#nixos-configuration)
-  - [Table of Contents](#table-of-contents)
-  - [Highlights](#highlights)
-  - [Repository Layout](#repository-layout)
-  - [Host Inventory](#host-inventory)
-  - [Prerequisites](#prerequisites)
-  - [Quick Start](#quick-start)
-    - [Validate the flake](#validate-the-flake)
-    - [Build a host locally (dry-run)](#build-a-host-locally-dry-run)
-  - [Deployment](#deployment)
-    - [Apply a host configuration locally](#apply-a-host-configuration-locally)
-    - [Colmena](#colmena)
-    - [Deploy-rs](#deploy-rs)
-  - [Installation](#installation)
-  - [Make Targets](#make-targets)
-  - [Host Composition](#host-composition)
-  - [Conventions](#conventions)
-  - [Host Roles](#host-roles)
-  - [Adding a Host](#adding-a-host)
-  - [Profile Reference](#profile-reference)
-    - [Driver \& Platform Profiles](#driver--platform-profiles)
-    - [GUI Profiles](#gui-profiles)
-    - [Policy Profiles](#policy-profiles)
-  - [Contributing](#contributing)
-  - [Useful Resources](#useful-resources)
-    - [Nix \& NixOS](#nix--nixos)
-    - [Other NixOS Configurations](#other-nixos-configurations)
-
 ## Highlights
 
 - Multi-host setup for personal, family, server, and workstation systems
 - Flake-based configuration with Colmena and deploy-rs deployment targets
-- Home Manager and Plasma Manager integration
-- Declarative disk partitioning with **disko**
+- Home Manager and Plasma Manager integration (KDE Plasma 6 desktop environment)
+- Declarative disk partitioning with **disko** and impermanence
 - Role-based composition (`minimal`, `server`, `desktop`, `workstation`, `family`)
 - Profile-driven capabilities via `appProfiles`, `platformProfiles`, and `policyProfiles`
 - Optional shared user configuration across hosts via `users/<name>/`
-- Early validation through the host schema in `lib/host-schema.nix`
 - Stable package selection via architecture-scoped `pkgsSets`
-- Enum-based selection for kernel (`myConfig.boot.kernel`), GPU driver (`myConfig.drivers.gpu.intel`), desktop environment (`myConfig.gui.desktop`), and power backend (`myConfig.apps.power.management.backend`)
-- Kebab-case module naming across desktop, GUI, and network components
 - Makefile helpers for common maintenance and deployment tasks
 
 ![my desktop environment](assets/image.webp)
@@ -96,8 +63,8 @@ Defined in `systems/systems.nix`.
 | Host             | Role        | Status         |
 | ---------------- | ----------- | -------------- |
 | `server-1-m710q` | full        | active         |
-| `fluttershy`     | server      | active         |
 | `discord-wsl`    | wsl         | active         |
+| `fluttershy`     | server      | active         |
 | `celestia`       | family      | WIP (disabled) |
 | `luna`           | family      | WIP (disabled) |
 | `rainbow-dash`   | family      | WIP (disabled) |

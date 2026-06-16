@@ -9,12 +9,10 @@ let
     docker-buildx
     docker-color-output
     lazydocker
+    compose2nix
   ];
 in
 {
-  imports = [
-    ./docker-services/docker-compose.nix
-  ];
   options.myConfig.apps.docker = {
     enable = moduleHelpers.mkDisabledOption "Enable Docker engine and tooling";
   };
@@ -35,25 +33,5 @@ in
     };
 
     environment.systemPackages = lib.mkIf config.virtualisation.docker.enable dockerPackages;
-  
-    services.my-docker-compose.services = {
-      # ollama = {
-      #   directory = ./docker-services/docker-ollama;
-      #   ports = [ 3000 ];
-      #   envVars = {
-      #     OLLAMA_DOCKER_TAG = "latest";
-      #     WEBUI_DOCKER_TAG = "main";
-      #     OPEN_WEBUI_PORT = "3000";
-      #   };
-      # };
-      # searcng = {
-      #   directory = ./docker-services/docker-searcng;
-      #   ports = [ 8080 ];
-      # };
-
-      watchtower = {
-        directory = ./docker-services/watchtower;
-      };
-    };
   };
 }

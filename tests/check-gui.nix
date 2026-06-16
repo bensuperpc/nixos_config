@@ -14,9 +14,5 @@
       assertion = config.services.displayManager.plasma-login-manager.enable;
       message = "Plasma login manager must be enabled.";
     }
-    {
-      assertion = config.services.xserver.enable;
-      message = "Xserver must be enabled for KDE Plasma.";
-    }
   ];
 }

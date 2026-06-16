@@ -7,7 +7,7 @@ let
     qbittorrent
     qbittorrent-nox
     transmission_4
-    transmission_4-qt6
+    transmission_4-qt
     # helpers
     mkbrr
   ];

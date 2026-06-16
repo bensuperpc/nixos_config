@@ -1,41 +1,60 @@
-{ lib, ... }:
+{ config, lib, pkgs, ... }:
 
-let
-  # Nameservers with TLS SNI hostnames for DoT verification
-  defaultNameservers = [
-    "1.1.1.1#one.one.one.one"
-    "1.0.0.1#one.one.one.one"
-    "8.8.8.8#dns.google"
-    "8.8.4.4#dns.google"
-  ];
-  fallbackNameservers = [
-    "9.9.9.9#dns.quad9.net"
-    "149.112.112.112#dns.quad9.net"
-  ];
-in
 {
-  # DNS over TLS via systemd-resolved
-  services.resolved = {
+  services.resolved.enable = false;
+
+  services.dnscrypt-proxy2 = {
     enable = true;
-    settings.Resolve = {
-      DNSSEC = "allow-downgrade";
-      DNSOverTLS = "allow-downgrade";
-      Domains = [ "~." ];
-      FallbackDNS = fallbackNameservers;
+    settings = {
+      listen_addresses = [ "127.0.0.1:5353" "[::1]:5353" ];
+      
+      doh_servers = true;
+      dnscrypt_servers = false;
+      
+      server_names = [ "cloudflare" "quad9-doh-ip4-port443-filter-pri" ];
+      
+      require_dnssec = true;
+      require_nolog = true;
+    };
+  };
+
+  services.unbound = {
+    enable = true;
+    settings = {
+      server = {
+        interface = [ "127.0.0.1" "::1" ];
+        port = 53;
+        do-not-query-localhost = "no"; 
+        
+        prefetch = "yes";
+        cache-min-ttl = 900;
+        cache-max-ttl = 86400;
+        serve-expired = "yes";
+        local-data = [
+          ''"mabox. IN A 192.168.1.1"''
+        ];
+      };
+      
+      forward-zone = [
+        {
+          name = ".";
+          forward-addr = [ "127.0.0.1@5353" "::1@5353" ];
+        }
+      ];
     };
   };
 
   networking = {
+    nameservers = [ "127.0.0.1" "::1" ];
+    
     networkmanager = {
       enable = true;
-      dns = "systemd-resolved";
-      # Prevent DHCP from overriding the DoT-capable DNS servers configured in resolved.
-      # Without this, the router's DNS (no DoT) takes over as the default route DNS.
+      dns = "none"; 
+      
       settings.connection = {
         "ipv4.ignore-auto-dns" = true;
         "ipv6.ignore-auto-dns" = true;
       };
     };
-    nameservers = defaultNameservers;
   };
 }

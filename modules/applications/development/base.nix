@@ -30,6 +30,7 @@ let
     sudo
     texinfo
     which
+    ninja
   ];
 
   enabledOptionalsPackages =

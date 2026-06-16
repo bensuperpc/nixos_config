@@ -9,7 +9,9 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    wsl.enable = true;
+    wsl = {
+      enable = true;
+    };
 
     boot.loader = {
       systemd-boot.enable = lib.mkForce false;
@@ -24,6 +26,27 @@ in
     networking.networkmanager.enable = lib.mkForce false; 
 
     services.timesyncd.enable = lib.mkForce false;
+    
+
+    # loginctl enable-linger $USER 
+    # then wsl --shutdown
+
+
+    # systemd.user.services.dbus = {
+    #   wantedBy = [ "default.target" ];
+    #   serviceConfig = {
+    #     ExecStart = "${pkgs.dbus}/bin/dbus-daemon --session --address=systemd: --nofork --nopidfile --systemd-activation";
+    #   };
+    # };
+
+    # systemd.user.services.dbus = {
+    #   wantedBy = [ "default.target" ];
+    #   wants = [ "dbus.socket" ];
+    #   after = [ "dbus.socket" ];
+    # };
+    # systemd.user.sockets.dbus = {
+    #   wantedBy = [ "sockets.target" ];
+    # };
   };
 }
 

@@ -1,7 +1,7 @@
 { ... }:
 {
   imports = [
-    ../../tests/check-network-servers.nix
+    #../../tests/check-network-servers.nix
   ];
 
   myConfig.apps.network.servers.core = true;

@@ -1,17 +1,27 @@
-{ pkgs, ... }:
+{ pkgs, pkgsSets, ... }:
 
 let
-  pythonPkg =
-    if pkgs ? python314 then pkgs.python314
-    else if pkgs ? python3 then pkgs.python3
-    else throw "No Python 3 package is available in this nixpkgs revision.";
+  my-python = pkgsSets.stable-2605.python3.withPackages (ps: with ps; [
+    pandas
+    requests
+    fastapi
+    uvicorn
+  ]);
 in
 pkgs.mkShell {
-  name = "python314-shell";
+  packages = [
+    my-python
+    pkgs.ruff
+    pkgs.pyright
+    pkgs.sqlite
+  ];
 
-  packages = [ pythonPkg ];
-
+  buildInputs = with pkgsSets.stable-2605; [
+    # zlib
+  ];
+  
   shellHook = ''
-    echo "Python 3 shell ready: $(${pythonPkg}/bin/python --version 2>&1)"
+    echo "Welcome to your Nix-managed Python environment!"
+    python --version
   '';
 }

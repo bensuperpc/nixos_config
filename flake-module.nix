@@ -48,7 +48,13 @@ in {
     imports = cfg.modules;
   }) deployableHostConfigs));
 
-  perSystem = { pkgs, ... }: {
+  perSystem = { pkgs, ... }@args: 
+  let
+    pkgsSets = pkgsCache.${args.system};
+  in
+  {
+    devShells = import ./devshells { inherit pkgs pkgsSets; };
+
     checks.deadnix = pkgs.runCommand "deadnix-check" {
       nativeBuildInputs = [ pkgs.deadnix ];
     } ''

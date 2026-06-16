@@ -6,6 +6,4 @@
   config.myConfig.apps.ssh.enable = lib.mkForce false;
   config.myConfig.apps.ssh.openFirewall = lib.mkForce false;
   config.myConfig.apps.ssh.useFail2ban = lib.mkForce false;
-
-  config.myConfig.apps.development.dev.base = lib.mkForce true;
 }

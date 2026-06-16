@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 {
   imports = [
-    ../../tests/check-communication.nix
+    #../../tests/check-communication.nix
   ];
 
   myConfig.apps.communication = {

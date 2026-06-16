@@ -1,4 +1,3 @@
-# More info: https://nix-community.github.io/plasma-manager/options.xhtml
 { config, osConfig, lib, pkgs, ... }:
 
 {
@@ -56,15 +55,14 @@
     enableZshIntegration = true;
     settings = {
       add_newline = false;
-      scan_timeout = 1500;
+      scan_timeout = 300;
       format = ''
-  [░▒▓](#9A348E)$os$username$hostname[](bg:#DA627D fg:#9A348E)$directory[](fg:#DA627D bg:#FCA17D)$git_branch$git_status[](fg:#FCA17D bg:#86BBD8)$c$elixir$elm$golang$haskell$java$julia$nodejs$nim$rust$scala[](fg:#86BBD8 bg:#06969A)$nix_shell[](fg:#06969A bg:#33658A)$time[ ](fg:#33658A)
-  $character'';
+        [░▒▓](#9A348E)$os$username$hostname[>](bg:#DA627D fg:#9A348E)$directory[>](fg:#DA627D bg:#FCA17D)$git_branch$git_status[>](fg:#FCA17D bg:#86BBD8)$c$elixir$elm$golang$haskell$java$julia$nodejs$nim$rust$scala[>](fg:#86BBD8 bg:#06969A)$nix_shell[>](fg:#06969A bg:#33658A)$time[> ](fg:#33658A)$character'';
 
       os = {
         disabled = false;
         style = "bg:#9A348E fg:white";
-        symbols.NixOS = " ";
+        symbols.NixOS = "❄ ";
       };
 
       username = {
@@ -88,7 +86,7 @@
       };
 
       git_branch = {
-        symbol = "";
+        symbol = "⎇";
         style = "bg:#FCA17D fg:black";
         format = "[ $symbol $branch ]($style)";
       };
@@ -99,7 +97,7 @@
       };
 
       nix_shell = {
-        symbol = "";
+        symbol = "❄";
         style = "bg:#06969A fg:white";
         format = "[ $symbol $state]($style)";
       };

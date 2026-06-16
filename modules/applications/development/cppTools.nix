@@ -19,12 +19,15 @@ let
   qualityPackages = with pkgs; [
     gcovr
     cppcheck
+    clang-analyzer
+    clang-tools
   ];
   debuggingPackages = with pkgs; [
     gdb
     lldb
     ltrace
     valgrind
+    libexecinfo
   ];
 
   enabledOptionalsPackages =

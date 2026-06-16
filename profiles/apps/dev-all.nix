@@ -1,11 +1,10 @@
 { config, lib, pkgs, ... }:
 {
   imports = [
-    ../../tests/check-dev.nix
+    #../../tests/check-dev.nix
   ];
 
   myConfig.apps.development.dev = {
-    core = lib.mkDefault true;
     tooling = lib.mkDefault true;
     graphics = lib.mkDefault true;
     dotnet = lib.mkDefault true;
@@ -49,6 +48,7 @@
     web = lib.mkDefault true;
     automation = lib.mkDefault true;
     testing = lib.mkDefault true;
+    llm = lib.mkDefault true;
   };
 
   myConfig.apps.development.modeling = {

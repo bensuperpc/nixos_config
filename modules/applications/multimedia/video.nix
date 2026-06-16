@@ -10,6 +10,8 @@ let
     video-compare
     video2x
     subtitleedit
+    kdePackages.kdenlive
+    shotcut
   ];
   playbackPackages = with pkgs; [
     qmplay2

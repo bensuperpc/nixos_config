@@ -6,8 +6,8 @@
   };
 
   wsl = {
-    platformProfiles = [ "platform/base" "platform/no-gpu" "platform/no-gui" "platform/wsl" ];
-    appProfiles      = [ "apps/docker" ];
+    platformProfiles = [ "platform/base" "platform/gpu-software" "platform/no-gui" "platform/wsl" ];
+    appProfiles      = [ ];
     policyProfiles   = [ ];
   };
 
@@ -25,13 +25,13 @@
 
   workstation = {
     platformProfiles = [ "platform/base" "platform/kde-plasma" ];
-    appProfiles      = [ "apps/custom" "apps/desktop-runtime" "apps/desktop" "apps/development" "apps/multimedia" "apps/utilities" "apps/office" "apps/virtualization" "apps/network-servers" ];
+    appProfiles      = [ "apps/custom" "apps/desktop-runtime" "apps/desktop" "apps/dev-all" "apps/multimedia" "apps/utilities" "apps/office" "apps/virtualization" "apps/network-servers" ];
     policyProfiles   = [ "policy/kernel-zen" ];
   };
 
   full = {
     platformProfiles = [ "platform/base" "platform/kde-plasma" ];
-    appProfiles      = [ "apps/custom" "apps/docker" "apps/games" "apps/desktop-runtime" "apps/desktop" "apps/browser" "apps/torrent" "apps/communication" "apps/development" "apps/multimedia" "apps/files" "apps/utilities" "apps/office" "apps/virtualization" "apps/network-servers" ];
+    appProfiles      = [ "apps/custom" "apps/docker" "apps/games" "apps/desktop-runtime" "apps/desktop" "apps/browser" "apps/torrent" "apps/communication" "apps/dev-all" "apps/multimedia" "apps/files" "apps/utilities" "apps/office" "apps/virtualization" "apps/network-servers" "apps/ai" ];
     policyProfiles   = [ "policy/kernel-zen" ];
   };
 

@@ -5,6 +5,8 @@ let
 
   cryptoPackages = with pkgs; [
     veracrypt
+    cryptomator
+    cryptomator-cli
   ];
 
   enabledOptionalsPackages =

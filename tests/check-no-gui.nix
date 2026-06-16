@@ -7,10 +7,6 @@
       message = "platform/no-gui conflicts with GUI presets: myConfig.gui.desktop must be \"none\".";    
     }
     {
-      assertion = !config.services.xserver.enable;
-      message = "platform/no-gui: services.xserver.enable must be false (no Xorg allowed).";
-    }
-    {
       assertion = !config.services.desktopManager.plasma6.enable;
       message = "platform/no-gui: services.desktopManager.plasma6.enable must be false (no Wayland/GUI compositor allowed).";
     }

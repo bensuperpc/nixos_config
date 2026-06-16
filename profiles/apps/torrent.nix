@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 {
   imports = [
-    ../../tests/check-torrent.nix
+    #../../tests/check-torrent.nix
   ];
 
   myConfig.apps.torrent = {

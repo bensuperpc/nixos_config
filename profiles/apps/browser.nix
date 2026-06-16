@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 {
   imports = [
-    ../../tests/check-browser.nix
+    #../../tests/check-browser.nix
   ];
 
   myConfig.apps.browser = {

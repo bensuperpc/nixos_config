@@ -8,6 +8,10 @@ let
     vkquake
     doomretro
     chocolate-doom
+    openarena
+#    xonotic
+#    redeclipse
+#    unvanquished
   ];
   arcadePackages = with pkgs; [
     extremetuxracer
@@ -29,6 +33,8 @@ let
 
   launchersPackages = with pkgs; [
     heroic
+    lgogdownloader
+    lgogdownloader-gui
     lutris
   ];
 

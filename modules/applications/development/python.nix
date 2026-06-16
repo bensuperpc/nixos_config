@@ -43,6 +43,15 @@ let
     canopen
   ];
 
+  llmPythonPackages = ps: with ps; [
+    unsloth
+    transformers
+    datasets
+    peft
+    trl
+    torch
+  ];
+
   testingPythonPackages = ps: with ps; [
     pytest
     pytest-bdd
@@ -61,6 +70,7 @@ let
     ++ lib.optionals cfg.dataScience (dataSciencePythonPackages ps)
     ++ lib.optionals cfg.web (webPythonPackages ps)
     ++ lib.optionals cfg.automation (automationPythonPackages ps)
+    ++ lib.optionals cfg.llm (llmPythonPackages ps)
     ++ lib.optionals cfg.testing (testingPythonPackages ps);
 
     anyEnabled = lib.any (x: x) [
@@ -69,6 +79,7 @@ let
       cfg.web
       cfg.automation
       cfg.testing
+      cfg.llm
     ];
 in
 {
@@ -78,14 +89,15 @@ in
     web = moduleHelpers.mkDisabledOption "Install Python web, scraping, and API packages";
     automation = moduleHelpers.mkDisabledOption "Install Python automation, CAN, and Robot Framework packages";
     testing = moduleHelpers.mkDisabledOption "Install Python testing and documentation packages";
+    llm = moduleHelpers.mkDisabledOption "Install Python LLM and AI packages";
   };
 
   config = lib.mkIf anyEnabled {
     environment.systemPackages = [
-      (pkgs.python314.withPackages enabledOptionalsPackages)
+      (pkgs.python313.withPackages enabledOptionalsPackages)
     ];
     environment.shellAliases = {
-      python = "python3.14";
+      python = "python3.13";
     };
   };
 }

@@ -5,6 +5,5 @@
     #../../tests/check-terminal.nix
   ];
 
-  myConfig.apps.network.cli.tooling = true;
-  myConfig.apps.terminal.enable = true;
+  myConfig.apps.ai.enable = true;
 }

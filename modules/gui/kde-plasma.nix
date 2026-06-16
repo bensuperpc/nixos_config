@@ -4,10 +4,6 @@ let
   cfg = config.myConfig.gui;
 in {
   config = lib.mkIf (cfg.desktop == "plasma") {
-    security = {
-        # Needed for KDE/Gnome GUI
-        polkit.enable = true;
-    };
     # Enable the KDE Plasma Desktop Environment.
     services.desktopManager.plasma6.enable = true;
     services.desktopManager.plasma6.enableQt5Integration = true;

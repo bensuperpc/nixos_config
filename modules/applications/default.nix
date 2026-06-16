@@ -10,5 +10,6 @@
     ./network
     ./desktop
     ./utilities
+    ./ai
   ];
 }

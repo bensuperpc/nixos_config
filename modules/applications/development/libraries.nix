@@ -53,7 +53,9 @@ let
   cryptoPackages = with pkgs; [
     mbedtls
     openssl
+    # wolfssl
     libressl
+    sslh
     xxhash
   ];
   testingPackages = with pkgs; [

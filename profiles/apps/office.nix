@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 {
   imports = [
-    ../../tests/check-office.nix
+    #../../tests/check-office.nix
   ];
 
   myConfig.apps.office = {

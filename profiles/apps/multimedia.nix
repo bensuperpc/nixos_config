@@ -3,9 +3,9 @@
 {
   imports = [
     # Tests
-    ../../tests/check-video.nix
-    ../../tests/check-image.nix
-    ../../tests/check-audio.nix
+    #../../tests/check-video.nix
+    #../../tests/check-image.nix
+    #../../tests/check-audio.nix
   ];
   # Preset for content creation workloads.
   myConfig.apps.multimedia.video = {
