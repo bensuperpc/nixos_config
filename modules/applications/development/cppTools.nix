@@ -3,60 +3,32 @@
 let
   cfg = config.myConfig.apps.development.cppTools;
 
-  cachingPackages = with pkgs; [
-    ccache
-    sccache
-    distcc
-    icecream
-  ];
-  buildSystemsPackages = with pkgs; [
-    cmake
-    lomiri.cmake-extras
-    meson
-    mold
-    gnumake
-  ];
-  qualityPackages = with pkgs; [
-    gcovr
-    cppcheck
-    clang-analyzer
-    clang-tools
-  ];
-  debuggingPackages = with pkgs; [
-    gdb
-    lldb
-    ltrace
-    valgrind
-    libexecinfo
-  ];
-
-  enabledOptionalsPackages =
-    lib.optionals cfg.caching cachingPackages
-    ++ lib.optionals cfg.buildSystems buildSystemsPackages
-    ++ lib.optionals cfg.quality qualityPackages
-    ++ lib.optionals cfg.debugging debuggingPackages;
-
-  anyEnabled = lib.any (x: x) [
-    cfg.caching
-    cfg.buildSystems
-    cfg.quality
-    cfg.debugging
-  ];
+  generated = moduleHelpers.mkPackageGroupModule {
+    inherit cfg;
+    groups = {
+      caching = {
+        description = "Install compiler cache and distributed build helpers";
+        packages = with pkgs; [ ccache sccache distcc icecream ];
+      };
+      buildSystems = {
+        description = "Install C/C++ build systems and linkers";
+        packages = with pkgs; [ cmake lomiri.cmake-extras meson mold gnumake ];
+      };
+      quality = {
+        description = "Install code quality and coverage tools";
+        packages = with pkgs; [ gcovr cppcheck clang-analyzer clang-tools ];
+      };
+      debugging = {
+        description = "Install native debugging and tracing tools";
+        packages = with pkgs; [ gdb lldb ltrace valgrind libexecinfo ];
+      };
+    };
+  };
 in
 {
-  options.myConfig.apps.development.cppTools = {
-    caching = moduleHelpers.mkDisabledOption "Install compiler cache and distributed build helpers";
-    buildSystems = moduleHelpers.mkDisabledOption "Install C/C++ build systems and linkers";
-    quality = moduleHelpers.mkDisabledOption "Install code quality and coverage tools";
-    debugging = moduleHelpers.mkDisabledOption "Install native debugging and tracing tools";
-  };
-
+  options.myConfig.apps.development.cppTools = generated.options;
   config = lib.mkMerge [
-    {
-    }
-    (lib.mkIf anyEnabled {
-      environment.systemPackages = enabledOptionalsPackages;
-    })
+    generated.config
     (lib.mkIf cfg.caching {
       programs.ccache.enable = true;
     })

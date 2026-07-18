@@ -93,6 +93,19 @@ in
   };
 
   config = lib.mkIf anyEnabled {
+    nixpkgs.overlays = lib.optionals cfg.web [
+      (_final: prev: {
+        pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
+          (_pyFinal: pyPrev: {
+            scrapy = pyPrev.scrapy.overrideAttrs (_old: {
+              # Tests run in installCheckPhase (doInstallCheck), not checkPhase.
+              doCheck = false;
+              doInstallCheck = false;
+            });
+          })
+        ];
+      })
+    ];
     environment.systemPackages = [
       (pkgs.python313.withPackages enabledOptionalsPackages)
     ];

@@ -3,89 +3,63 @@
 let
   cfg = config.myConfig.apps.multimedia.video;
 
-
-  editingPackages = with pkgs; [
-    obs-studio
-    handbrake
-    video-compare
-    video2x
-    subtitleedit
-    kdePackages.kdenlive
-    shotcut
-  ];
-  playbackPackages = with pkgs; [
-    qmplay2
-    mpv
-    mpvc
-    haruna
-    vlc
-    vlc-bittorrent
-    # webtorrent_desktop
-  ];
-  codecsPackages = with pkgs; [
-    ffmpeg-full
-    svt-av1
-    svt-av1-psyex
-    rav1e
-    rav1d
-    libaom
-    vvenc
-    libvpx
-    xeve
-    xevd
-    av1an
-    libcamera
-    openjph
-  ];
-  opticalMediaPackages = with pkgs; [
-    libdvdcss
-    libdvdnav
-    libdvdread
-    makemkv
-    libaacs
-    libbdplus
-  ];
-  downloadersPackages = with pkgs; [
-    yt-dlp
-    gallery-dl
-    video-downloader
-    media-downloader
-  ];
-
-  enabledOptionalsPackages =
-    lib.optionals cfg.editing editingPackages
-    ++ lib.optionals cfg.playback playbackPackages
-    ++ lib.optionals cfg.codecs codecsPackages
-    ++ lib.optionals cfg.opticalMedia opticalMediaPackages
-    ++ lib.optionals cfg.downloaders downloadersPackages;
-
-  anyEnabled = lib.any (x: x) [
-    cfg.editing
-    cfg.playback
-    cfg.codecs
-    cfg.opticalMedia
-    cfg.downloaders
-  ];
+  generated = moduleHelpers.mkPackageGroupModule {
+    inherit cfg;
+    groups = {
+      editing = {
+        description = "Install video editing, recording, and subtitle tools";
+        packages = with pkgs; [
+          obs-studio
+          handbrake
+          video-compare
+          video2x
+          subtitleedit
+          kdePackages.kdenlive
+          shotcut
+        ];
+      };
+      playback = {
+        description = "Install video players and playback utilities";
+        packages = with pkgs; [
+          qmplay2
+          mpv
+          mpvc
+          haruna
+          vlc
+          vlc-bittorrent
+          # webtorrent_desktop
+        ];
+      };
+      codecs = {
+        description = "Install video/audio codec tooling";
+        packages = with pkgs; [
+          ffmpeg-full
+          svt-av1
+          svt-av1-psyex
+          rav1e
+          rav1d
+          libaom
+          vvenc
+          libvpx
+          xeve
+          xevd
+          av1an
+          libcamera
+          openjph
+        ];
+      };
+      opticalMedia = {
+        description = "Install DVD and Blu-ray tooling";
+        packages = with pkgs; [ libdvdcss libdvdnav libdvdread makemkv libaacs libbdplus ];
+      };
+      downloaders = {
+        description = "Install media download tools";
+        packages = with pkgs; [ yt-dlp gallery-dl video-downloader media-downloader ];
+      };
+    };
+  };
 in
 {
-  options.myConfig.apps.multimedia.video = {
-    editing = moduleHelpers.mkDisabledOption "Install video editing, recording, and subtitle tools";
-
-    playback = moduleHelpers.mkDisabledOption "Install video players and playback utilities";
-
-    codecs = moduleHelpers.mkDisabledOption "Install video/audio codec tooling";
-
-    opticalMedia = moduleHelpers.mkDisabledOption "Install DVD and Blu-ray tooling";
-
-    downloaders = moduleHelpers.mkDisabledOption "Install media download tools";
-  };
-
-  config = lib.mkMerge [
-    {
-    }
-    (lib.mkIf anyEnabled {
-      environment.systemPackages = enabledOptionalsPackages;
-    })
-  ];
+  options.myConfig.apps.multimedia.video = generated.options;
+  config = generated.config;
 }
-

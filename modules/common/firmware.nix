@@ -1,36 +1,32 @@
-
 { config, lib, pkgs, moduleHelpers, ... }:
 
 let
   cfg = config.myConfig.apps.firmware;
 
-  firmwarePackages = with pkgs; [
-    fwupd-efi
-  ];
-
-  enabledOptionalsPackages =
-    lib.optionals cfg.enable firmwarePackages;
-
-  anyEnabled = lib.any (x: x) [
-    cfg.enable
-  ];
+  generated = moduleHelpers.mkPackageGroupModule {
+    inherit cfg;
+    groups = {
+      enable = {
+        description = "Enable firmware management";
+        enabledByDefault = true;
+        packages = with pkgs; [ fwupd-efi ];
+      };
+    };
+  };
 in
 {
-  options.myConfig.apps.firmware = {
-    enable = moduleHelpers.mkEnabledOption "Enable firmware management";
-  };
+  options.myConfig.apps.firmware = generated.options;
 
   config = lib.mkMerge [
     {
       nixpkgs.config.allowUnfree = true;
     }
-    (lib.mkIf anyEnabled {
+    generated.config
+    (lib.mkIf generated.anyEnabled {
       hardware.enableAllFirmware = true;
       hardware.enableRedistributableFirmware = true;
-      
-      services.fwupd.enable = true;
 
-      environment.systemPackages = enabledOptionalsPackages;
+      services.fwupd.enable = true;
     })
   ];
 }

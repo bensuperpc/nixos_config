@@ -16,6 +16,7 @@
     ./ssh.nix
     ./user.nix
     ./tpm.nix
+    ./secureboot.nix
     ./logs.nix
     ./impermanence
   ];

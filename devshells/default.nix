@@ -4,6 +4,6 @@
     inherit pkgs pkgsSets; 
   };
   python314 = import ./python314.nix {
-    inherit pkgs;
+    inherit pkgs pkgsSets;
   };
 }

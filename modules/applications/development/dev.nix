@@ -1,54 +1,33 @@
-{ config, lib, pkgs, moduleHelpers, ... }:
+{ config, lib, pkgs, moduleHelpers, pkgsSets, ... }:
 
 let
   cfg = config.myConfig.apps.development.dev;
-  toolingPackages = with pkgs; [
-    shellcheck
-    codechecker
-    commitizen
-    gource
-    lazygit
-  ];
-  graphicsPackages = with pkgs; [
-    vulkan-tools
-    vulkan-cts
-    mesa.opencl
-    mesa-demos
-    virtualgl
-  ];
-  dotnetPackages = with pkgs; [
-    mono
-    dotnet-sdk
-  ];
-  miscPackages = with pkgs; [
-    postman
-  ];
 
-  enabledOptionalsPackages =
-    lib.optionals cfg.tooling toolingPackages
-    ++ lib.optionals cfg.graphics graphicsPackages
-    ++ lib.optionals cfg.dotnet dotnetPackages
-    ++ lib.optionals cfg.misc miscPackages;
-
-  anyEnabled = lib.any (x: x) [
-    cfg.tooling
-    cfg.graphics
-    cfg.dotnet
-    cfg.misc
-  ];
+  generated = moduleHelpers.mkPackageGroupModule {
+    inherit cfg;
+    groups = {
+      tooling = {
+        description = "Install general development CLIs and review tools";
+        packages = with pkgs; [ shellcheck codechecker gource lazygit ] ++ (with pkgsSets.stable-2511; [
+          commitizen
+        ]);
+      };
+      graphics = {
+        description = "Install graphics, Vulkan, and OpenCL diagnostics";
+        packages = with pkgs; [ vulkan-tools vulkan-cts mesa.opencl mesa-demos virtualgl ];
+      };
+      dotnet = {
+        description = "Install Mono and .NET development tooling";
+        packages = with pkgs; [ mono dotnet-sdk ];
+      };
+      misc = {
+        description = "Install auxiliary developer applications";
+        packages = with pkgs; [ postman ];
+      };
+    };
+  };
 in
 {
-  options.myConfig.apps.development.dev = {
-    tooling = moduleHelpers.mkDisabledOption "Install general development CLIs and review tools";
-
-    graphics = moduleHelpers.mkDisabledOption "Install graphics, Vulkan, and OpenCL diagnostics";
-
-    dotnet = moduleHelpers.mkDisabledOption "Install Mono and .NET development tooling";
-
-    misc = moduleHelpers.mkDisabledOption "Install auxiliary developer applications";
-  };
-
-  config = lib.mkIf anyEnabled {
-    environment.systemPackages = enabledOptionalsPackages;
-  };
+  options.myConfig.apps.development.dev = generated.options;
+  config = generated.config;
 }

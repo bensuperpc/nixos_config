@@ -11,6 +11,10 @@
       message = "platform/no-gui: services.desktopManager.plasma6.enable must be false (no Wayland/GUI compositor allowed).";
     }
     {
+      assertion = !config.services.xserver.desktopManager.lxqt.enable;
+      message = "platform/no-gui: services.xserver.desktopManager.lxqt.enable must be false (no Wayland/GUI compositor allowed).";
+    }
+    {
       assertion = !config.services.displayManager.plasma-login-manager.enable;
       message = "platform/no-gui: services.displayManager.plasma-login-manager.enable must be false.";
     }

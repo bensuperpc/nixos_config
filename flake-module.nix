@@ -24,7 +24,7 @@ let
   hostConfigs           = lib.mapAttrs mkHostConfig hosts;
   deployableHostConfigs = lib.filterAttrs (_: cfg: cfg.host.ip != null) hostConfigs;
 in {
-  flake.nixosConfigurations = lib.mapAttrs (name: cfg: lib.nixosSystem {
+  flake.nixosConfigurations = lib.mapAttrs (_name: cfg: lib.nixosSystem {
     inherit (cfg) system;
     specialArgs = {
       inherit inputs moduleHelpers;
@@ -37,7 +37,7 @@ in {
       nixpkgs     = import inputs.nixpkgs { system = "x86_64-linux"; };
       specialArgs = { inherit inputs moduleHelpers; };
     };
-  } // (lib.mapAttrs (name: cfg: {
+  } // (lib.mapAttrs (_name: cfg: {
     deployment = {
       targetHost           = cfg.host.ip;
       targetUser           = cfg.host.deployUser;

@@ -44,7 +44,6 @@ in
         min-free = 268435456; # 256 MiB
         max-free = 1073741824; # 1 GiB
 
-        auto-optimise-store = true;
         max-jobs = "auto";
         cores = 0;
         http-connections = 48;
@@ -66,6 +65,9 @@ in
         trusted-public-keys = baseTrustedPublicKeys ++ lib.optionals cfg.enableCommunitySubstituters communityTrustedPublicKeys;
       };
 
+      # auto-optimise-store hardlinks the store synchronously after every
+      # build, slowing each build down; this periodic timer does the same
+      # deduplication asynchronously instead.
       optimise = {
         automatic = true;
         dates = [ "5:00" ];

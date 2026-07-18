@@ -3,55 +3,32 @@
 let
   cfg = config.myConfig.apps.multimedia.audio;
 
-
-  editingPackages = with pkgs; [
-    tenacity
-    audiowaveform
-    audiosource
-  ];
-  conversionPackages = with pkgs; [
-    lame
-    flacon
-    vgmtrans
-  ];
-  libraryPackages = with pkgs; [
-    beets
-  ];
-  playbackPackages = with pkgs; [
-    playerctl
-  ];
-
-  enabledOptionalsPackages =
-    lib.optionals cfg.editing editingPackages
-    ++ lib.optionals cfg.conversion conversionPackages
-    ++ lib.optionals cfg.library libraryPackages
-    ++ lib.optionals cfg.playback playbackPackages;
-
-  anyEnabled = lib.any (x: x) [
-    cfg.editing
-    cfg.conversion
-    cfg.library
-    cfg.playback
-  ];
+  generated = moduleHelpers.mkPackageGroupModule {
+    inherit cfg;
+    groups = {
+      editing = {
+        description = "Install audio editing and waveform tools";
+        packages = with pkgs; [ tenacity audiowaveform audiosource ];
+      };
+      conversion = {
+        description = "Install audio conversion and extraction tools";
+        packages = with pkgs; [ lame flacon vgmtrans ];
+      };
+      library = {
+        description = "Install music library and metadata tooling";
+        packages = with pkgs; [ beets ];
+      };
+      playback = {
+        description = "Install audio playback control tools";
+        packages = with pkgs; [ playerctl ];
+      };
+    };
+  };
 in
 {
-  options.myConfig.apps.multimedia.audio = {
-    editing = moduleHelpers.mkDisabledOption "Install audio editing and waveform tools";
-
-    conversion = moduleHelpers.mkDisabledOption "Install audio conversion and extraction tools";
-
-    library = moduleHelpers.mkDisabledOption "Install music library and metadata tooling";
-
-    playback = moduleHelpers.mkDisabledOption "Install audio playback control tools";
-  };
-
+  options.myConfig.apps.multimedia.audio = generated.options;
   config = lib.mkMerge [
-    {
-    }
-    (lib.mkIf anyEnabled {
-      environment.systemPackages = enabledOptionalsPackages;
-    })
-
+    generated.config
     (lib.mkIf cfg.playback {
       services.playerctld.enable = true;
     })

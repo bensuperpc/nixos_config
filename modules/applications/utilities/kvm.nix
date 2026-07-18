@@ -1,36 +1,30 @@
-
-
 { config, lib, pkgs, moduleHelpers, ... }:
 
 let
   cfg = config.myConfig.apps.kvm;
-
-  kvmPackages = with pkgs; [
-    dnsmasq
-    virt-manager
-    virt-viewer
-    qemu
-    spice
-    spice-gtk
-  ];
 
   vhostPackages = with pkgs; [
     virtiofsd
     qemu_kvm
   ];
 
-  enabledOptionalsPackages =
-    lib.optionals cfg.host kvmPackages;
+  generated = moduleHelpers.mkPackageGroupModule {
+    inherit cfg;
+    groups = {
+      host = {
+        description = "Install KVM and host virtualization tools";
+        packages = with pkgs; [ dnsmasq virt-manager virt-viewer qemu spice spice-gtk ];
+      };
+    };
+  };
 
-  anyEnabled = lib.any (x: x) [
-    cfg.host
-    cfg.enableGuestServices
-  ];
+  # enableGuestServices isn't a package group (no packages of its own), so it
+  # isn't part of `groups` above, but it must still bring in the same extra
+  # config block below.
+  anyEnabled = generated.anyEnabled || cfg.enableGuestServices;
 in
 {
-  options.myConfig.apps.kvm = {
-    host = moduleHelpers.mkDisabledOption "Install KVM and host virtualization tools";
-
+  options.myConfig.apps.kvm = generated.options // {
     enableGuestServices = lib.mkOption {
       type = lib.types.bool;
       default = false;
@@ -39,15 +33,13 @@ in
   };
 
   config = lib.mkMerge [
-    {
-    }
+    generated.config
     (lib.mkIf anyEnabled {
-      environment.systemPackages = enabledOptionalsPackages;
       # virtualisation.spiceUSBRedirection.enable = true;
       virtualisation.libvirtd = {
         enable = true;
         allowedBridges = [ "virbr0" ];
-      # qemu.wtpm.enable = true;
+        # qemu.wtpm.enable = true;
         qemu.vhostUserPackages = vhostPackages;
       };
 

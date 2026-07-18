@@ -2,59 +2,33 @@
 
 let
   cfg = config.myConfig.apps.files.sync;
-  # Base packages that are always included.
-  # Optional packages for each category.
-  transferPackages = with pkgs; [
-    rclone
-    croc
-  ];
 
-  peerToPeerPackages = with pkgs; [
-    syncthing
-    syncthingtray
-    localsend
-  ];
-
-  networkPackages = with pkgs; [
-    filezilla
-    samba
-  ];
-
-  mobilePackages = with pkgs; [
-    adb-sync
-  ];
-
-  # Combine enabled optional packages based on configuration.
-  enabledOptionalsPackages =
-    lib.optionals cfg.transfer transferPackages
-    ++ lib.optionals cfg.peerToPeer peerToPeerPackages
-    ++ lib.optionals cfg.networkShares networkPackages
-    ++ lib.optionals cfg.mobile mobilePackages;
-
-  # If any optional category is enabled, we need to include the enabled packages and configure services.
-  anyEnabled = lib.any (x: x) [
-    cfg.transfer
-    cfg.peerToPeer
-    cfg.networkShares
-    cfg.mobile
-  ];
+  generated = moduleHelpers.mkPackageGroupModule {
+    inherit cfg;
+    groups = {
+      transfer = {
+        description = "CLI transfer tools";
+        packages = with pkgs; [ rclone croc ];
+      };
+      peerToPeer = {
+        description = "P2P sync tools";
+        packages = with pkgs; [ syncthing syncthingtray localsend ];
+      };
+      networkShares = {
+        description = "network shares tools";
+        packages = with pkgs; [ filezilla samba ];
+      };
+      mobile = {
+        description = "mobile sync tools";
+        packages = with pkgs; [ adb-sync ];
+      };
+    };
+  };
 in
 {
-  options.myConfig.apps.files.sync = {
-    transfer = moduleHelpers.mkDisabledOption "CLI transfer tools";
-    peerToPeer = moduleHelpers.mkDisabledOption "P2P sync tools";
-    networkShares = moduleHelpers.mkDisabledOption "network shares tools";
-    mobile = moduleHelpers.mkDisabledOption "mobile sync tools";
-  };
-
-  config = lib.mkMerge [ 
-    {
-    }
-    # Config that only applies if any optional category is enabled.
-    (lib.mkIf anyEnabled {
-      environment.systemPackages = enabledOptionalsPackages;   
-    })
-    # Specific config configurations for individual options.
+  options.myConfig.apps.files.sync = generated.options;
+  config = lib.mkMerge [
+    generated.config
     (lib.mkIf cfg.peerToPeer {
       services.syncthing = {
         enable = true;

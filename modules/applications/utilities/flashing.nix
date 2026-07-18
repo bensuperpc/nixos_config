@@ -3,30 +3,17 @@
 let
   cfg = config.myConfig.apps.flashing;
 
-  flashingPackages = with pkgs; [
-    qFlipper
-    rpi-imager
-    arduino
-    avrdude
-  ];
-
-  enabledOptionalsPackages =
-    lib.optionals cfg.tools flashingPackages;
-
-  anyEnabled = lib.any (x: x) [
-    cfg.tools
-  ];
+  generated = moduleHelpers.mkPackageGroupModule {
+    inherit cfg;
+    groups = {
+      tools = {
+        description = "Install flashing tools";
+        packages = with pkgs; [ qFlipper rpi-imager arduino avrdude ];
+      };
+    };
+  };
 in
 {
-  options.myConfig.apps.flashing = {
-    tools = moduleHelpers.mkDisabledOption "Install flashing tools";
-  };
-
-  config = lib.mkMerge [
-    {
-    }
-    (lib.mkIf anyEnabled {
-      environment.systemPackages = enabledOptionalsPackages;
-    })
-  ];
+  options.myConfig.apps.flashing = generated.options;
+  config = generated.config;
 }

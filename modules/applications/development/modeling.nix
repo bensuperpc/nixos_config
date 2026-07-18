@@ -3,35 +3,21 @@
 let
   cfg = config.myConfig.apps.development.modeling;
 
-  enginesPackages = with pkgs; [
-    godot
-    ogre
-  ];
-
-  modelingPackages = with pkgs; [
-    blender
-    freecad
-  ];
-
-  enabledOptionalsPackages =
-    lib.optionals cfg.engines enginesPackages
-    ++ lib.optionals cfg.cad modelingPackages;
-
-  anyEnabled = lib.any (x: x) [
-    cfg.engines
-    cfg.cad
-  ];
+  generated = moduleHelpers.mkPackageGroupModule {
+    inherit cfg;
+    groups = {
+      engines = {
+        description = "Install 3D game engines (Godot, Ogre)";
+        packages = with pkgs; [ godot ogre ];
+      };
+      cad = {
+        description = "Install 3D modeling and CAD tools (Blender, FreeCAD)";
+        packages = with pkgs; [ blender freecad ];
+      };
+    };
+  };
 in
 {
-  options.myConfig.apps.development.modeling = {
-    engines = moduleHelpers.mkDisabledOption "Install 3D game engines (Godot, Ogre)";
-    cad = moduleHelpers.mkDisabledOption "Install 3D modeling and CAD tools (Blender, FreeCAD)";
-  };
-
-  config = lib.mkMerge [
-    {}
-    (lib.mkIf anyEnabled {
-      environment.systemPackages = enabledOptionalsPackages;
-    })
-  ];
+  options.myConfig.apps.development.modeling = generated.options;
+  config = generated.config;
 }

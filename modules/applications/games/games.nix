@@ -3,74 +3,45 @@
 let
   cfg = config.myConfig.apps.games.games;
 
-
-  fpsPackages = with pkgs; [
-    vkquake
-    doomretro
-    chocolate-doom
-    openarena
-#    xonotic
-#    redeclipse
-#    unvanquished
-  ];
-  arcadePackages = with pkgs; [
-    extremetuxracer
-    supertux
-    supertuxkart
-  ];
-  sandboxPackages = with pkgs; [
-    classicube
-    luanti
-    mindustry-wayland
-  ];
-  strategyPackages = with pkgs; [
-    stockfish
-  ];
-  othersPackages = with pkgs; [
-    nanosaur
-    nanosaur2
-  ];
-
-  launchersPackages = with pkgs; [
-    heroic
-    lgogdownloader
-    lgogdownloader-gui
-    lutris
-  ];
-
-  enabledOptionalsPackages =
-    lib.optionals cfg.fps fpsPackages
-    ++ lib.optionals cfg.arcade arcadePackages
-    ++ lib.optionals cfg.sandbox sandboxPackages
-    ++ lib.optionals cfg.strategy strategyPackages
-    ++ lib.optionals cfg.others othersPackages
-    ++ lib.optionals cfg.launchers launchersPackages;
-
-  anyEnabled = lib.any (x: x) [
-    cfg.fps
-    cfg.arcade
-    cfg.sandbox
-    cfg.strategy
-    cfg.others
-    cfg.launchers
-  ];
+  generated = moduleHelpers.mkPackageGroupModule {
+    inherit cfg;
+    groups = {
+      fps = {
+        description = "Install FPS and retro shooter games";
+        packages = with pkgs; [
+          vkquake
+          doomretro
+          chocolate-doom
+          openarena
+          #    xonotic
+          #    redeclipse
+          #    unvanquished
+        ];
+      };
+      arcade = {
+        description = "Install arcade and racing games";
+        packages = with pkgs; [ extremetuxracer supertux supertuxkart ];
+      };
+      sandbox = {
+        description = "Install sandbox and factory games";
+        packages = with pkgs; [ classicube luanti mindustry-wayland ];
+      };
+      strategy = {
+        description = "Install strategy and board-game engines";
+        packages = with pkgs; [ stockfish ];
+      };
+      others = {
+        description = "Install other miscellaneous games";
+        packages = with pkgs; [ nanosaur nanosaur2 ];
+      };
+      launchers = {
+        description = "Install game store launchers (Heroic, Lutris)";
+        packages = with pkgs; [ heroic lgogdownloader lgogdownloader-gui lutris ];
+      };
+    };
+  };
 in
 {
-  options.myConfig.apps.games.games = {
-    fps = moduleHelpers.mkDisabledOption "Install FPS and retro shooter games";
-
-    arcade = moduleHelpers.mkDisabledOption "Install arcade and racing games";
-
-    sandbox = moduleHelpers.mkDisabledOption "Install sandbox and factory games";
-
-    strategy = moduleHelpers.mkDisabledOption "Install strategy and board-game engines";
-
-    others = moduleHelpers.mkDisabledOption "Install other miscellaneous games";
-
-    launchers = moduleHelpers.mkDisabledOption "Install game store launchers (Heroic, Lutris)";
-  };
-
-  config = lib.mkIf anyEnabled {
-    environment.systemPackages = enabledOptionalsPackages;
-  };
+  options.myConfig.apps.games.games = generated.options;
+  config = generated.config;
 }

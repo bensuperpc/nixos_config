@@ -3,29 +3,17 @@
 let
   cfg = config.myConfig.apps.files.crypto;
 
-  cryptoPackages = with pkgs; [
-    veracrypt
-    cryptomator
-    cryptomator-cli
-  ];
-
-  enabledOptionalsPackages =
-    lib.optionals cfg.veracrypt cryptoPackages;
-
-  anyEnabled = lib.any (x: x) [
-    cfg.veracrypt
-  ];
+  generated = moduleHelpers.mkPackageGroupModule {
+    inherit cfg;
+    groups = {
+      veracrypt = {
+        description = "Install VeraCrypt";
+        packages = with pkgs; [ veracrypt cryptomator cryptomator-cli ];
+      };
+    };
+  };
 in
 {
-  options.myConfig.apps.files.crypto = {
-    veracrypt = moduleHelpers.mkDisabledOption "Install VeraCrypt";
-  };
-
-  config = lib.mkMerge [
-    {
-    }
-    (lib.mkIf anyEnabled {
-      environment.systemPackages = enabledOptionalsPackages;
-    })
-  ];
+  options.myConfig.apps.files.crypto = generated.options;
+  config = generated.config;
 }

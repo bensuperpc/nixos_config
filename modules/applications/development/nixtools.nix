@@ -3,44 +3,25 @@
 let
   cfg = config.myConfig.apps.development.nixtools;
 
-
-  cachePackages = with pkgs; [
-    cachix
-  ];
-  pinningPackages = with pkgs; [
-    niv
-    npins
-  ];
-  analysisPackages = with pkgs; [
-    nix-tree
-    nix-diff
-  ];
-
-  enabledOptionalsPackages =
-    lib.optionals cfg.cache cachePackages
-    ++ lib.optionals cfg.pinning pinningPackages
-    ++ lib.optionals cfg.analysis analysisPackages;
-
-  anyEnabled = lib.any (x: x) [
-    cfg.cache
-    cfg.pinning
-    cfg.analysis
-  ];
+  generated = moduleHelpers.mkPackageGroupModule {
+    inherit cfg;
+    groups = {
+      cache = {
+        description = "Install Nix cache and binary cache tools";
+        packages = with pkgs; [ cachix ];
+      };
+      pinning = {
+        description = "Install Nix pinning and input management tools";
+        packages = with pkgs; [ niv npins ];
+      };
+      analysis = {
+        description = "Install Nix store and derivation inspection tools";
+        packages = with pkgs; [ nix-tree nix-diff ];
+      };
+    };
+  };
 in
 {
-  options.myConfig.apps.development.nixtools = {
-    cache = moduleHelpers.mkDisabledOption "Install Nix cache and binary cache tools";
-
-    pinning = moduleHelpers.mkDisabledOption "Install Nix pinning and input management tools";
-
-    analysis = moduleHelpers.mkDisabledOption "Install Nix store and derivation inspection tools";
-  };
-
-  config = lib.mkMerge [
-    {
-    }
-    (lib.mkIf anyEnabled {
-      environment.systemPackages = enabledOptionalsPackages;
-    })
-  ];
+  options.myConfig.apps.development.nixtools = generated.options;
+  config = generated.config;
 }

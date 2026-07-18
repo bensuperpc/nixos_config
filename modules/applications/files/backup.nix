@@ -3,40 +3,27 @@
 let
   cfg = config.myConfig.apps.files.backup;
 
-  corePackages = with pkgs; [
-    restic
-    rustic
-  ];
-  profileManagerPackages = [
-    (pkgsSets.stable-2605.resticprofile.overrideAttrs (_: { doCheck = false; }))
-  ];
-  guiPackages = with pkgs; [
-    restic-browser
-  ];
-
-  enabledOptionalsPackages =
-    lib.optionals cfg.core corePackages
-    ++ lib.optionals cfg.profileManager profileManagerPackages
-    ++ lib.optionals cfg.gui guiPackages;
-
-  anyEnabled = lib.any (x: x) [
-    cfg.core
-    cfg.profileManager
-    cfg.gui
-  ];
+  generated = moduleHelpers.mkPackageGroupModule {
+    inherit cfg;
+    groups = {
+      core = {
+        description = "Install core backup tools";
+        packages = with pkgs; [ restic rustic ];
+      };
+      profileManager = {
+        description = "Install backup profile manager";
+        packages = [
+          (pkgsSets.stable-2605.resticprofile.overrideAttrs (_: { doCheck = false; }))
+        ];
+      };
+      gui = {
+        description = "Install backup graphical interface";
+        packages = with pkgs; [ restic-browser ];
+      };
+    };
+  };
 in
 {
-  options.myConfig.apps.files.backup = {
-    core = moduleHelpers.mkDisabledOption "Install core backup tools";
-    profileManager = moduleHelpers.mkDisabledOption "Install backup profile manager";
-    gui = moduleHelpers.mkDisabledOption "Install backup graphical interface";
-  };
-
-  config = lib.mkMerge [
-    {
-    }
-    (lib.mkIf anyEnabled {
-      environment.systemPackages = enabledOptionalsPackages;
-    })
-  ];
+  options.myConfig.apps.files.backup = generated.options;
+  config = generated.config;
 }

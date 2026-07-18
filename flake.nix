@@ -19,10 +19,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # lanzaboote = {
-    #   url = "github:nix-community/lanzaboote/master";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
+    lanzaboote = {
+      url = "github:nix-community/lanzaboote/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     # Hardware support
     # nixos-hardware.url = "github:NixOS/nixos-hardware/master";
@@ -32,7 +32,7 @@
     #   url = "github:aksiksi/compose2nix/main";
     #   inputs.nixpkgs.follows = "nixpkgs";
     # };
-    
+
     home-manager = {
       url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -95,10 +95,14 @@
     };
   };
 
-  outputs = inputs@{ flake-parts, ... }:
+  outputs =
+    inputs@{ flake-parts, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
       imports = [ ./flake-module.nix ];
-      systems = [ "x86_64-linux" "aarch64-linux" ];
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+      ];
       perSystem = { pkgs, ... }: {
         # nix fmt
         formatter = pkgs.nixfmt;

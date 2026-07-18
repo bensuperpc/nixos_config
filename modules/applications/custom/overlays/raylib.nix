@@ -4,7 +4,7 @@ let
 in
 {
   nixpkgs.overlays = lib.optionals cfg.raylib60 [
-    (final: prev: {
+    (_final: prev: {
       raylib = prev.raylib.overrideAttrs (old: {
         version = "6.0";
 

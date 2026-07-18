@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  flake-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+      - run: nix flake check -L
+  discover-hosts:
+    runs-on: ubuntu-latest
+    outputs:
+      hosts: ${{ steps.list.outputs.hosts }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@main
+      - id: list
+        run: |
+          hosts=$(nix eval --json .#nixosConfigurations --apply builtins.attrNames)
+          echo "hosts=$hosts" >> "$GITHUB_OUTPUT"
+
+  build-hosts:
+    needs: discover-hosts
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        host: ${{ fromJson(needs.discover-hosts.outputs.hosts) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+      - run: >
+          nix build ".#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel"
+          --dry-run --show-trace -L

@@ -2,79 +2,38 @@
 
 let
   cfg = config.myConfig.apps.development.compilers;
-  
-  clangPackages = with pkgs; [
-    clang
-    llvm
-    libllvm
-  ];
-  lowLevelPackages = with pkgs; [
-    byacc
-    nasm
-    dtc
-  ];
-  protobufPackages = with pkgs; [
-    protobuf
-    protobufc
-    nanopb
-    nanopbMalloc
-  ];
-  wasmPackages = with pkgs; [
-    emscripten
-    wasmi
-    wasmer
-    emscriptenStdenv
-  ];
-  embeddedPackages = with pkgs; [
-    tinycc
-    sdcc
-    linuxHeaders
-    musl
-  ];
-  stdenvsPackages = with pkgs; [
-    clangStdenv
-    distccStdenv
-    ccacheStdenv
-    gccStdenv
-  ];
 
-  enabledOptionalsPackages =
-    lib.optionals cfg.clang clangPackages
-    ++ lib.optionals cfg.lowLevel lowLevelPackages
-    ++ lib.optionals cfg.wasm wasmPackages
-    ++ lib.optionals cfg.embedded embeddedPackages
-    ++ lib.optionals cfg.protobuf protobufPackages
-    ++ lib.optionals cfg.stdenvs stdenvsPackages;
-
-  anyEnabled = lib.any (x: x) [
-    cfg.clang
-    cfg.lowLevel
-    cfg.wasm
-    cfg.embedded
-    cfg.stdenvs
-    cfg.protobuf
-  ];
+  generated = moduleHelpers.mkPackageGroupModule {
+    inherit cfg;
+    groups = {
+      clang = {
+        description = "Install Clang/LLVM toolchains";
+        packages = with pkgs; [ clang llvm libllvm ];
+      };
+      lowLevel = {
+        description = "Install low-level code generation and parser tools";
+        packages = with pkgs; [ byacc nasm dtc ];
+      };
+      protobuf = {
+        description = "Install Protocol Buffers compilers and libraries";
+        packages = with pkgs; [ protobuf protobufc nanopb nanopbMalloc ];
+      };
+      wasm = {
+        description = "Install WebAssembly toolchains and runtimes";
+        packages = with pkgs; [ emscripten wasmi wasmer emscriptenStdenv ];
+      };
+      embedded = {
+        description = "Install embedded and device-oriented compilers";
+        packages = with pkgs; [ tinycc sdcc linuxHeaders musl ];
+      };
+      stdenvs = {
+        description = "Install alternate stdenv variants for testing builds";
+        packages = with pkgs; [ clangStdenv distccStdenv ccacheStdenv gccStdenv ];
+      };
+    };
+  };
 in
 {
-  options.myConfig.apps.development.compilers = {
-    clang = moduleHelpers.mkDisabledOption "Install Clang/LLVM toolchains";
-
-    lowLevel = moduleHelpers.mkDisabledOption "Install low-level code generation and parser tools";
-
-    protobuf = moduleHelpers.mkDisabledOption "Install Protocol Buffers compilers and libraries";
-
-    wasm = moduleHelpers.mkDisabledOption "Install WebAssembly toolchains and runtimes";
-
-    embedded = moduleHelpers.mkDisabledOption "Install embedded and device-oriented compilers";
-
-    stdenvs = moduleHelpers.mkDisabledOption "Install alternate stdenv variants for testing builds";
-  };
-
-  config = lib.mkMerge [
-    {
-    }
-    (lib.mkIf anyEnabled {
-      environment.systemPackages = enabledOptionalsPackages;
-    })
-  ];
+  options.myConfig.apps.development.compilers = generated.options;
+  config = generated.config;
 }

@@ -1,11 +1,18 @@
-{ inputs, lib, pkgsCache, moduleHelpers, ... }:
+{
+  inputs,
+  lib,
+  pkgsCache,
+  moduleHelpers,
+  ...
+}:
 
-name: cfg: 
+name: cfg:
 let
   # All packages and configurations
   mainPkgs = [ ../modules ];
 
-  requirePath = what: path:
+  requirePath =
+    what: path:
     if builtins.pathExists path then
       path
     else
@@ -20,13 +27,15 @@ let
   # Import profiles from normalized host schema.
   profilesModules = map (p: requirePath "profile" ../profiles/${p}.nix) allProfiles;
 
-  varsUsers = lib.genAttrs (cfg.users or []) (u: import (requirePath "user variables" ../users/${u}/variables.nix));
+  varsUsers = lib.genAttrs (cfg.users or [ ]) (
+    u: import (requirePath "user variables" ../users/${u}/variables.nix)
+  );
 
   # Wrap each user module to inject its own variables as a NixOS module argument.
   usersModules = map (u: {
     _module.args.userVars = varsUsers.${u};
     imports = [ (requirePath "user system module" ../users/${u}/system.nix) ];
-  }) (cfg.users or []);
+  }) (cfg.users or [ ]);
 
   varsHost = {
     name = cfg.systemName;
@@ -53,6 +62,7 @@ let
     inputs.agenix.nixosModules.default
     inputs.nixos-wsl.nixosModules.wsl
     inputs.nix-ld.nixosModules.nix-ld
+    inputs.lanzaboote.nixosModules.lanzaboote
     ({ config, ... }: {
       home-manager = {
         useGlobalPkgs = true;
@@ -68,8 +78,12 @@ let
         inherit pkgsSets moduleHelpers;
       };
     })
-  ] ++ profilesModules ++ usersModules ++ mainPkgs;
-in {
+  ]
+  ++ profilesModules
+  ++ usersModules
+  ++ mainPkgs;
+in
+{
   inherit modules;
   host = varsHost;
   inherit (cfg) system users;
