@@ -1,4 +1,10 @@
-{ config, lib, pkgs, moduleHelpers, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  moduleHelpers,
+  ...
+}:
 
 let
   cfg = config.myConfig.apps.network.cli;
@@ -16,8 +22,7 @@ let
     mtr
   ];
 
-  enabledOptionalsPackages =
-    lib.optionals cfg.tooling toolingPackages;
+  enabledOptionalsPackages = lib.optionals cfg.tooling toolingPackages;
 in
 {
   options.myConfig.apps.network.cli = {

@@ -1,4 +1,11 @@
-{ config, osConfig, lib, pkgs, userVars, ... }:
+{
+  config,
+  osConfig,
+  lib,
+  pkgs,
+  userVars,
+  ...
+}:
 
 {
   programs.git = lib.mkIf osConfig.myConfig.apps.development.dev.tooling {
@@ -26,7 +33,7 @@
       CCACHE_DIR = "$HOME/.cache/ccache";
     };
     activation = {
-      setupCcache = config.lib.dag.entryAfter ["writeBoundary"] ''
+      setupCcache = config.lib.dag.entryAfter [ "writeBoundary" ] ''
         mkdir -p $HOME/.cache/ccache
       '';
     };

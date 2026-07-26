@@ -1,4 +1,10 @@
-{ config, lib, pkgs, moduleHelpers, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  moduleHelpers,
+  ...
+}:
 
 let
   cfg = config.myConfig.apps.development.rust;
@@ -8,12 +14,19 @@ let
     groups = {
       toolchain = {
         description = "Install Rust toolchain";
-        packages = with pkgs; [ rustc cargo rustfmt clippy bugstalker uutils-coreutils ];
+        packages = with pkgs; [
+          rustc
+          cargo
+          rustfmt
+          clippy
+          bugstalker
+          uutils-coreutils
+        ];
       };
     };
   };
 in
 {
   options.myConfig.apps.development.rust = generated.options;
-  config = generated.config;
+  inherit (generated) config;
 }

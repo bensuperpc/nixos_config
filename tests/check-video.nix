@@ -1,5 +1,10 @@
 # tests/check-video.nix
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 let
   requiredVideoPkgs = with pkgs; [
@@ -27,31 +32,30 @@ let
   ];
 in
 {
-  assertions =
-    [
-      {
-        assertion = config.myConfig.apps.multimedia.video.editing;
-        message = "Multimedia video editing group must be enabled";
-      }
-      {
-        assertion = config.myConfig.apps.multimedia.video.playback;
-        message = "Multimedia video playback group must be enabled";
-      }
-      {
-        assertion = config.myConfig.apps.multimedia.video.codecs;
-        message = "Multimedia video codecs group must be enabled";
-      }
-      {
-        assertion = config.myConfig.apps.multimedia.video.opticalMedia;
-        message = "Multimedia video optical media group must be enabled";
-      }
-      {
-        assertion = config.myConfig.apps.multimedia.video.downloaders;
-        message = "Multimedia video downloaders group must be enabled";
-      }
-    ]
-    ++ map (pkg: {
-      assertion = lib.elem pkg config.environment.systemPackages;
-      message = "Package missing: ${pkg.name}";
-    }) requiredVideoPkgs;
+  assertions = [
+    {
+      assertion = config.myConfig.apps.multimedia.video.editing;
+      message = "Multimedia video editing group must be enabled";
+    }
+    {
+      assertion = config.myConfig.apps.multimedia.video.playback;
+      message = "Multimedia video playback group must be enabled";
+    }
+    {
+      assertion = config.myConfig.apps.multimedia.video.codecs;
+      message = "Multimedia video codecs group must be enabled";
+    }
+    {
+      assertion = config.myConfig.apps.multimedia.video.opticalMedia;
+      message = "Multimedia video optical media group must be enabled";
+    }
+    {
+      assertion = config.myConfig.apps.multimedia.video.downloaders;
+      message = "Multimedia video downloaders group must be enabled";
+    }
+  ]
+  ++ map (pkg: {
+    assertion = lib.elem pkg config.environment.systemPackages;
+    message = "Package missing: ${pkg.name}";
+  }) requiredVideoPkgs;
 }

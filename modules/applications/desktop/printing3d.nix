@@ -1,4 +1,11 @@
-{ config, lib, pkgs, pkgsSets, moduleHelpers, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  pkgsSets,
+  moduleHelpers,
+  ...
+}:
 
 let
   cfg = config.myConfig.apps.printing3d;
@@ -6,6 +13,7 @@ let
   printing3dPackages = with pkgs; [
     prusa-slicer
     klipper
+    orca-slicer
     # cura
     # curaengine
   ];

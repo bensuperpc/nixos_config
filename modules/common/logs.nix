@@ -1,4 +1,9 @@
-{ config, lib, moduleHelpers, ... }:
+{
+  config,
+  lib,
+  moduleHelpers,
+  ...
+}:
 
 {
   services.journald = {

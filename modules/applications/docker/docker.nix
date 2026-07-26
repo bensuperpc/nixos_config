@@ -1,4 +1,10 @@
-{ config, lib, pkgs, moduleHelpers, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  moduleHelpers,
+  ...
+}:
 
 let
   cfg = config.myConfig.apps.docker;
@@ -10,6 +16,7 @@ let
     docker-color-output
     lazydocker
     compose2nix
+    dive
   ];
 in
 {

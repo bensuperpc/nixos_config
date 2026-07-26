@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
   imports = [
@@ -10,5 +15,6 @@
     ./math.nix
     ./misc.nix
     ./hardware-infos.nix
+    ./geography.nix
   ];
 }

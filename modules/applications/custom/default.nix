@@ -1,4 +1,10 @@
-{ config, lib, pkgs, moduleHelpers, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  moduleHelpers,
+  ...
+}:
 
 let
   cfg = config.myConfig.apps.custom;
@@ -15,12 +21,14 @@ in
   };
 
   config = {
-    environment.systemPackages = lib.optionals cfg.libraries [
-      (pkgs.callPackage packages/bs-thread-pool.nix { })
-      (pkgs.callPackage packages/fake-function-framework.nix { })
-    ] ++ lib.optionals cfg.svtav1410 [
-      (pkgs.callPackage packages/svt-av1.nix { })
-    ];
+    environment.systemPackages =
+      lib.optionals cfg.libraries [
+        (pkgs.callPackage packages/bs-thread-pool.nix { })
+        (pkgs.callPackage packages/fake-function-framework.nix { })
+      ]
+      ++ lib.optionals cfg.svtav1410 [
+        (pkgs.callPackage packages/svt-av1.nix { })
+      ];
   };
 
   # nixpkgs.overlays = [

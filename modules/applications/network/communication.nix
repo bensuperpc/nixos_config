@@ -1,4 +1,10 @@
-{ config, lib, pkgs, moduleHelpers, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  moduleHelpers,
+  ...
+}:
 
 let
   cfg = config.myConfig.apps.communication;
@@ -8,7 +14,12 @@ let
     groups = {
       chat = {
         description = "Install chat and team communication applications";
-        packages = with pkgs; [ discord telegram-desktop signal-desktop element-desktop ];
+        packages = with pkgs; [
+          discord
+          telegram-desktop
+          signal-desktop
+          element-desktop
+        ];
       };
       voice = {
         description = "Install voice communication applications";
@@ -20,12 +31,15 @@ let
       };
       terminal = {
         description = "Install terminal communication tools";
-        packages = with pkgs; [ sshx weechat ];
+        packages = with pkgs; [
+          sshx
+          weechat
+        ];
       };
     };
   };
 in
 {
   options.myConfig.apps.communication = generated.options;
-  config = generated.config;
+  inherit (generated) config;
 }

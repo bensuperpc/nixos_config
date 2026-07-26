@@ -17,10 +17,10 @@ stdenv.mkDerivation rec {
   dontConfigure = true;
   installPhase = ''
     runHook preInstall
-   
+
     mkdir -p $out/include
     cp fff.h $out/include/fff.h
-   
+
     runHook postInstall
   '';
   meta = with lib; {

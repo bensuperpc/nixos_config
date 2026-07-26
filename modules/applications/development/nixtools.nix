@@ -1,4 +1,10 @@
-{ config, lib, pkgs, moduleHelpers, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  moduleHelpers,
+  ...
+}:
 
 let
   cfg = config.myConfig.apps.development.nixtools;
@@ -12,16 +18,22 @@ let
       };
       pinning = {
         description = "Install Nix pinning and input management tools";
-        packages = with pkgs; [ niv npins ];
+        packages = with pkgs; [
+          niv
+          npins
+        ];
       };
       analysis = {
         description = "Install Nix store and derivation inspection tools";
-        packages = with pkgs; [ nix-tree nix-diff ];
+        packages = with pkgs; [
+          nix-tree
+          nix-diff
+        ];
       };
     };
   };
 in
 {
   options.myConfig.apps.development.nixtools = generated.options;
-  config = generated.config;
+  inherit (generated) config;
 }

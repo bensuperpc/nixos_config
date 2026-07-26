@@ -18,10 +18,10 @@ stdenv.mkDerivation rec {
   dontConfigure = true;
   installPhase = ''
     runHook preInstall
-   
+
     mkdir -p $out/include
     cp include/BS_thread_pool.hpp $out/include/BS_thread_pool.hpp
-   
+
     runHook postInstall
   '';
   meta = with lib; {

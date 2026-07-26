@@ -1,4 +1,10 @@
-{ config, lib, pkgs, moduleHelpers, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  moduleHelpers,
+  ...
+}:
 
 let
   cfg = config.myConfig.apps.development.go;
@@ -15,5 +21,5 @@ let
 in
 {
   options.myConfig.apps.development.go = generated.options;
-  config = generated.config;
+  inherit (generated) config;
 }

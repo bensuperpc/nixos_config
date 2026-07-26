@@ -1,4 +1,11 @@
-{ config, lib, pkgs, pkgsSets, moduleHelpers, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  pkgsSets,
+  moduleHelpers,
+  ...
+}:
 
 let
   cfg = config.myConfig.apps.files.backup;
@@ -8,12 +15,17 @@ let
     groups = {
       core = {
         description = "Install core backup tools";
-        packages = with pkgs; [ restic rustic ];
+        packages = with pkgs; [
+          restic
+          rustic
+        ];
       };
       profileManager = {
         description = "Install backup profile manager";
         packages = [
-          (pkgsSets.stable-2605.resticprofile.overrideAttrs (_: { doCheck = false; }))
+          (pkgsSets.stable-2605.resticprofile.overrideAttrs (_: {
+            doCheck = false;
+          }))
         ];
       };
       gui = {
@@ -25,5 +37,5 @@ let
 in
 {
   options.myConfig.apps.files.backup = generated.options;
-  config = generated.config;
+  inherit (generated) config;
 }

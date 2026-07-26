@@ -1,7 +1,5 @@
 { pkgs, pkgsSets, ... }:
 
-let
-in
 pkgs.mkShell {
   nativeBuildInputs = with pkgs; [
     qt6.wrapQtAppsHook
@@ -15,36 +13,39 @@ pkgs.mkShell {
     bashInteractive
   ];
 
-  buildInputs = with pkgsSets.stable-2605; [
-    gtest
-    gbenchmark
-  ] ++ (with pkgsSets.stable-2605.qt6; [
-    qtbase
-    qtwebengine
-    qtdeclarative
-    qt5compat
-    qtwebchannel
-    qtpositioning
-    qtshadertools
-    qtnetworkauth
-    qtsvg
-    qtmultimedia
-    qtimageformats
-    qtquick3d
-    qt3d
-    qtcharts
-    qtgraphs
-    qtscxml
-    qtwayland
-    qtspeech
-    qtsensors
-    qtmqtt
-    qtgrpc
-    qtlottie
-    qtserialbus
-    qtserialport
-    qttranslations
-  ]);
+  buildInputs =
+    with pkgsSets.stable-2605;
+    [
+      gtest
+      gbenchmark
+    ]
+    ++ (with pkgsSets.stable-2605.qt6; [
+      qtbase
+      qtwebengine
+      qtdeclarative
+      qt5compat
+      qtwebchannel
+      qtpositioning
+      qtshadertools
+      qtnetworkauth
+      qtsvg
+      qtmultimedia
+      qtimageformats
+      qtquick3d
+      qt3d
+      qtcharts
+      qtgraphs
+      qtscxml
+      qtwayland
+      qtspeech
+      qtsensors
+      qtmqtt
+      qtgrpc
+      qtlottie
+      qtserialbus
+      qtserialport
+      qttranslations
+    ]);
 
   shellHook = ''
     bashdir=$(mktemp -d)

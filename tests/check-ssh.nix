@@ -1,14 +1,23 @@
 # tests/check-ssh.nix
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 let
+  cfg = config.myConfig.apps.ssh;
+
   requiredSSHPkgs = with pkgs; [
     openssh
     sshfs
   ];
 in
 {
-  assertions =
+  # Only enforce SSH hardening invariants on hosts where the SSH app is
+  # actually enabled (e.g. WSL hosts disable it via platform/wsl.nix).
+  assertions = lib.optionals cfg.enable (
     [
       {
         assertion = config.services.openssh.enable;
@@ -42,5 +51,6 @@ in
     ++ map (pkg: {
       assertion = lib.elem pkg config.environment.systemPackages;
       message = "Package missing: ${pkg.name}";
-    }) requiredSSHPkgs;
+    }) requiredSSHPkgs
+  );
 }

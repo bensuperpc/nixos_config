@@ -40,19 +40,27 @@ in
                   "--perf-no_write_workqueue"
                 ];
                 extraFormatArgs = [
-                  "--pbkdf" "argon2id"
-                  "--iter-time" "15000"
-                  "--key-size" "512"
+                  "--pbkdf"
+                  "argon2id"
+                  "--iter-time"
+                  "15000"
+                  "--key-size"
+                  "512"
                 ];
                 settings = {
                   crypttabExtraOpts = [
                     "fido2-device=auto"
                     "tpm2-device=auto"
-                    "token-timeout=40"];
+                    "token-timeout=40"
+                  ];
                 };
                 content = {
                   type = "btrfs";
-                  extraArgs = ["-L" "nixos" "-f"];
+                  extraArgs = [
+                    "-L"
+                    "nixos"
+                    "-f"
+                  ];
                   postCreateHook = ''
                     set -euo pipefail
 

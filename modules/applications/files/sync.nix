@@ -1,4 +1,10 @@
-{ config, lib, pkgs, moduleHelpers, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  moduleHelpers,
+  ...
+}:
 
 let
   cfg = config.myConfig.apps.files.sync;
@@ -8,15 +14,25 @@ let
     groups = {
       transfer = {
         description = "CLI transfer tools";
-        packages = with pkgs; [ rclone croc ];
+        packages = with pkgs; [
+          rclone
+          croc
+        ];
       };
       peerToPeer = {
         description = "P2P sync tools";
-        packages = with pkgs; [ syncthing syncthingtray localsend ];
+        packages = with pkgs; [
+          syncthing
+          syncthingtray
+          localsend
+        ];
       };
       networkShares = {
         description = "network shares tools";
-        packages = with pkgs; [ filezilla samba ];
+        packages = with pkgs; [
+          filezilla
+          samba
+        ];
       };
       mobile = {
         description = "mobile sync tools";

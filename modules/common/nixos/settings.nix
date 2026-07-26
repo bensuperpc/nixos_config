@@ -1,4 +1,10 @@
-{ config, lib, moduleHelpers, inputs, ... }:
+{
+  config,
+  lib,
+  moduleHelpers,
+  inputs,
+  ...
+}:
 
 let
   trustedUsers = [
@@ -37,7 +43,10 @@ in
 
     nix = {
       settings = {
-        experimental-features = [ "nix-command" "flakes" ];
+        experimental-features = [
+          "nix-command"
+          "flakes"
+        ];
         connect-timeout = 3;
         log-lines = 25;
         download-buffer-size = 268435456; # 256 MiB
@@ -61,8 +70,10 @@ in
         allowed-users = trustedUsers;
         trusted-users = trustedUsers;
 
-        substituters = baseSubstituters ++ lib.optionals cfg.enableCommunitySubstituters communitySubstituters;
-        trusted-public-keys = baseTrustedPublicKeys ++ lib.optionals cfg.enableCommunitySubstituters communityTrustedPublicKeys;
+        substituters =
+          baseSubstituters ++ lib.optionals cfg.enableCommunitySubstituters communitySubstituters;
+        trusted-public-keys =
+          baseTrustedPublicKeys ++ lib.optionals cfg.enableCommunitySubstituters communityTrustedPublicKeys;
       };
 
       # auto-optimise-store hardlinks the store synchronously after every

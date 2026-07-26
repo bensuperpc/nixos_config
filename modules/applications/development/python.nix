@@ -1,71 +1,84 @@
-{ config, lib, pkgs, moduleHelpers, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  moduleHelpers,
+  ...
+}:
 
 let
   cfg = config.myConfig.apps.development.python;
 
-  corePythonPackages = ps: with ps; [
-    numpy
-    loguru
-    qrcode
-    isort
-    environs
-    virtualenv
-    sh
-    av
-    # pipx # buggy in 1.8.0 with python 3.14
-    ninja
-  ];
+  corePythonPackages =
+    ps: with ps; [
+      numpy
+      loguru
+      qrcode
+      isort
+      environs
+      virtualenv
+      sh
+      av
+      # pipx # buggy in 1.8.0 with python 3.14
+      ninja
+    ];
 
-  dataSciencePythonPackages = ps: with ps; [
-    matplotlib
-    mpmath
-    pandas
-    scikit-learn
-    scipy
-    sympy
-    seaborn
-  ];
+  dataSciencePythonPackages =
+    ps: with ps; [
+      matplotlib
+      mpmath
+      pandas
+      scikit-learn
+      scipy
+      sympy
+      seaborn
+    ];
 
-  webPythonPackages = ps: with ps; [
-    flask
-    fastapi
-    uvicorn
-    requests
-    scrapy
-    beautifulsoup4
-    boto3
-    internetarchive
-  ];
+  webPythonPackages =
+    ps: with ps; [
+      flask
+      fastapi
+      uvicorn
+      requests
+      scrapy
+      beautifulsoup4
+      boto3
+      internetarchive
+    ];
 
-  automationPythonPackages = ps: with ps; [
-    celery
-    cantools
-    canopen
-  ];
+  automationPythonPackages =
+    ps: with ps; [
+      celery
+      cantools
+      canopen
+    ];
 
-  llmPythonPackages = ps: with ps; [
-    unsloth
-    transformers
-    datasets
-    peft
-    trl
-    torch
-  ];
+  llmPythonPackages =
+    ps: with ps; [
+      unsloth
+      transformers
+      datasets
+      peft
+      trl
+      torch
+    ];
 
-  testingPythonPackages = ps: with ps; [
-    pytest
-    pytest-bdd
-    sphinx
-    robotframework
-    robotframework-seleniumlibrary
-    robotframework-requests
-    robotframework-pythonlibcore
-    robotframework-databaselibrary
-    robotframework-assertion-engine
-  ];
+  testingPythonPackages =
+    ps: with ps; [
+      pytest
+      pytest-bdd
+      sphinx
+      robotframework
+      robotframework-seleniumlibrary
+      robotframework-requests
+      robotframework-pythonlibcore
+      robotframework-databaselibrary
+      robotframework-assertion-engine
+    ];
 
-
-  enabledOptionalsPackages = ps: with ps;
+  enabledOptionalsPackages =
+    ps:
+    with ps;
     lib.optionals cfg.core (corePythonPackages ps)
     ++ lib.optionals cfg.dataScience (dataSciencePythonPackages ps)
     ++ lib.optionals cfg.web (webPythonPackages ps)
@@ -73,14 +86,14 @@ let
     ++ lib.optionals cfg.llm (llmPythonPackages ps)
     ++ lib.optionals cfg.testing (testingPythonPackages ps);
 
-    anyEnabled = lib.any (x: x) [
-      cfg.core
-      cfg.dataScience
-      cfg.web
-      cfg.automation
-      cfg.testing
-      cfg.llm
-    ];
+  anyEnabled = lib.any (x: x) [
+    cfg.core
+    cfg.dataScience
+    cfg.web
+    cfg.automation
+    cfg.testing
+    cfg.llm
+  ];
 in
 {
   options.myConfig.apps.development.python = {

@@ -1,7 +1,13 @@
-{ config, lib, pkgs, userVars, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  userVars,
+  ...
+}:
 {
   users.groups.${userVars.user} = {
-    members = [];
+    members = [ ];
   };
 
   users.users.${userVars.user} = {
@@ -9,19 +15,28 @@
     description = userVars.fullName;
     initialPassword = "password";
     group = userVars.user;
-    extraGroups = userVars.extraGroups;
+    inherit (userVars) extraGroups;
     openssh.authorizedKeys.keys = userVars.sshPubKeyAccess;
     shell = pkgs.zsh;
   };
-  
+
   security.sudo.extraRules = [
     {
       users = [ userVars.user ];
       commands = [
         # Allow running any command without password (TODO: Remove later)
-        { command = "ALL"; options = [ "NOPASSWD" ]; }
-        { command = "${pkgs.systemd}/bin/poweroff"; options = [ "NOPASSWD" ]; }
-        { command = "${pkgs.systemd}/bin/reboot";   options = [ "NOPASSWD" ]; }
+        {
+          command = "ALL";
+          options = [ "NOPASSWD" ];
+        }
+        {
+          command = "${pkgs.systemd}/bin/poweroff";
+          options = [ "NOPASSWD" ];
+        }
+        {
+          command = "${pkgs.systemd}/bin/reboot";
+          options = [ "NOPASSWD" ];
+        }
       ];
     }
   ];

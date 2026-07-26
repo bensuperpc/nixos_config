@@ -1,4 +1,11 @@
-{ config, lib, pkgs, moduleHelpers, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  pkgsSets,
+  moduleHelpers,
+  ...
+}:
 
 let
   cfg = config.myConfig.apps.multimedia.video;
@@ -16,6 +23,8 @@ let
           subtitleedit
           kdePackages.kdenlive
           shotcut
+          losslesscut
+          # natron # Broken
         ];
       };
       playback = {
@@ -34,8 +43,9 @@ let
         description = "Install video/audio codec tooling";
         packages = with pkgs; [
           ffmpeg-full
+          dav1d
           svt-av1
-          svt-av1-psyex
+          svt-av1-hdr
           rav1e
           rav1d
           libaom
@@ -46,20 +56,40 @@ let
           av1an
           libcamera
           openjph
+          x264
+          openh264
+          x265
+          xvidcore
+          libheif
+          libde265
         ];
       };
       opticalMedia = {
         description = "Install DVD and Blu-ray tooling";
-        packages = with pkgs; [ libdvdcss libdvdnav libdvdread makemkv libaacs libbdplus ];
+        packages = (with pkgs; [
+          libdvdcss
+          libdvdnav
+          libdvdread
+          mkvtoolnix
+          libaacs
+          libbdplus
+        ]) ++ (with pkgsSets.stable-2605; [
+          # makemkv
+        ]);
       };
       downloaders = {
         description = "Install media download tools";
-        packages = with pkgs; [ yt-dlp gallery-dl video-downloader media-downloader ];
+        packages = with pkgs; [
+          yt-dlp
+          gallery-dl
+          video-downloader
+          media-downloader
+        ];
       };
     };
   };
 in
 {
   options.myConfig.apps.multimedia.video = generated.options;
-  config = generated.config;
+  inherit (generated) config;
 }

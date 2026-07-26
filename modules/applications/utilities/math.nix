@@ -1,4 +1,10 @@
-{ config, lib, pkgs, moduleHelpers, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  moduleHelpers,
+  ...
+}:
 
 let
   cfg = config.myConfig.apps.math;
@@ -13,8 +19,7 @@ let
   ];
 
   enabledOptionalsPackages =
-    lib.optionals cfg.geometry geometryPackages
-    ++ lib.optionals cfg.plotting plottingPackages;
+    lib.optionals cfg.geometry geometryPackages ++ lib.optionals cfg.plotting plottingPackages;
 
   anyEnabled = cfg.geometry || cfg.plotting;
 in

@@ -1,4 +1,10 @@
-{ config, lib, pkgs, moduleHelpers, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  moduleHelpers,
+  ...
+}:
 
 let
   cfg = config.myConfig.apps.tools;
@@ -8,7 +14,13 @@ let
     groups = {
       system = {
         description = "Install system monitoring and info tools";
-        packages = with pkgs; [ htop bottom lm_sensors kernel-hardening-checker ];
+        packages = with pkgs; [
+          # nvtopPackages.intel
+          htop
+          bottom
+          lm_sensors
+          kernel-hardening-checker
+        ];
       };
       network = {
         description = "Install network and file transfer utilities";
@@ -46,11 +58,17 @@ let
       };
       archive = {
         description = "Install backup and archive tools";
-        packages = with pkgs; [ internetarchive kiwix ];
+        packages = with pkgs; [
+          internetarchive
+          kiwix
+        ];
       };
       crackingPassword = {
         description = "Install password cracking tools (for security auditing and recovery purposes only)";
-        packages = with pkgs; [ cracklib hashcat ];
+        packages = with pkgs; [
+          cracklib
+          hashcat
+        ];
       };
     };
   };
@@ -66,5 +84,5 @@ in
   #   capabilities = "cap_perfmon,cap_sys_rawio,cap_sys_admin+ep";
   #   source = "${pkgs.btop}/bin/btop";
   # };
-  config = generated.config;
+  inherit (generated) config;
 }

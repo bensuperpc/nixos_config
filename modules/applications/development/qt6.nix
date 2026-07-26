@@ -1,4 +1,10 @@
-{ config, lib, pkgs, moduleHelpers, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  moduleHelpers,
+  ...
+}:
 
 let
   cfg = config.myConfig.apps.development.qt6;
@@ -49,5 +55,5 @@ let
 in
 {
   options.myConfig.apps.development.qt6 = generated.options;
-  config = generated.config;
+  inherit (generated) config;
 }

@@ -1,4 +1,10 @@
-{ config, lib, pkgs, moduleHelpers, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  moduleHelpers,
+  ...
+}:
 
 let
   cfg = config.myConfig.apps.development.databases;
@@ -8,7 +14,11 @@ let
     groups = {
       relational = {
         description = "Install relational database servers and tooling";
-        packages = with pkgs; [ sqlite postgresql mariadb ];
+        packages = with pkgs; [
+          sqlite
+          postgresql
+          mariadb
+        ];
       };
       kv = {
         description = "Install key-value database tooling";
@@ -19,5 +29,5 @@ let
 in
 {
   options.myConfig.apps.development.databases = generated.options;
-  config = generated.config;
+  inherit (generated) config;
 }

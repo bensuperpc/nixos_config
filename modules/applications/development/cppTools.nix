@@ -1,4 +1,10 @@
-{ config, lib, pkgs, moduleHelpers, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  moduleHelpers,
+  ...
+}:
 
 let
   cfg = config.myConfig.apps.development.cppTools;
@@ -8,19 +14,41 @@ let
     groups = {
       caching = {
         description = "Install compiler cache and distributed build helpers";
-        packages = with pkgs; [ ccache sccache distcc icecream ];
+        packages = with pkgs; [
+          ccache
+          sccache
+          distcc
+          icecream
+        ];
       };
       buildSystems = {
         description = "Install C/C++ build systems and linkers";
-        packages = with pkgs; [ cmake lomiri.cmake-extras meson mold gnumake ];
+        packages = with pkgs; [
+          cmake
+          lomiri.cmake-extras
+          meson
+          mold
+          gnumake
+        ];
       };
       quality = {
         description = "Install code quality and coverage tools";
-        packages = with pkgs; [ gcovr cppcheck clang-analyzer clang-tools ];
+        packages = with pkgs; [
+          gcovr
+          cppcheck
+          clang-analyzer
+          clang-tools
+        ];
       };
       debugging = {
         description = "Install native debugging and tracing tools";
-        packages = with pkgs; [ gdb lldb ltrace valgrind libexecinfo ];
+        packages = with pkgs; [
+          gdb
+          lldb
+          ltrace
+          valgrind
+          libexecinfo
+        ];
       };
     };
   };

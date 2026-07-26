@@ -3,7 +3,8 @@
 let
   rolePresets = import ./role-presets.nix;
 
-  normalizeHost = name: raw:
+  normalizeHost =
+    name: raw:
     let
       role = raw.role or "minimal";
       supportedRoles = builtins.attrNames rolePresets;
@@ -15,15 +16,17 @@ let
 
       users = lib.unique (raw.users or [ ]);
 
-      platformProfiles = lib.unique ((rolePreset.platformProfiles or [ ]) ++ (raw.platformProfiles or [ ]));
-      appProfiles      = lib.unique ((rolePreset.appProfiles or [ ])      ++ (raw.appProfiles or [ ]));
-      policyProfiles   = lib.unique ((rolePreset.policyProfiles or [ ])   ++ (raw.policyProfiles or [ ]));
+      platformProfiles = lib.unique (
+        (rolePreset.platformProfiles or [ ]) ++ (raw.platformProfiles or [ ])
+      );
+      appProfiles = lib.unique ((rolePreset.appProfiles or [ ]) ++ (raw.appProfiles or [ ]));
+      policyProfiles = lib.unique ((rolePreset.policyProfiles or [ ]) ++ (raw.policyProfiles or [ ]));
 
       allProfiles = lib.unique (platformProfiles ++ appProfiles ++ policyProfiles);
 
-      ip         = raw.ip or null;
-      port       = raw.port or 22;
-      enabled    = raw.enabled or true;
+      ip = raw.ip or null;
+      port = raw.port or 22;
+      enabled = raw.enabled or true;
       deployUser = raw.deployUser or (lib.head users);
     in
     if !(raw ? system) then
@@ -36,14 +39,25 @@ let
       throw "Host '${name}': deployUser '${raw.deployUser}' is not in the users list."
     else
       {
-        inherit role users deployUser platformProfiles appProfiles policyProfiles allProfiles ip port enabled;
+        inherit
+          role
+          users
+          deployUser
+          platformProfiles
+          appProfiles
+          policyProfiles
+          allProfiles
+          ip
+          port
+          enabled
+          ;
         systemName = raw.systemName or name;
-        system = raw.system;
+        inherit (raw) system;
       };
 
-in {
+in
+{
   inherit rolePresets normalizeHost;
 
-  normalizeHosts = hosts:
-    lib.mapAttrs normalizeHost hosts;
+  normalizeHosts = hosts: lib.mapAttrs normalizeHost hosts;
 }

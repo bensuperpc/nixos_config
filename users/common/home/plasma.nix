@@ -1,5 +1,10 @@
 # More info: https://nix-community.github.io/plasma-manager/options.xhtml
-{ config, osConfig, lib, ... }:
+{
+  config,
+  osConfig,
+  lib,
+  ...
+}:
 
 {
 
@@ -61,9 +66,7 @@
           {
             iconTasks = {
               launchers =
-                [
-                ]
-                ++ lib.optionals osConfig.myConfig.apps.browser.core [
+                lib.optionals osConfig.myConfig.apps.browser.core [
                   "applications:torbrowser.desktop"
                   "applications:firefox.desktop"
                 ]

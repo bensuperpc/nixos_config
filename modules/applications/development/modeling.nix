@@ -1,4 +1,10 @@
-{ config, lib, pkgs, moduleHelpers, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  moduleHelpers,
+  ...
+}:
 
 let
   cfg = config.myConfig.apps.development.modeling;
@@ -8,16 +14,22 @@ let
     groups = {
       engines = {
         description = "Install 3D game engines (Godot, Ogre)";
-        packages = with pkgs; [ godot ogre ];
+        packages = with pkgs; [
+          godot
+          ogre
+        ];
       };
       cad = {
         description = "Install 3D modeling and CAD tools (Blender, FreeCAD)";
-        packages = with pkgs; [ blender freecad ];
+        packages = with pkgs; [
+          blender
+          freecad
+        ];
       };
     };
   };
 in
 {
   options.myConfig.apps.development.modeling = generated.options;
-  config = generated.config;
+  inherit (generated) config;
 }

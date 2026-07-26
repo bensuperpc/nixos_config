@@ -1,4 +1,10 @@
-{ config, lib, pkgs, moduleHelpers, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  moduleHelpers,
+  ...
+}:
 
 let
   cfg = config.myConfig.apps.terminal;
@@ -10,15 +16,17 @@ in
 
   config = lib.mkMerge [
     {
-      environment.systemPackages = with pkgs; lib.optionals cfg.enable [
-        alacritty-graphics
-        alacritty-theme
-        terminator
-        wezterm
-        foot
-        xterm
-      ];
+      environment.systemPackages =
+        with pkgs;
+        lib.optionals cfg.enable [
+          alacritty-graphics
+          alacritty-theme
+          terminator
+          wezterm
+          foot
+          xterm
+          kitty
+        ];
     }
   ];
 }
-

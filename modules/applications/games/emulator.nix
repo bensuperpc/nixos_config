@@ -1,4 +1,11 @@
-{ config, lib, pkgs, moduleHelpers, pkgsSets, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  moduleHelpers,
+  pkgsSets,
+  ...
+}:
 
 let
   cfg = config.myConfig.apps.games.emulator;
@@ -8,21 +15,28 @@ let
     groups = {
       nintendo = {
         description = "Install Nintendo family emulators";
-        packages = with pkgs; [
-          dolphin-emu # Nintendo GameCube/Wii
-          simple64 # Nintendo 64
-          mupen64plus # Nintendo 64
-          n64recomp # Nintendo 64
-          snes9x # Super Nintendo Entertainment System
-          bsnes-hd # Super Nintendo Entertainment System
-          mgba # Game Boy Advance
-          sameboy # Game Boy
-          azahar # 3DS
-          ryubing # Switch 1 emulator
-          eden # Switch 1 emulator
-        ] ++ (with pkgsSets.stable-2511; [
-          zsnes2 # Super Nintendo Entertainment System
-        ]);
+        packages =
+          with pkgs;
+          [
+            dolphin-emu # Nintendo GameCube/Wii
+            simple64 # Nintendo 64
+            mupen64plus # Nintendo 64
+            n64recomp # Nintendo 64
+            snes9x # Super Nintendo Entertainment System
+            bsnes-hd # Super Nintendo Entertainment System
+            mgba # Game Boy Advance
+            sameboy # Game Boy
+            melonds # Nintendo DS
+            ryubing # Switch 1 emulator
+            eden # Switch 1 emulator
+            cemu # Wii U
+          ]
+          ++ (with pkgsSets.stable-2511; [
+            zsnes2 # Super Nintendo Entertainment System
+          ])
+          ++ (with pkgsSets.stable-2605; [
+            azahar # 3DS
+          ]);
       };
       sega = {
         description = "Install Sega family emulators";
@@ -35,9 +49,12 @@ let
         description = "Install Sony family emulators";
         packages = with pkgs; [
           ppsspp-sdl-wayland
+        ]
+        ++ (with pkgsSets.stable-2605; [
+          # emulator.sony
           pcsx2 # PlayStation 2
           rpcs3 # PlayStation 3
-        ];
+        ]);
       };
       retro = {
         description = "Install retro and multi-system emulators";
@@ -61,5 +78,5 @@ let
 in
 {
   options.myConfig.apps.games.emulator = generated.options;
-  config = generated.config;
+  inherit (generated) config;
 }

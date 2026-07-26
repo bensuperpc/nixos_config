@@ -1,11 +1,16 @@
-{ config, lib, pkgs, moduleHelpers, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  moduleHelpers,
+  ...
+}:
 
 let
   cfg = config.myConfig.apps.kvm;
 
   vhostPackages = with pkgs; [
     virtiofsd
-    qemu_kvm
   ];
 
   generated = moduleHelpers.mkPackageGroupModule {
@@ -13,14 +18,17 @@ let
     groups = {
       host = {
         description = "Install KVM and host virtualization tools";
-        packages = with pkgs; [ dnsmasq virt-manager virt-viewer qemu spice spice-gtk ];
+        packages = with pkgs; [
+          dnsmasq
+          virt-manager
+          virt-viewer
+          qemu
+          spice
+          spice-gtk
+        ];
       };
     };
   };
-
-  # enableGuestServices isn't a package group (no packages of its own), so it
-  # isn't part of `groups` above, but it must still bring in the same extra
-  # config block below.
   anyEnabled = generated.anyEnabled || cfg.enableGuestServices;
 in
 {
@@ -39,7 +47,8 @@ in
       virtualisation.libvirtd = {
         enable = true;
         allowedBridges = [ "virbr0" ];
-        # qemu.wtpm.enable = true;
+        # qemu.swtpm.enable = true;
+        qemu.package = pkgs.qemu_kvm;
         qemu.vhostUserPackages = vhostPackages;
       };
 

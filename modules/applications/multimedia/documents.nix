@@ -1,4 +1,10 @@
-{ config, lib, pkgs, moduleHelpers, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  moduleHelpers,
+  ...
+}:
 
 let
   cfg = config.myConfig.apps.multimedia.documents;
@@ -12,12 +18,15 @@ let
       };
       pdf = {
         description = "Install PDF tooling";
-        packages = with pkgs; [ pdfarranger pdftk ];
+        packages = with pkgs; [
+          pdfarranger
+          pdftk
+        ];
       };
     };
   };
 in
 {
   options.myConfig.apps.multimedia.documents = generated.options;
-  config = generated.config;
+  inherit (generated) config;
 }

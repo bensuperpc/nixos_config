@@ -1,4 +1,10 @@
-{ config, osConfig, lib, pkgs, ... }:
+{
+  config,
+  osConfig,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
   programs.mpv = lib.mkIf osConfig.myConfig.apps.multimedia.video.playback {

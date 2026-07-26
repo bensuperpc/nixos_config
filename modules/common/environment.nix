@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   shellPackages = with pkgs; [
@@ -45,15 +50,14 @@ in
 {
   programs.zsh.enable = true;
   programs.bash.enable = true;
-  environment.shells = with pkgs; [ zsh bashInteractive ];
 
-  environment.systemPackages = shellPackages;
-
-  environment.shellAliases = shellAliases;
-
-  environment.variables = envVariables;
-
-  environment.sessionVariables = sessionVariables;
+  environment = {
+    shells = with pkgs; [
+      zsh
+      bashInteractive
+    ];
+    systemPackages = shellPackages;
+    variables = envVariables;
+    inherit shellAliases sessionVariables;
+  };
 }
-
-

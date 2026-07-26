@@ -19,10 +19,8 @@ let
       throw "Host '${name}' is missing ${what}: ${toString path}";
 
   allProfiles =
-    if cfg ? allProfiles then
-      cfg.allProfiles
-    else
-      throw "Host '${name}' is missing 'allProfiles'. Ensure systems/systems.nix is normalized via lib/host-schema.nix.";
+    cfg.allProfiles
+      or (throw "Host '${name}' is missing 'allProfiles'. Ensure systems/systems.nix is normalized via lib/host-schema.nix.");
 
   # Import profiles from normalized host schema.
   profilesModules = map (p: requirePath "profile" ../profiles/${p}.nix) allProfiles;
@@ -39,12 +37,12 @@ let
 
   varsHost = {
     name = cfg.systemName;
-    role = cfg.role;
-    enabled = cfg.enabled;
-    users = cfg.users;
-    deployUser = cfg.deployUser;
-    ip = cfg.ip;
-    port = cfg.port;
+    inherit (cfg) role;
+    inherit (cfg) enabled;
+    inherit (cfg) users;
+    inherit (cfg) deployUser;
+    inherit (cfg) ip;
+    inherit (cfg) port;
   };
 
   pkgsSets =

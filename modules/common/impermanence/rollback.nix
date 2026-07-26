@@ -1,4 +1,10 @@
-{ config, lib, pkgs, moduleHelpers, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  moduleHelpers,
+  ...
+}:
 
 let
   cfg = config.myConfig.system.impermanence;
@@ -14,12 +20,18 @@ in
       Defaults lecture = never
     '';
 
-    boot.initrd.systemd.services.rollback = {
+    boot.initrd.systemd.services.rollback = lib.mkIf cfg.rollback.enable {
       wantedBy = [ "initrd.target" ];
-      after = [ "dev-mapper-cryptroot.device" ];
+      after = [ "cryptsetup.target" ];
       before = [ "sysroot.mount" ];
 
       unitConfig.DefaultDependencies = "no";
+
+      path = [
+        pkgs.btrfs-progs
+        pkgs.util-linux
+        pkgs.coreutils
+      ];
 
       serviceConfig = {
         Type = "oneshot";
@@ -44,7 +56,7 @@ in
         fi
 
         if btrfs subvolume show "$MNT/$ROOT" >/dev/null 2>&1; then
-          btrfs subvolume delete -R "$MNT/$ROOT" || true
+          btrfs subvolume delete -R "$MNT/$ROOT"
         fi
 
         btrfs subvolume snapshot "$MNT/$BLANK" "$MNT/$ROOT"

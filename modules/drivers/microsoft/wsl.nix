@@ -1,4 +1,10 @@
-{ config, lib, pkgs, moduleHelpers, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  moduleHelpers,
+  ...
+}:
 
 let
   cfg = config.myConfig.drivers.wsl;
@@ -18,19 +24,20 @@ in
       efi.canTouchEfiVariables = lib.mkForce false;
     };
 
-    services.resolved.enable = lib.mkForce false; 
+    networking = {
+      nameservers = lib.mkForce [ ];
+      nftables.enable = lib.mkForce false;
+      firewall.enable = lib.mkForce false;
+      networkmanager.enable = lib.mkForce false;
+    };
 
-    networking.nameservers = lib.mkForce []; 
-    networking.nftables.enable = lib.mkForce false; 
-    networking.firewall.enable = lib.mkForce false; 
-    networking.networkmanager.enable = lib.mkForce false; 
+    services = {
+      resolved.enable = lib.mkForce false;
+      timesyncd.enable = lib.mkForce false;
+    };
 
-    services.timesyncd.enable = lib.mkForce false;
-    
-
-    # loginctl enable-linger $USER 
+    # loginctl enable-linger $USER
     # then wsl --shutdown
-
 
     # systemd.user.services.dbus = {
     #   wantedBy = [ "default.target" ];
@@ -49,4 +56,3 @@ in
     # };
   };
 }
-

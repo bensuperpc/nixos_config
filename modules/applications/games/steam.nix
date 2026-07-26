@@ -1,4 +1,10 @@
-{ config, lib, pkgs, moduleHelpers, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  moduleHelpers,
+  ...
+}:
 
 let
   cfg = config.myConfig.apps.games.steam;
@@ -58,7 +64,7 @@ in
 
     boot.kernelModules = lib.optionals cfg.enableNtsync [ "ntsync" ];
 
-    environment.systemPackages = enabledOptionalsPackages
-      ++ lib.optionals (!cfg.client) steamClientPackages;
+    environment.systemPackages =
+      enabledOptionalsPackages ++ lib.optionals (!cfg.client) steamClientPackages;
   };
 }

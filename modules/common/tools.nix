@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   toolsPackages = with pkgs; [
     wget
@@ -17,7 +22,7 @@ let
     fio # Benchmarking tool for storage devices
     yazi # CLI file manager
   ];
-  
+
   nixToolsPackages = with pkgs; [
     nix-du
   ];
@@ -26,15 +31,14 @@ in
   # programs.dconf.enable = true;
 
   environment.systemPackages = toolsPackages ++ nixToolsPackages;
-  
-  # nix-ld and nix-ld.dev are mutually exclusive.
-  # programs.nix-ld.enable = true;
-  programs.nix-ld.dev.enable = true;
 
-  programs.nh.enable = true;
+  programs = {
+    # nix-ld and nix-ld.dev are mutually exclusive.
+    # nix-ld.enable = true;
+    nix-ld.dev.enable = true;
 
-  programs.yazi = {
-    enable = true;
+    nh.enable = true;
+
+    yazi.enable = true;
   };
 }
-

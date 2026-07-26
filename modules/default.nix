@@ -1,4 +1,11 @@
-{ config, lib, pkgs, inputs, moduleHelpers, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  inputs,
+  moduleHelpers,
+  ...
+}:
 {
   imports = [
     ./common

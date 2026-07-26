@@ -1,4 +1,10 @@
-{ config, lib, pkgs, moduleHelpers, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  moduleHelpers,
+  ...
+}:
 
 let
   cfg = config.myConfig.apps.electronic;
@@ -19,5 +25,5 @@ let
 in
 {
   options.myConfig.apps.electronic = generated.options;
-  config = generated.config;
+  inherit (generated) config;
 }

@@ -9,5 +9,10 @@
   deployUser = "bensuperpc";
 
   appProfiles = [ ];
-  platformProfiles = [ "platform/gpu-intel-skylake" "platform/tpm" "platform/bluetooth" "platform/wireless" ];
+  platformProfiles = [
+    "platform/gpu-intel-skylake"
+    "platform/tpm"
+    "platform/bluetooth"
+    "platform/wireless"
+  ];
 }

@@ -1,4 +1,10 @@
-{ config, lib, pkgs, moduleHelpers, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  moduleHelpers,
+  ...
+}:
 
 let
   cfg = config.myConfig.apps.development.dev;
@@ -43,5 +49,5 @@ let
 in
 {
   options.myConfig.apps.development.dev = generated.options;
-  config = generated.config;
+  inherit (generated) config;
 }

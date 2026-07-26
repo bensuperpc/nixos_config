@@ -1,4 +1,10 @@
-{ config, lib, pkgs, moduleHelpers, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  moduleHelpers,
+  ...
+}:
 
 let
   cfg = config.myConfig.apps.desktop.fonts;
@@ -13,7 +19,10 @@ let
 in
 {
   imports = [
-    (lib.mkAliasOptionModule [ "myConfig" "apps" "additionalFonts" ] [ "myConfig" "apps" "desktop" "fonts" ])
+    (lib.mkAliasOptionModule
+      [ "myConfig" "apps" "additionalFonts" ]
+      [ "myConfig" "apps" "desktop" "fonts" ]
+    )
   ];
 
   options.myConfig.apps.desktop = {
@@ -25,9 +34,12 @@ in
       fonts = {
         fontconfig.enable = true;
         enableDefaultPackages = true;
-        packages = defaultFonts
-        # More info: https://nixos.wiki/wiki/Fonts
-          ++ lib.optionals cfg.nerdFonts (builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts));
+        packages =
+          defaultFonts
+          # More info: https://nixos.wiki/wiki/Fonts
+          ++ lib.optionals cfg.nerdFonts (
+            builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts)
+          );
       };
     }
   ];

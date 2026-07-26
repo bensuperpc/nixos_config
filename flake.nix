@@ -7,7 +7,7 @@
     nixpkgs-2511.url = "github:NixOS/nixpkgs/nixos-25.11";
     nixpkgs-2505.url = "github:NixOS/nixpkgs/nixos-25.05";
     nixpkgs-master.url = "github:NixOS/nixpkgs/master";
-    nixpkgs.follows = "nixpkgs-2605";
+    nixpkgs.follows = "nixpkgs-unstable";
 
     flake-parts = {
       url = "github:hercules-ci/flake-parts/main";
@@ -34,7 +34,7 @@
     # };
 
     home-manager = {
-      url = "github:nix-community/home-manager/release-26.05";
+      url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     plasma-manager = {
@@ -105,7 +105,7 @@
       ];
       perSystem = { pkgs, ... }: {
         # nix fmt
-        formatter = pkgs.nixfmt;
+        formatter = pkgs.nixfmt-tree;
       };
     };
 }

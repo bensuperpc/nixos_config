@@ -1,4 +1,11 @@
-{ config, osConfig, lib, pkgs, userVars, ... }:
+{
+  config,
+  osConfig,
+  lib,
+  pkgs,
+  userVars,
+  ...
+}:
 
 {
   programs.ssh = {
@@ -31,7 +38,7 @@
         Compression = true;
         IdentityFile = "~/.ssh/${userVars.codebergSSHKeyName}";
       };
-      "code.forgejo.org"  = {
+      "code.forgejo.org" = {
         HostName = "code.forgejo.org";
         User = "${userVars.user}";
         Port = 22;

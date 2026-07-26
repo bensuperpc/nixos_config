@@ -1,4 +1,10 @@
-{ config, lib, pkgs, moduleHelpers, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  moduleHelpers,
+  ...
+}:
 
 let
   cfg = config.myConfig.apps.compress;
@@ -32,5 +38,5 @@ let
 in
 {
   options.myConfig.apps.compress = generated.options;
-  config = generated.config;
+  inherit (generated) config;
 }

@@ -1,4 +1,11 @@
-{ config, lib, pkgs, pkgsSets, moduleHelpers, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  pkgsSets,
+  moduleHelpers,
+  ...
+}:
 
 let
   cfg = config.myConfig.apps.browser;
@@ -12,7 +19,7 @@ let
   extraBrowserPackages = with pkgs; [
     ungoogled-chromium
     brave
-    ladybird
+    # ladybird # CVE-2026-58592
     servo
     librewolf
     dillo
@@ -42,34 +49,35 @@ in
   config = lib.mkIf anyEnabled {
     environment.systemPackages = enabledOptionalsPackages;
 
-    programs.firefox = lib.mkIf (cfg.core) {
-        enable = true;
-        policies = {
-          DisableTelemetry = true;
-          EnableTrackingProtection = {
-            Value = true;
-            Locked = true;
-            Cryptomining = true;
-            Fingerprinting = true;
-          };
+    programs.firefox = lib.mkIf cfg.core {
+      enable = true;
+      policies = {
+        DisableTelemetry = true;
+        EnableTrackingProtection = {
+          Value = true;
+          Locked = true;
+          Cryptomining = true;
+          Fingerprinting = true;
         };
       };
+    };
 
-      programs.chromium = lib.mkIf (cfg.core) {
-        enable = true;
-        #homepageLocation = "";
-        extraOpts = {
-          "ExtensionManifestV2Availability" = 2;
-          MetricsReportingEnabled = false;
-          NewTabPageLocation = "https://github.com/notifications";
-          PasswordManagerEnabled = false;
-          SpellcheckEnabled = true;
-          SpellcheckLanguage = [ "fr" "en-US" ];
-        };
-        # define in home config
-        #extensions = [];
+    programs.chromium = lib.mkIf cfg.core {
+      enable = true;
+      #homepageLocation = "";
+      extraOpts = {
+        "ExtensionManifestV2Availability" = 2;
+        MetricsReportingEnabled = false;
+        NewTabPageLocation = "https://github.com/notifications";
+        PasswordManagerEnabled = false;
+        SpellcheckEnabled = true;
+        SpellcheckLanguage = [
+          "fr"
+          "en-US"
+        ];
       };
+      # define in home config
+      #extensions = [];
+    };
   };
 }
-
-

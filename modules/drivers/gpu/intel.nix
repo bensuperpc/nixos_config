@@ -1,13 +1,23 @@
 # More info: https://wiki.nixos.org/wiki/Intel_Graphics
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   variant = config.myConfig.drivers.gpu.intel;
-  isIntel  = variant != "none";
+  isIntel = variant != "none";
 in
 {
   options.myConfig.drivers.gpu.intel = lib.mkOption {
-    type    = lib.types.enum [ "none" "old" "skylake" "xe" ];
+    type = lib.types.enum [
+      "none"
+      "old"
+      "skylake"
+      "xe"
+    ];
     default = "none";
     description = ''
       Intel iGPU driver variant:
@@ -21,7 +31,7 @@ in
   config = lib.mkMerge [
     (lib.mkIf isIntel {
       hardware.graphics = {
-        enable      = true;
+        enable = true;
         enable32Bit = true;
         extraPackages = with pkgs; [
           libvdpau-va-gl

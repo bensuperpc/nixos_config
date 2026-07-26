@@ -1,4 +1,10 @@
-{ config, lib, pkgs, moduleHelpers, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  moduleHelpers,
+  ...
+}:
 
 let
   cfgGui = config.myConfig.apps.hardware.gui;
@@ -22,8 +28,7 @@ let
     #inxi
   ];
 
-  enabledPackages = lib.optionals cfgGui.tools guiPackages
-    ++ lib.optionals cfgCli.tools cliPackages;
+  enabledPackages = lib.optionals cfgGui.tools guiPackages ++ lib.optionals cfgCli.tools cliPackages;
 in
 {
   options.myConfig.apps.hardware = {

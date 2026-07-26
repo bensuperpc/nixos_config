@@ -1,4 +1,10 @@
-{ config, lib, pkgs, moduleHelpers, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  moduleHelpers,
+  ...
+}:
 
 let
   cfg = config.myConfig.system.impermanence;
@@ -14,6 +20,14 @@ let
     # Docker/Podman
     "/var/lib/docker"
     "/var/lib/containers"
+    "/var/lib/flatpak"
+    "/var/lib/cups"
+    "/var/lib/fail2ban"
+    "/var/lib/fwupd"
+    "/var/lib/AccountsService"
+    "/var/lib/systemd/timers"
+    "/var/lib/unbound"
+    "/etc/secureboot"
   ];
 
   persistFilesDefault = [
@@ -31,6 +45,8 @@ in
     enable = moduleHelpers.mkDisabledOption "opt-in persistence via /persist";
 
     rollback = {
+      enable = moduleHelpers.mkDisabledOption "Wipe the root subvolume back to its blank snapshot on next boot";
+
       device = lib.mkOption {
         type = lib.types.str;
         default = "/dev/mapper/cryptroot";

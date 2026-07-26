@@ -1,4 +1,10 @@
-{ config, lib, pkgs, moduleHelpers, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  moduleHelpers,
+  ...
+}:
 
 let
   cfg = config.myConfig.apps.multimedia.audio;
@@ -8,11 +14,19 @@ let
     groups = {
       editing = {
         description = "Install audio editing and waveform tools";
-        packages = with pkgs; [ tenacity audiowaveform audiosource ];
+        packages = with pkgs; [
+          tenacity
+          audiowaveform
+          audiosource
+        ];
       };
       conversion = {
         description = "Install audio conversion and extraction tools";
-        packages = with pkgs; [ lame flacon vgmtrans ];
+        packages = with pkgs; [
+          lame
+          flacon
+          vgmtrans
+        ];
       };
       library = {
         description = "Install music library and metadata tooling";

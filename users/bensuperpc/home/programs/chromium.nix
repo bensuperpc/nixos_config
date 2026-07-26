@@ -1,4 +1,11 @@
-{ config, osConfig, lib, pkgs, userVars, ... }:
+{
+  config,
+  osConfig,
+  lib,
+  pkgs,
+  userVars,
+  ...
+}:
 
 let
   chromiumExtensions = [

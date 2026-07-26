@@ -1,5 +1,11 @@
 # More info: https://wiki.nixos.org/wiki/Bluetooth
-{ config, lib, pkgs, moduleHelpers, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  moduleHelpers,
+  ...
+}:
 
 let
   cfg = config.myConfig.drivers.bluetooth;

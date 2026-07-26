@@ -24,7 +24,7 @@ in
 
     boot.lanzaboote = {
       enable = true;
-      pkiBundle = cfg.pkiBundle;
+      inherit (cfg) pkiBundle;
     };
   };
 }

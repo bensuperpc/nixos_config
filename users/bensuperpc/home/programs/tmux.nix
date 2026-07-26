@@ -1,7 +1,14 @@
-{ config, osConfig, lib, pkgs, userVars, ... }:
+{
+  config,
+  osConfig,
+  lib,
+  pkgs,
+  userVars,
+  ...
+}:
 
 {
-  programs.tmux = { 
+  programs.tmux = {
     enable = true;
     plugins = with pkgs; [
       tmuxPlugins.sensible

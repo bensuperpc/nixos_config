@@ -1,4 +1,10 @@
-{ config, lib, pkgs, moduleHelpers, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  moduleHelpers,
+  ...
+}:
 
 let
   cfg = config.myConfig.apps.firmware;
@@ -18,9 +24,6 @@ in
   options.myConfig.apps.firmware = generated.options;
 
   config = lib.mkMerge [
-    {
-      nixpkgs.config.allowUnfree = true;
-    }
     generated.config
     (lib.mkIf generated.anyEnabled {
       hardware.enableAllFirmware = true;

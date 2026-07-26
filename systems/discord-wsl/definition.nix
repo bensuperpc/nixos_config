@@ -8,6 +8,10 @@
   users = [ "bensuperpc" ];
   deployUser = "bensuperpc";
 
-  appProfiles = ["apps/dev-base" "apps/dev-cpp" "apps/docker" ];
+  appProfiles = [
+    "apps/dev-base"
+    "apps/dev-cpp"
+    "apps/docker"
+  ];
   platformProfiles = [ ];
 }

@@ -1,4 +1,10 @@
-{ config, lib, pkgs, moduleHelpers, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  moduleHelpers,
+  ...
+}:
 let
   cfg = config.myConfig.apps.custom;
 in
@@ -17,8 +23,7 @@ in
         buildInputs = (old.buildInputs or [ ]) ++ [
           prev.libxrandr
         ];
-        cmakeFlags = old.cmakeFlags ++ [
-        ];
+        inherit (old) cmakeFlags;
       });
     })
   ];

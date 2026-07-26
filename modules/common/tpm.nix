@@ -1,4 +1,10 @@
-{ config, lib, pkgs, moduleHelpers, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  moduleHelpers,
+  ...
+}:
 
 let
   cfg = config.myConfig.system.tpm;
@@ -10,6 +16,9 @@ in
 
   config = lib.mkIf cfg.enable {
     security.tpm2.enable = true;
-    boot.initrd.availableKernelModules = [ "tpm_tis" "tpm_crb" ];
+    boot.initrd.availableKernelModules = [
+      "tpm_tis"
+      "tpm_crb"
+    ];
   };
 }

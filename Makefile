@@ -23,7 +23,7 @@ check:
 	@$(DOCKER_NIX) sh -c '$(GIT_FIX) && nix $(NIX_FLAGS) flake check'
 
 fmt:
-	@$(DOCKER_NIX) sh -c '$(GIT_FIX) && nix $(NIX_FLAGS) fmt'
+	@$(DOCKER_NIX) sh -c '$(GIT_FIX) && nix $(NIX_FLAGS) fmt .'
 
 gc:
 	@$(DOCKER_NIX) sh -c '$(GIT_FIX) && nix-collect-garbage --delete-older-than 7d'

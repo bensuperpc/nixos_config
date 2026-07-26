@@ -1,4 +1,11 @@
-{ config, osConfig, lib, pkgs, userVars, ... }:
+{
+  config,
+  osConfig,
+  lib,
+  pkgs,
+  userVars,
+  ...
+}:
 
 let
   sshKeys = lib.unique [
@@ -37,7 +44,7 @@ in
   };
 
   home.activation = {
-    generateSshKey = lib.hm.dag.entryAfter ["installPackages"] (
+    generateSshKey = lib.hm.dag.entryAfter [ "installPackages" ] (
       lib.concatMapStringsSep "\n" (keyName: ''
         if [ ! -f "$HOME/.ssh/${keyName}" ]; then
           install -d -m 700 "$HOME/.ssh"

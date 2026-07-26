@@ -1,4 +1,10 @@
-{ config, lib, pkgs, moduleHelpers, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  moduleHelpers,
+  ...
+}:
 
 let
   cfg = config.myConfig.apps.network.servers;
@@ -14,8 +20,7 @@ let
   ];
 
   enabledOptionalsPackages =
-    lib.optionals cfg.core corePackages
-    ++ lib.optionals cfg.reverseProxy reverseProxyPackages;
+    lib.optionals cfg.core corePackages ++ lib.optionals cfg.reverseProxy reverseProxyPackages;
 
   anyPackagesEnabled = lib.any (x: x) [
     cfg.core

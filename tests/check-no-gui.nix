@@ -4,7 +4,7 @@
   assertions = [
     {
       assertion = config.myConfig.gui.desktop == "none";
-      message = "platform/no-gui conflicts with GUI presets: myConfig.gui.desktop must be \"none\".";    
+      message = "platform/no-gui conflicts with GUI presets: myConfig.gui.desktop must be \"none\".";
     }
     {
       assertion = !config.services.desktopManager.plasma6.enable;

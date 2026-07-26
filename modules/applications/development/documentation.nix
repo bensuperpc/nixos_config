@@ -1,4 +1,10 @@
-{ config, lib, pkgs, moduleHelpers, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  moduleHelpers,
+  ...
+}:
 
 let
   cfg = config.myConfig.apps.development.documentation;
@@ -20,7 +26,10 @@ let
       };
       generators = {
         description = "Install documentation generation and static site tools";
-        packages = with pkgs; [ doxygen zola ];
+        packages = with pkgs; [
+          doxygen
+          zola
+        ];
       };
     };
   };
@@ -34,12 +43,14 @@ in
   config = lib.mkMerge [
     generated.config
     (lib.mkIf cfg.nixosDocumentation {
-      documentation.enable = true;
-      documentation.dev.enable = true;
-      documentation.doc.enable = false;
-      documentation.info.enable = false;
-      documentation.man.enable = true;
-      documentation.nixos.enable = true;
+      documentation = {
+        enable = true;
+        dev.enable = true;
+        doc.enable = false;
+        info.enable = false;
+        man.enable = true;
+        nixos.enable = true;
+      };
     })
   ];
 }
