@@ -38,7 +38,7 @@
       "apps/utilities"
       "apps/office"
     ];
-    policyProfiles = [ "policy/kernel-zen" ];
+    policyProfiles = [ "policy/kernel-latest" ];
   };
 
   workstation = {
@@ -57,7 +57,7 @@
       "apps/virtualization"
       "apps/network-servers"
     ];
-    policyProfiles = [ "policy/kernel-zen" ];
+    policyProfiles = [ "policy/kernel-latest" ];
   };
 
   full = {
@@ -83,7 +83,7 @@
       "apps/network-servers"
       "apps/ai"
     ];
-    policyProfiles = [ "policy/kernel-zen" ];
+    policyProfiles = [ "policy/kernel-latest" ];
   };
 
   family = {
@@ -102,6 +102,6 @@
       "apps/files"
       "apps/utilities"
     ];
-    policyProfiles = [ "policy/kernel-zen" ];
+    policyProfiles = [ "policy/kernel-latest" ];
   };
 }

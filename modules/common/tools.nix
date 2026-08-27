@@ -25,6 +25,7 @@ let
 
   nixToolsPackages = with pkgs; [
     nix-du
+    nix-fast-build
   ];
 in
 {
