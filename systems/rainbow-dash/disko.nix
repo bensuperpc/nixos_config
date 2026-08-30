@@ -10,7 +10,7 @@ in
     disk = {
       nvme0n1 = {
         type = "disk";
-        device = "/dev/disk/by-id/nvme-SAMSUNG_MZVLB256HAHQ-000H1_S425NA0K888091"; # /dev/nvme0n1
+        device = "/dev/disk/by-id/nvme-Samsung_SSD_990_PRO_2TB_S7PJNJ0XC09571W"; # /dev/nvme0n1
         content = {
           type = "gpt";
           partitions = {
@@ -82,10 +82,10 @@ in
                       mountpoint = "/home";
                       mountOptions = btrfsOpts;
                     };
-                    # "@home-snapshots" = {
-                    #   mountpoint = "/home/.snapshots";
-                    #   mountOptions = btrfsOpts;
-                    # };
+                    "@home-snapshots" = {
+                      mountpoint = "/home/.snapshots";
+                      mountOptions = btrfsOpts;
+                    };
 
                     "@nix" = {
                       mountpoint = "/nix";

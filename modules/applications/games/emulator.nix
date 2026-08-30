@@ -47,14 +47,16 @@ let
       };
       sony = {
         description = "Install Sony family emulators";
-        packages = with pkgs; [
-          ppsspp-sdl-wayland
-        ]
-        ++ (with pkgsSets.stable-2605; [
-          # emulator.sony
-          pcsx2 # PlayStation 2
-          rpcs3 # PlayStation 3
-        ]);
+        packages =
+          with pkgs;
+          [
+            ppsspp-sdl-wayland
+          ]
+          ++ (with pkgsSets.stable-2605; [
+            # emulator.sony
+            pcsx2 # PlayStation 2
+            rpcs3 # PlayStation 3
+          ]);
       };
       retro = {
         description = "Install retro and multi-system emulators";

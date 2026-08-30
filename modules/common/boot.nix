@@ -29,7 +29,7 @@ in
     };
     tmp = {
       useZram = true;
-      zramSettings.zram-size = "ram * 0.60";
+      zramSettings.zram-size = "ram * 0.20";
     };
 
     kernelParams = bootKernelParams;

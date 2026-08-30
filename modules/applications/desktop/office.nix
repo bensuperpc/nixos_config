@@ -15,7 +15,7 @@ let
       suite = {
         description = "Install office suite and dictionaries";
         packages = with pkgs; [
-          libreoffice-qt-fresh
+          libreoffice-qt
           hyphenDicts.fr-fr
           hyphenDicts.en-us
           hyphenDicts.en-gb

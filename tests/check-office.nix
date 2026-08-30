@@ -9,7 +9,7 @@
 let
   requiredPkgs = with pkgs; [
     # office.suite
-    libreoffice-qt-fresh
+    libreoffice-qt
     # office.writing
     languagetool
   ];

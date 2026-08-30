@@ -67,11 +67,11 @@ Hosts without an IP address are excluded from remote deployment targets.
 | Host             | Role        | Status         |
 | ---------------- | ----------- | -------------- |
 | `server-1-m710q` | full        | active         |
+| `rainbow-dash`   | full        | active         |
 | `discord-wsl`    | wsl         | active         |
-| `fluttershy`     | server      | active         |
+| `fluttershy`     | server      | WIP (disabled) |
 | `celestia`       | family      | WIP (disabled) |
 | `luna`           | family      | WIP (disabled) |
-| `rainbow-dash`   | family      | WIP (disabled) |
 | `pinkie-pie`     | desktop     | WIP (disabled) |
 
 ## Prerequisites
@@ -124,7 +124,7 @@ deploy .#server-1-m710q
 
 ## Installation
 
-To install on a new machine, you need a live USB with the NixOS installer, the example below uses the `server-1-m710q` target.
+To install on a new machine, you need a live USB with the NixOS installer, the example below uses the `server-1-m710q` target, but you can copy `server-1-m710q` and update ip, name, the `definition.nix` and `disko.nix` files for a new host.
 
 After booting the live USB, list the disks to identify the target device:
 
@@ -285,10 +285,10 @@ Roles are defined in `lib/host-schema.nix` and provide default `platformProfiles
 | `minimal`     | `platform/base`                                                       | _(none)_                                                                                                                      | _(none)_                |
 | `server`      | `platform/base`, `platform/no-gui`                                    | `apps/docker`                                                                                                                 | _(none)_                |
 | `wsl`         | `platform/base`, `platform/no-gpu`, `platform/no-gui`, `platform/wsl` | `apps/docker`                                                                                                                 | _(none)_                |
-| `desktop`     | `platform/base`, `platform/kde-plasma`                                | `apps/custom`, `apps/desktop-runtime`, `apps/desktop`, `apps/multimedia`, `apps/utilities`, `apps/office`                     | `policy/kernel-zen`     |
-| `workstation` | `platform/base`, `platform/kde-plasma`                                | `apps/custom`, `apps/desktop-runtime`, `apps/desktop`, `apps/dev-all`, `apps/multimedia`, `apps/utilities`, `apps/office`, `apps/virtualization`, `apps/network-servers` | `policy/kernel-zen`     |
-| `full`        | `platform/base`, `platform/kde-plasma`                                | `apps/custom`, `apps/docker`, `apps/games`, `apps/desktop-runtime`, `apps/desktop`, `apps/browser`, `apps/torrent`, `apps/communication`, `apps/dev-all`, `apps/multimedia`, `apps/files`, `apps/utilities`, `apps/office`, `apps/virtualization`, `apps/network-servers`, `apps/ai` | `policy/kernel-zen`     |
-| `family`      | `platform/base`, `platform/kde-plasma`                                | `apps/desktop-runtime`, `apps/desktop`, `apps/browser`, `apps/communication`, `apps/torrent`, `apps/multimedia`, `apps/office`, `apps/files`, `apps/utilities` | `policy/kernel-zen`     |
+| `desktop`     | `platform/base`, `platform/kde-plasma`                                | `apps/custom`, `apps/desktop-runtime`, `apps/desktop`, `apps/multimedia`, `apps/utilities`, `apps/office`                     | `policy/kernel-latest`     |
+| `workstation` | `platform/base`, `platform/kde-plasma`                                | `apps/custom`, `apps/desktop-runtime`, `apps/desktop`, `apps/dev-all`, `apps/multimedia`, `apps/utilities`, `apps/office`, `apps/virtualization`, `apps/network-servers` | `policy/kernel-latest`     |
+| `full`        | `platform/base`, `platform/kde-plasma`                                | `apps/custom`, `apps/docker`, `apps/games`, `apps/desktop-runtime`, `apps/desktop`, `apps/browser`, `apps/torrent`, `apps/communication`, `apps/dev-all`, `apps/multimedia`, `apps/files`, `apps/utilities`, `apps/office`, `apps/virtualization`, `apps/network-servers`, `apps/ai` | `policy/kernel-latest`     |
+| `family`      | `platform/base`, `platform/kde-plasma`                                | `apps/desktop-runtime`, `apps/desktop`, `apps/browser`, `apps/communication`, `apps/torrent`, `apps/multimedia`, `apps/office`, `apps/files`, `apps/utilities` | `policy/kernel-latest`     |
 
 ## Adding a Host
 
@@ -321,7 +321,7 @@ Example `definition.nix`:
 
   appProfiles      = [ "apps/games" "apps/docker" ]; # optional extras on top of the role
   platformProfiles = [ "platform/gpu-amd" "platform/wireless" ]; # hardware/driver profiles
-  policyProfiles   = [ "policy/kernel-zen" ]; # kernel and system-wide policies
+  policyProfiles   = [ "policy/kernel-latest" ]; # kernel and system-wide policies
 }
 ```
 

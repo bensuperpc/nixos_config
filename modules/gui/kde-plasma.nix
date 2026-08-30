@@ -61,6 +61,7 @@ in
         kdePackages.karchive
         kdePackages.dolphin-plugins
         kdePackages.dolphin
+        kdePackages.kio-snapshot
 
         # Desktop integration and shell
         kdePackages.flatpak-kcm

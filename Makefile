@@ -1,6 +1,6 @@
 DIR := $(CURDIR)
 
-SERVERS := server-1-m710q fluttershy discord-wsl
+SERVERS := server-1-m710q rainbow-dash fluttershy discord-wsl
 
 DOCKER_NIX_VOL := nix-store-vol
 DOCKER_NIX := docker run -it --rm \

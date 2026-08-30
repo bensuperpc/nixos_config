@@ -19,5 +19,6 @@
     ./secureboot.nix
     ./logs.nix
     ./impermanence
+    ./snapper.nix
   ];
 }

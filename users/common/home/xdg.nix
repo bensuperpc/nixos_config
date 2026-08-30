@@ -33,6 +33,7 @@
     };
 
     configFile."mimeapps.list".force = true;
+    configFile."user-dirs.dirs".force = true;
     mimeApps = {
       enable = true;
       defaultApplications = {
