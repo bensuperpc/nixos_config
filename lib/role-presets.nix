@@ -19,7 +19,7 @@
   server = {
     platformProfiles = [
       "platform/base"
-      "platform/no-gui"
+      "platform/kde-plasma"
     ];
     appProfiles = [ "apps/docker" ];
     policyProfiles = [ ];

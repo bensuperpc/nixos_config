@@ -8,17 +8,13 @@
 
 let
   cfg = config.myConfig.apps.terminal;
-in
-{
-  options.myConfig.apps.terminal = {
-    enable = moduleHelpers.mkDisabledOption "Install additional modern GPU-accelerated terminals";
-  };
 
-  config = lib.mkMerge [
-    {
-      environment.systemPackages =
-        with pkgs;
-        lib.optionals cfg.enable [
+  generated = moduleHelpers.mkPackageGroupModule {
+    inherit cfg;
+    groups = {
+      enable = {
+        description = "Install additional modern GPU-accelerated terminals";
+        packages = with pkgs; [
           alacritty-graphics
           alacritty-theme
           terminator
@@ -27,6 +23,11 @@ in
           xterm
           kitty
         ];
-    }
-  ];
+      };
+    };
+  };
+in
+{
+  options.myConfig.apps.terminal = generated.options;
+  config = generated.config;
 }

@@ -15,17 +15,20 @@ let
     groups = {
       editing = {
         description = "Install video editing, recording, and subtitle tools";
-        packages = with pkgs; [
-          obs-studio
-          handbrake
-          video-compare
-          video2x
-          subtitleedit
-          kdePackages.kdenlive
-          shotcut
-          losslesscut
-          # natron # Broken
-        ];
+        packages =
+          (with pkgs; [
+            obs-studio
+            handbrake
+            video-compare
+            video2x
+            kdePackages.kdenlive
+            shotcut
+            losslesscut
+            # natron # Broken
+          ])
+          ++ (with pkgsSets.stable-2605; [
+            subtitleedit
+          ]);
       };
       playback = {
         description = "Install video players and playback utilities";

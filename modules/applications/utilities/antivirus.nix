@@ -8,13 +8,18 @@
 
 let
   cfg = config.myConfig.apps.antivirus;
+
+  generated = moduleHelpers.mkPackageGroupModule {
+    inherit cfg;
+    groups = {
+      scanner = {
+        description = "Install antivirus scanning tools";
+        packages = with pkgs; [ clamtk ];
+      };
+    };
+  };
 in
 {
-  options.myConfig.apps.antivirus = {
-    scanner = moduleHelpers.mkDisabledOption "Install antivirus scanning tools";
-  };
-
-  config = lib.mkIf cfg.scanner {
-    environment.systemPackages = with pkgs; [ clamtk ];
-  };
+  options.myConfig.apps.antivirus = generated.options;
+  config = generated.config;
 }

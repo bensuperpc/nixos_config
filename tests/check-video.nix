@@ -16,7 +16,7 @@ let
     obs-studio
     handbrake
     video2x
-    subtitleedit
+    #subtitleedit
     # video.opticalMedia
     libdvdnav
     libdvdcss

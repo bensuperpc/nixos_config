@@ -9,20 +9,17 @@
 let
   cfg = config.myConfig.apps.geography;
 
-  geographyPackages = with pkgs; [
-    qgis
-  ];
-
-  enabledOptionalsPackages = lib.optionals cfg.viewer geographyPackages;
-
-  anyEnabled = cfg.viewer;
+  generated = moduleHelpers.mkPackageGroupModule {
+    inherit cfg;
+    groups = {
+      viewer = {
+        description = "Install geography packages (e.g., QGIS)";
+        packages = with pkgs; [ qgis ];
+      };
+    };
+  };
 in
 {
-  options.myConfig.apps.geography = {
-    viewer = moduleHelpers.mkDisabledOption "Install geography packages (e.g., QGIS)";
-  };
-
-  config = lib.mkIf anyEnabled {
-    environment.systemPackages = enabledOptionalsPackages;
-  };
+  options.myConfig.apps.geography = generated.options;
+  config = generated.config;
 }

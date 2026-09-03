@@ -9,27 +9,28 @@
 let
   cfg = config.myConfig.apps.network.cli;
 
-  toolingPackages = with pkgs; [
-    wireshark
-    openvpn
-    inetutils
-    iproute2
-    ethtool
-    dig
-    iperf3
-    nmap
-    traceroute
-    mtr
-  ];
-
-  enabledOptionalsPackages = lib.optionals cfg.tooling toolingPackages;
+  generated = moduleHelpers.mkPackageGroupModule {
+    inherit cfg;
+    groups = {
+      tooling = {
+        description = "Install networking and diagnostics tools";
+        packages = with pkgs; [
+          wireshark
+          openvpn
+          inetutils
+          iproute2
+          ethtool
+          dig
+          iperf3
+          nmap
+          traceroute
+          mtr
+        ];
+      };
+    };
+  };
 in
 {
-  options.myConfig.apps.network.cli = {
-    tooling = moduleHelpers.mkDisabledOption "Install networking and diagnostics tools";
-  };
-
-  config = lib.mkIf cfg.tooling {
-    environment.systemPackages = enabledOptionalsPackages;
-  };
+  options.myConfig.apps.network.cli = generated.options;
+  config = generated.config;
 }

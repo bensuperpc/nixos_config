@@ -9,27 +9,24 @@
 let
   cfg = config.myConfig.apps.math;
 
-  geometryPackages = with pkgs; [
-    geogebra
-  ];
-
-  plottingPackages = with pkgs; [
-    mathgl
-    mathmod
-  ];
-
-  enabledOptionalsPackages =
-    lib.optionals cfg.geometry geometryPackages ++ lib.optionals cfg.plotting plottingPackages;
-
-  anyEnabled = cfg.geometry || cfg.plotting;
+  generated = moduleHelpers.mkPackageGroupModule {
+    inherit cfg;
+    groups = {
+      geometry = {
+        description = "Install geometry and interactive math tools";
+        packages = with pkgs; [ geogebra ];
+      };
+      plotting = {
+        description = "Install mathematical plotting and graphing tools";
+        packages = with pkgs; [
+          mathgl
+          mathmod
+        ];
+      };
+    };
+  };
 in
 {
-  options.myConfig.apps.math = {
-    geometry = moduleHelpers.mkDisabledOption "Install geometry and interactive math tools";
-    plotting = moduleHelpers.mkDisabledOption "Install mathematical plotting and graphing tools";
-  };
-
-  config = lib.mkIf anyEnabled {
-    environment.systemPackages = enabledOptionalsPackages;
-  };
+  options.myConfig.apps.math = generated.options;
+  config = generated.config;
 }

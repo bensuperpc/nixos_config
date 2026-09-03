@@ -10,20 +10,23 @@
 let
   cfg = config.myConfig.apps.printing3d;
 
-  printing3dPackages = with pkgs; [
-    prusa-slicer
-    klipper
-    orca-slicer
-    # cura
-    # curaengine
-  ];
+  generated = moduleHelpers.mkPackageGroupModule {
+    inherit cfg;
+    groups = {
+      tools = {
+        description = "Install 3D printing tools";
+        packages = with pkgs; [
+          prusa-slicer
+          klipper
+          orca-slicer
+          # cura
+          # curaengine
+        ];
+      };
+    };
+  };
 in
 {
-  options.myConfig.apps.printing3d = {
-    tools = moduleHelpers.mkDisabledOption "Install 3D printing tools";
-  };
-
-  config = lib.mkIf cfg.tools {
-    environment.systemPackages = printing3dPackages;
-  };
+  options.myConfig.apps.printing3d = generated.options;
+  config = generated.config;
 }
