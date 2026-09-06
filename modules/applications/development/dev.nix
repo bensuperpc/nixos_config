@@ -15,17 +15,13 @@ let
     groups = {
       tooling = {
         description = "Install general development CLIs and review tools";
-        packages =
-          with pkgs;
-          [
-            shellcheck
-            codechecker
-            gource
-            lazygit
-          ]
-          ++ (with pkgsSets.stable-2511; [
-            commitizen
-          ]);
+        packages = with pkgs; [
+          shellcheck
+          codechecker
+          gource
+          lazygit
+          commitizen
+        ];
       };
       graphics = {
         description = "Install graphics, Vulkan, and OpenCL diagnostics";

@@ -23,6 +23,7 @@ let
             mupen64plus # Nintendo 64
             n64recomp # Nintendo 64
             snes9x # Super Nintendo Entertainment System
+            zsnes2 # Super Nintendo Entertainment System
             bsnes-hd # Super Nintendo Entertainment System
             mgba # Game Boy Advance
             sameboy # Game Boy
@@ -31,9 +32,6 @@ let
             eden # Switch 1 emulator
             cemu # Wii U
           ]
-          ++ (with pkgsSets.stable-2511; [
-            zsnes2 # Super Nintendo Entertainment System
-          ])
           ++ (with pkgsSets.stable-2605; [
             azahar # 3DS
           ]);

@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  pkgsSets,
   moduleHelpers,
   ...
 }:
@@ -9,23 +10,26 @@
 let
   cfg = config.myConfig.apps.printing;
 
-  cupsDrivers = with pkgs; [
-    gutenprint
-    # Brother
-    brlaser
-    brgenml1lpr
-    # HP
-    hplip
-    # hplipWithPlugin # Non-free
-    # Samsung
-    splix
-    # samsung-unified-linux-driver # Non-free
-    # Epson
-    epson-escpr2
-    epson-escpr
-    # Lexmark
-    postscript-lexmark
-  ];
+  cupsDrivers =
+    (with pkgs; [
+      gutenprint
+      # Brother
+      brlaser
+      brgenml1lpr
+      # Samsung
+      splix
+      # samsung-unified-linux-driver # Non-free
+      # Epson
+      epson-escpr2
+      epson-escpr
+      # Lexmark
+      postscript-lexmark
+    ])
+    ++ (with pkgsSets.stable-2605; [
+      # HP
+      hplip
+      # hplipWithPlugin # Non-free
+    ]);
 in
 {
   options.myConfig.apps.printing = {

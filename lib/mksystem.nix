@@ -69,11 +69,13 @@ let
         extraSpecialArgs = {
           inherit inputs;
           inherit pkgsSets moduleHelpers;
+          inherit varsHost;
         };
       };
       _module.args = {
         inherit varsUsers;
         inherit pkgsSets moduleHelpers;
+        inherit varsHost;
       };
     })
   ]

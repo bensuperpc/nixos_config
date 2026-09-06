@@ -14,5 +14,7 @@
     "platform/tpm"
     "platform/bluetooth"
     "platform/wireless"
+    "platform/snapper"
+    "platform/impermanence"
   ];
 }

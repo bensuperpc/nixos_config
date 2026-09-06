@@ -187,13 +187,13 @@ bootctl status
 
 Use the **with secure boot** command only if this host has Secure Boot fully set up (previous subsection, PCR 7 already at its final state), otherwise use the **no secure boot** command.
 
-No Secure Boot on this host:
+**No Secure Boot** on this host:
 
 ```bash
 sudo systemd-cryptenroll /dev/disk/by-partlabel/luks --tpm2-device=auto
 ```
 
-With Secure Boot on this host:
+**With Secure Boot** on this host:
 
 ```bash
 sudo systemd-cryptenroll /dev/disk/by-partlabel/luks --tpm2-device=auto --tpm2-pcrs=0+1+2+7

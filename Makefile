@@ -14,7 +14,13 @@ COLMENA_FLAGS := --show-trace --verbose
 # --no-build-on-target
 COLMENA_BUILD_FLAGS ?=
 
-.PHONY: help update update-input check fmt clean repl gc
+.PHONY: help update update-input check fmt clean repl gc build-all
+
+build-all:
+	@$(DOCKER_NIX) sh -c '$(GIT_FIX) && nix $(NIX_FLAGS) run github:Mic92/nix-fast-build -- \
+		--flake "path:/etc/nixos#nixosConfigurations" \
+		--select "configs: builtins.mapAttrs (name: cfg: cfg.config.system.build.toplevel) configs" \
+		--skip-cached'
 
 update:
 	@$(DOCKER_NIX) sh -c '$(GIT_FIX) && nix $(NIX_FLAGS) flake update'

@@ -3,6 +3,7 @@
   lib,
   pkgs,
   moduleHelpers,
+  varsHost,
   ...
 }:
 
@@ -48,8 +49,9 @@ in
             NUMBER_LIMIT_IMPORTANT = "10";
             NUMBER_MIN_AGE = "60";
 
-            ALLOW_USERS = [
+            ALLOW_USERS = lib.unique [
               "root"
+              varsHost.deployUser
             ];
             SYNC_ACL = true;
             ALLOW_GROUPS = [

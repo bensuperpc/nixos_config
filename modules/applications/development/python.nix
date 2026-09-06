@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  pkgsSets,
   moduleHelpers,
   ...
 }:
@@ -106,21 +107,22 @@ in
   };
 
   config = lib.mkIf anyEnabled {
-    nixpkgs.overlays = lib.optionals cfg.web [
-      (_final: prev: {
-        pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
-          (_pyFinal: pyPrev: {
-            scrapy = pyPrev.scrapy.overrideAttrs (_old: {
-              # Tests run in installCheckPhase (doInstallCheck), not checkPhase.
-              doCheck = false;
-              doInstallCheck = false;
-            });
-          })
-        ];
-      })
-    ];
     environment.systemPackages = [
-      (pkgs.python313.withPackages enabledOptionalsPackages)
+      (
+        (pkgsSets.stable-2605.python313.override {
+          packageOverrides =
+            if cfg.web then
+              (_pyFinal: pyPrev: {
+                scrapy = pyPrev.scrapy.overrideAttrs (_old: {
+                  doCheck = false;
+                  doInstallCheck = false;
+                });
+              })
+            else
+              (_pyFinal: _pyPrev: { });
+        }).withPackages
+        enabledOptionalsPackages
+      )
     ];
     environment.shellAliases = {
       python = "python3.13";

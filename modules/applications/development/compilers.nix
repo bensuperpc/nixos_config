@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  pkgsSets,
   moduleHelpers,
   ...
 }:
@@ -39,7 +40,7 @@ let
       };
       wasm = {
         description = "Install WebAssembly toolchains and runtimes";
-        packages = with pkgs; [
+        packages = with pkgsSets.stable-2605; [
           emscripten
           wasmi
           wasmer
