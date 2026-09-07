@@ -24,5 +24,5 @@ let
 in
 {
   options.myConfig.apps.development.ide = generated.options;
-  config = generated.config;
+  inherit (generated) config;
 }

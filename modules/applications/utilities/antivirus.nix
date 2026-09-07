@@ -21,5 +21,5 @@ let
 in
 {
   options.myConfig.apps.antivirus = generated.options;
-  config = generated.config;
+  inherit (generated) config;
 }

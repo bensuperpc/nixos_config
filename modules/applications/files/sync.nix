@@ -36,7 +36,7 @@ let
       };
       mobile = {
         description = "mobile sync tools";
-        packages = with pkgs; [ adb-sync ];
+        packages = with pkgs; [ better-adb-sync ];
       };
     };
   };

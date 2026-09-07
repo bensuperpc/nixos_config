@@ -25,5 +25,5 @@ let
 in
 {
   options.myConfig.apps.development.benchmark = generated.options;
-  config = generated.config;
+  inherit (generated) config;
 }

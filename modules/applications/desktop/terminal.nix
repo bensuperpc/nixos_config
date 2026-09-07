@@ -29,5 +29,5 @@ let
 in
 {
   options.myConfig.apps.terminal = generated.options;
-  config = generated.config;
+  inherit (generated) config;
 }

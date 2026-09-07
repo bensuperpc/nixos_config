@@ -32,5 +32,5 @@ let
 in
 {
   options.myConfig.apps.network.cli = generated.options;
-  config = generated.config;
+  inherit (generated) config;
 }

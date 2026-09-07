@@ -28,5 +28,5 @@ let
 in
 {
   options.myConfig.apps.printing3d = generated.options;
-  config = generated.config;
+  inherit (generated) config;
 }
