@@ -31,9 +31,9 @@ let
             ryubing # Switch 1 emulator
             eden # Switch 1 emulator
             cemu # Wii U
+            azahar # 3DS
           ]
           ++ (with pkgsSets.stable-2605; [
-            azahar # 3DS
           ]);
       };
       sega = {
@@ -45,16 +45,11 @@ let
       };
       sony = {
         description = "Install Sony family emulators";
-        packages =
-          with pkgs;
-          [
-            ppsspp-sdl-wayland
-          ]
-          ++ (with pkgsSets.stable-2605; [
-            # emulator.sony
-            pcsx2 # PlayStation 2
-            rpcs3 # PlayStation 3
-          ]);
+        packages = with pkgs; [
+          ppsspp-sdl-wayland
+          pcsx2 # PlayStation 2
+          rpcs3 # PlayStation 3
+        ];
       };
       retro = {
         description = "Install retro and multi-system emulators";

@@ -40,7 +40,7 @@ let
       };
       wasm = {
         description = "Install WebAssembly toolchains and runtimes";
-        packages = with pkgsSets.stable-2605; [
+        packages = with pkgs; [
           emscripten
           wasmi
           wasmer

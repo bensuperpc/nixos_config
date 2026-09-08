@@ -24,11 +24,11 @@ let
       epson-escpr
       # Lexmark
       postscript-lexmark
-    ])
-    ++ (with pkgsSets.stable-2605; [
       # HP
       hplip
       # hplipWithPlugin # Non-free
+    ])
+    ++ (with pkgsSets.stable-2605; [
     ]);
 in
 {
