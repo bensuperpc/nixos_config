@@ -8,7 +8,7 @@
 }:
 
 let
-  cfg = config.myConfig.apps.printing3d;
+  cfg = config.myConfig.apps.desktop.printing3d;
 
   generated = moduleHelpers.mkPackageGroupModule {
     inherit cfg;
@@ -27,6 +27,6 @@ let
   };
 in
 {
-  options.myConfig.apps.printing3d = generated.options;
+  options.myConfig.apps.desktop.printing3d = generated.options;
   inherit (generated) config;
 }

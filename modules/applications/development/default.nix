@@ -17,7 +17,7 @@
     ./benchmark.nix
     ./documentation.nix
     ./nixtools.nix
-    ./cppTools.nix
+    ./cpp-tools.nix
     ./compilers.nix
     ./rust.nix
     ./go.nix

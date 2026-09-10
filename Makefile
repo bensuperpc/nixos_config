@@ -38,13 +38,13 @@ all-systems:
 	@$(DOCKER_NIX) sh -c '$(GIT_FIX) && nix $(NIX_FLAGS) flake show path:. --all-systems --no-write-lock-file'
 
 define SERVER_RULES
-.PHONY: $(1).test $(1).build $(1).push $(1).vm
+.PHONY: $(1).test $(1).build $(1).push $(1).boot $(1).vm $(1).sbom
 
 $(1).test:
 	@$(DOCKER_NIX) sh -c '$(GIT_FIX) && nix $(NIX_FLAGS) build path:/etc/nixos#nixosConfigurations.$(1).config.system.build.toplevel --dry-run --show-trace --verbose'
 
 $(1).build:
-	@$(DOCKER_NIX) sh -c '$(GIT_FIX) && nix $(NIX_FLAGS) build path:/etc/nixos#nixosConfigurations.$(1).config.system.build.toplevel --show-trace --verbose'
+	@$(DOCKER_NIX) sh -c '$(GIT_FIX) && nix $(NIX_FLAGS) build path:/etc/nixos#nixosConfigurations.$(1).config.system.build.toplevel -o result-$(1) --show-trace --verbose'
 
 $(1).push:
 	@colmena apply $(COLMENA_FLAGS) $(COLMENA_BUILD_FLAGS) --on $(1)
@@ -54,6 +54,13 @@ $(1).boot:
 
 $(1).vm:
 	@$(DOCKER_NIX) sh -c '$(GIT_FIX) && nix $(NIX_FLAGS) build path:/etc/nixos#nixosConfigurations.$(1).config.system.build.vm --show-trace'
+
+$(1).sbom: $(1).build
+	@$(DOCKER_NIX) sh -c '$(GIT_FIX) && nix $(NIX_FLAGS) run nixpkgs#sbomnix -- "./result-$(1)" \
+		--csv "sbom-$(1).csv" \
+		--cdx "sbom-$(1).cdx.json" \
+		--spdx "sbom-$(1).spdx.json"'
+
 endef
 
 $(foreach server,$(SERVERS),$(eval $(call SERVER_RULES,$(server))))

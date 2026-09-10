@@ -9,7 +9,7 @@
     #../../tests/check-communication.nix
   ];
 
-  myConfig.apps.communication = {
+  myConfig.apps.network.communication = {
     chat = lib.mkDefault true;
     voice = lib.mkDefault true;
     mail = lib.mkDefault true;

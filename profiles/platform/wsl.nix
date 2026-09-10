@@ -2,7 +2,7 @@
 {
   config.myConfig = {
     drivers.wsl.enable = true;
-    apps = {
+    system = {
       firmware.enable = lib.mkForce false;
       ssh = {
         enable = lib.mkForce false;

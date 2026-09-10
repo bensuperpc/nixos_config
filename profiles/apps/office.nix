@@ -9,7 +9,7 @@
     #../../tests/check-office.nix
   ];
 
-  myConfig.apps = {
+  myConfig.apps.desktop = {
     office = {
       suite = lib.mkDefault true;
       writing = lib.mkDefault true;
@@ -19,6 +19,6 @@
     printing.service = lib.mkDefault true;
     printing3d.tools = lib.mkDefault true;
 
-    desktop.fonts.nerdFonts = lib.mkDefault true;
+    fonts.nerdFonts = lib.mkDefault true;
   };
 }

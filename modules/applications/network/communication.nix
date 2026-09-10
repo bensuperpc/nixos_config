@@ -7,7 +7,7 @@
 }:
 
 let
-  cfg = config.myConfig.apps.communication;
+  cfg = config.myConfig.apps.network.communication;
 
   generated = moduleHelpers.mkPackageGroupModule {
     inherit cfg;
@@ -40,6 +40,6 @@ let
   };
 in
 {
-  options.myConfig.apps.communication = generated.options;
+  options.myConfig.apps.network.communication = generated.options;
   inherit (generated) config;
 }

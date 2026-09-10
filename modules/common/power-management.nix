@@ -6,10 +6,10 @@
 }:
 
 let
-  cfg = config.myConfig.apps.power.management;
+  cfg = config.myConfig.system.power.management;
 in
 {
-  options.myConfig.apps.power.management = {
+  options.myConfig.system.power.management = {
     services = moduleHelpers.mkDisabledOption "power management services for desktop/laptop machines";
 
     backend = lib.mkOption {

@@ -9,5 +9,5 @@
     #../../tests/check-virtualization.nix
   ];
 
-  myConfig.apps.kvm.host = true;
+  myConfig.apps.utilities.kvm.host = true;
 }

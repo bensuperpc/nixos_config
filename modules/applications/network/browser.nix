@@ -8,7 +8,7 @@
 }:
 
 let
-  cfg = config.myConfig.apps.browser;
+  cfg = config.myConfig.apps.network.browser;
 
   corePackages = with pkgs; [
     firefox
@@ -40,7 +40,7 @@ let
   anyEnabled = cfg.core || cfg.extra || cfg.cli;
 in
 {
-  options.myConfig.apps.browser = {
+  options.myConfig.apps.network.browser = {
     core = moduleHelpers.mkDisabledOption "Install core browsers";
     extra = moduleHelpers.mkDisabledOption "Install extra browsers";
     cli = moduleHelpers.mkDisabledOption "Install CLI browsers";

@@ -11,6 +11,7 @@
   appProfiles = [ ];
   platformProfiles = [
     "platform/gpu-intel-skylake"
+    "platform/cpu-intel"
     "platform/tpm"
     "platform/bluetooth"
     "platform/wireless"

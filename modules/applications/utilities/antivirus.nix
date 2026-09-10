@@ -7,7 +7,7 @@
 }:
 
 let
-  cfg = config.myConfig.apps.antivirus;
+  cfg = config.myConfig.apps.utilities.antivirus;
 
   generated = moduleHelpers.mkPackageGroupModule {
     inherit cfg;
@@ -20,6 +20,6 @@ let
   };
 in
 {
-  options.myConfig.apps.antivirus = generated.options;
+  options.myConfig.apps.utilities.antivirus = generated.options;
   inherit (generated) config;
 }

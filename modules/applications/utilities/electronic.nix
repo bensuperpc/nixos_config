@@ -7,7 +7,7 @@
 }:
 
 let
-  cfg = config.myConfig.apps.electronic;
+  cfg = config.myConfig.apps.utilities.electronic;
 
   generated = moduleHelpers.mkPackageGroupModule {
     inherit cfg;
@@ -24,6 +24,6 @@ let
   };
 in
 {
-  options.myConfig.apps.electronic = generated.options;
+  options.myConfig.apps.utilities.electronic = generated.options;
   inherit (generated) config;
 }

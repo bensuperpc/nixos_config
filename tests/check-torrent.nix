@@ -20,19 +20,19 @@ in
 {
   assertions = [
     {
-      assertion = config.myConfig.apps.torrent.qbittorrent;
+      assertion = config.myConfig.apps.network.torrent.qbittorrent;
       message = "qBittorrent client must be enabled";
     }
     {
-      assertion = config.myConfig.apps.torrent.transmission;
+      assertion = config.myConfig.apps.network.torrent.transmission;
       message = "Transmission client must be enabled";
     }
     {
-      assertion = config.myConfig.apps.torrent.helpers;
+      assertion = config.myConfig.apps.network.torrent.helpers;
       message = "Torrent helper tools must be enabled";
     }
     {
-      assertion = config.myConfig.apps.torrent.openFirewall;
+      assertion = config.myConfig.apps.network.torrent.openFirewall;
       message = "Torrent firewall opening must be enabled";
     }
   ]

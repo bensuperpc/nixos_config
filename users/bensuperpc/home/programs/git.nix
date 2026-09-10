@@ -15,7 +15,11 @@
       user = {
         name = "${userVars.fullName}";
         email = "${userVars.email}";
+        signingKey = "~/.ssh/${userVars.defaultOnlineSSHKeyName}.pub";
       };
+      commit.gpgSign = true;
+      tag.gpgSign = true;
+      gpg.format = "ssh";
       maintenance = {
         auto = true;
         strategy = "incremental";

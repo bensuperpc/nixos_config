@@ -26,7 +26,7 @@
       kernelModules = [ ];
     };
     #  "coretemp" "msr" "intel_rapl_msr" "intel_rapl_common" # k10temp for AMD
-    kernelModules = [ "kvm-intel" ];
+    # kernelModules = [ "kvm-intel" ];
     extraModulePackages = [ ];
   };
   # swapDevices = [ ];

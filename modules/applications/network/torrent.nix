@@ -7,7 +7,7 @@
 }:
 
 let
-  cfg = config.myConfig.apps.torrent;
+  cfg = config.myConfig.apps.network.torrent;
 
   qbittorrentPackages = with pkgs; [
     qbittorrent
@@ -31,7 +31,7 @@ let
   anyEnabled = cfg.qbittorrent || cfg.transmission || cfg.helpers;
 in
 {
-  options.myConfig.apps.torrent = {
+  options.myConfig.apps.network.torrent = {
     qbittorrent = moduleHelpers.mkDisabledOption "Install qBittorrent client";
     transmission = moduleHelpers.mkDisabledOption "Install Transmission client";
     helpers = moduleHelpers.mkDisabledOption "Install torrent helper tools";

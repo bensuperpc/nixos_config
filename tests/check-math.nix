@@ -18,11 +18,11 @@ in
 {
   assertions = [
     {
-      assertion = config.myConfig.apps.math.geometry;
+      assertion = config.myConfig.apps.utilities.math.geometry;
       message = "Math geometry group must be enabled";
     }
     {
-      assertion = config.myConfig.apps.math.plotting;
+      assertion = config.myConfig.apps.utilities.math.plotting;
       message = "Math plotting group must be enabled";
     }
   ]

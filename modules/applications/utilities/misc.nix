@@ -7,7 +7,7 @@
 }:
 
 let
-  cfg = config.myConfig.apps.tools;
+  cfg = config.myConfig.apps.utilities.tools;
 
   generated = moduleHelpers.mkPackageGroupModule {
     inherit cfg;
@@ -74,7 +74,7 @@ let
   };
 in
 {
-  options.myConfig.apps.tools = generated.options;
+  options.myConfig.apps.utilities.tools = generated.options;
 
   # btop to add CPU/GPU monitoring
   # Also need: boot.kernelModules = [ "kvm-intel" "coretemp" "msr" "intel_rapl_msr" "intel_rapl_common" ]; # k10temp for AMD

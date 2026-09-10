@@ -7,7 +7,7 @@
 }:
 
 let
-  cfg = config.myConfig.apps.ssh;
+  cfg = config.myConfig.system.ssh;
 
   sshPackages = with pkgs; [
     openssh
@@ -15,7 +15,7 @@ let
   ];
 in
 {
-  options.myConfig.apps.ssh = {
+  options.myConfig.system.ssh = {
     enable = moduleHelpers.mkEnabledOption "Activate SSH service";
     openFirewall = moduleHelpers.mkEnabledOption "Automatically open port 22 in the firewall.";
     useFail2ban = moduleHelpers.mkEnabledOption "Automatically enable Fail2ban to protect SSH.";

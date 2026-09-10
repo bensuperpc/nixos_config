@@ -7,8 +7,8 @@
 }:
 
 let
-  cfgGui = config.myConfig.apps.hardware.gui;
-  cfgCli = config.myConfig.apps.hardware.cli;
+  cfgGui = config.myConfig.apps.utilities.hardware.gui;
+  cfgCli = config.myConfig.apps.utilities.hardware.cli;
 
   guiPackages = with pkgs; [
     # Hardware tools/info
@@ -31,7 +31,7 @@ let
   enabledPackages = lib.optionals cfgGui.tools guiPackages ++ lib.optionals cfgCli.tools cliPackages;
 in
 {
-  options.myConfig.apps.hardware = {
+  options.myConfig.apps.utilities.hardware = {
     gui.tools = moduleHelpers.mkDisabledOption "Install hardware GUI tools";
     cli.tools = moduleHelpers.mkDisabledOption "Install hardware CLI tools";
   };

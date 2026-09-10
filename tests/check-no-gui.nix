@@ -19,15 +19,18 @@
       message = "platform/no-gui: services.displayManager.plasma-login-manager.enable must be false.";
     }
     {
-      assertion = !config.myConfig.apps.browser.core && !config.myConfig.apps.browser.extra;
+      assertion =
+        !config.myConfig.apps.network.browser.core && !config.myConfig.apps.network.browser.extra;
       message = "platform/no-gui: browser apps must be disabled (no GUI apps allowed).";
     }
     {
-      assertion = !config.myConfig.apps.communication.chat && !config.myConfig.apps.communication.voice;
+      assertion =
+        !config.myConfig.apps.network.communication.chat
+        && !config.myConfig.apps.network.communication.voice;
       message = "platform/no-gui: GUI communication apps (chat, voice) must be disabled.";
     }
     {
-      assertion = !config.myConfig.apps.office.suite;
+      assertion = !config.myConfig.apps.desktop.office.suite;
       message = "platform/no-gui: office suite must be disabled (no GUI apps allowed).";
     }
   ];

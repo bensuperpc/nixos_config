@@ -11,6 +11,7 @@
   appProfiles = [ ];
   platformProfiles = [
     "platform/gpu-amd"
+    "platform/cpu-amd"
     "platform/tpm"
     "platform/bluetooth"
     "platform/wireless"

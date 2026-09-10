@@ -10,7 +10,7 @@
     #../../tests/check-tools.nix
   ];
 
-  myConfig.apps = {
+  myConfig.apps.utilities = {
     electronic = {
       design = lib.mkDefault true;
       diagnostics = lib.mkDefault true;

@@ -7,7 +7,7 @@
 }:
 
 let
-  cfg = config.myConfig.apps.flashing;
+  cfg = config.myConfig.apps.utilities.flashing;
 
   generated = moduleHelpers.mkPackageGroupModule {
     inherit cfg;
@@ -28,6 +28,6 @@ let
   };
 in
 {
-  options.myConfig.apps.flashing = generated.options;
+  options.myConfig.apps.utilities.flashing = generated.options;
   inherit (generated) config;
 }

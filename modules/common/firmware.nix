@@ -7,7 +7,7 @@
 }:
 
 let
-  cfg = config.myConfig.apps.firmware;
+  cfg = config.myConfig.system.firmware;
 
   generated = moduleHelpers.mkPackageGroupModule {
     inherit cfg;
@@ -21,7 +21,7 @@ let
   };
 in
 {
-  options.myConfig.apps.firmware = generated.options;
+  options.myConfig.system.firmware = generated.options;
 
   config = lib.mkMerge [
     generated.config

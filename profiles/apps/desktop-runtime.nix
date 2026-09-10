@@ -6,5 +6,5 @@
   ];
 
   myConfig.apps.network.cli.tooling = true;
-  myConfig.apps.terminal.enable = true;
+  myConfig.apps.desktop.terminal.enable = true;
 }

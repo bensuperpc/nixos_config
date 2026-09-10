@@ -7,7 +7,7 @@
 }:
 
 let
-  cfg = config.myConfig.apps.math;
+  cfg = config.myConfig.apps.utilities.math;
 
   generated = moduleHelpers.mkPackageGroupModule {
     inherit cfg;
@@ -27,6 +27,6 @@ let
   };
 in
 {
-  options.myConfig.apps.math = generated.options;
+  options.myConfig.apps.utilities.math = generated.options;
   inherit (generated) config;
 }

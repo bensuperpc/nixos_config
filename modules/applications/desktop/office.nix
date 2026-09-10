@@ -7,7 +7,7 @@
 }:
 
 let
-  cfg = config.myConfig.apps.office;
+  cfg = config.myConfig.apps.desktop.office;
 
   generated = moduleHelpers.mkPackageGroupModule {
     inherit cfg;
@@ -39,6 +39,6 @@ let
   };
 in
 {
-  options.myConfig.apps.office = generated.options;
+  options.myConfig.apps.desktop.office = generated.options;
   inherit (generated) config;
 }

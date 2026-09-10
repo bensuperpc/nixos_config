@@ -7,7 +7,7 @@
 }:
 
 let
-  cfg = config.myConfig.apps.terminal;
+  cfg = config.myConfig.apps.desktop.terminal;
 
   generated = moduleHelpers.mkPackageGroupModule {
     inherit cfg;
@@ -28,6 +28,6 @@ let
   };
 in
 {
-  options.myConfig.apps.terminal = generated.options;
+  options.myConfig.apps.desktop.terminal = generated.options;
   inherit (generated) config;
 }

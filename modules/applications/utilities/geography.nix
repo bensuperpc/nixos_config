@@ -7,7 +7,7 @@
 }:
 
 let
-  cfg = config.myConfig.apps.geography;
+  cfg = config.myConfig.apps.utilities.geography;
 
   generated = moduleHelpers.mkPackageGroupModule {
     inherit cfg;
@@ -20,6 +20,6 @@ let
   };
 in
 {
-  options.myConfig.apps.geography = generated.options;
+  options.myConfig.apps.utilities.geography = generated.options;
   inherit (generated) config;
 }

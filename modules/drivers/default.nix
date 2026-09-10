@@ -4,6 +4,7 @@
     ./wireless.nix
     ./bluetooth.nix
     ./gpu
-    ./microsoft
+    ./cpu
+    ./wsl.nix
   ];
 }

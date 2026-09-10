@@ -16,7 +16,7 @@ in
 {
   assertions = [
     {
-      assertion = config.myConfig.apps.kvm.host;
+      assertion = config.myConfig.apps.utilities.kvm.host;
       message = "KVM host virtualization must be enabled";
     }
     {

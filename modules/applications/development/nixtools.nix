@@ -17,7 +17,7 @@ let
         packages = with pkgs; [ cachix ];
       };
       pinning = {
-        description = "Install Nix pinning and input management tools";
+        description = "Install Nix dependency tools";
         packages = with pkgs; [
           niv
           npins
@@ -28,6 +28,7 @@ let
         packages = with pkgs; [
           nix-tree
           nix-diff
+          sbomnix
         ];
       };
     };

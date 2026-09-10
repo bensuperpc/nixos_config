@@ -9,7 +9,7 @@
     #../../tests/check-torrent.nix
   ];
 
-  myConfig.apps.torrent = {
+  myConfig.apps.network.torrent = {
     qbittorrent = lib.mkDefault true;
     transmission = lib.mkDefault true;
     helpers = lib.mkDefault true;

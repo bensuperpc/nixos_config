@@ -8,7 +8,7 @@
 }:
 
 let
-  cfg = config.myConfig.apps.printing;
+  cfg = config.myConfig.apps.desktop.printing;
 
   cupsDrivers =
     (with pkgs; [
@@ -32,7 +32,7 @@ let
     ]);
 in
 {
-  options.myConfig.apps.printing = {
+  options.myConfig.apps.desktop.printing = {
     service = moduleHelpers.mkDisabledOption "Enable printing services";
   };
 

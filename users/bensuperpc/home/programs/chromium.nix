@@ -19,7 +19,7 @@ let
   ];
 in
 {
-  programs.chromium = lib.mkIf osConfig.myConfig.apps.browser.core {
+  programs.chromium = lib.mkIf osConfig.myConfig.apps.network.browser.core {
     enable = true;
     extensions = chromiumExtensions;
   };

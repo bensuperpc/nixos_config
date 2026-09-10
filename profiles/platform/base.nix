@@ -11,5 +11,5 @@
     ../../tests/check-ssh.nix
   ];
 
-  myConfig.apps.ssh.enable = true;
+  myConfig.system.ssh.enable = true;
 }

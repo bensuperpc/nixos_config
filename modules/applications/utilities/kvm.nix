@@ -7,7 +7,7 @@
 }:
 
 let
-  cfg = config.myConfig.apps.kvm;
+  cfg = config.myConfig.apps.utilities.kvm;
 
   vhostPackages = with pkgs; [
     virtiofsd
@@ -32,7 +32,7 @@ let
   anyEnabled = generated.anyEnabled || cfg.enableGuestServices;
 in
 {
-  options.myConfig.apps.kvm = generated.options // {
+  options.myConfig.apps.utilities.kvm = generated.options // {
     enableGuestServices = lib.mkOption {
       type = lib.types.bool;
       default = false;

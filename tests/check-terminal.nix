@@ -19,7 +19,7 @@ in
 {
   assertions = [
     {
-      assertion = config.myConfig.apps.terminal.enable;
+      assertion = config.myConfig.apps.desktop.terminal.enable;
       message = "Terminal module must be enabled";
     }
   ]

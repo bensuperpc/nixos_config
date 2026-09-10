@@ -1,6 +1,7 @@
 { ... }:
 {
   imports = [
-    ./wsl.nix
+    ./intel.nix
+    ./amd.nix
   ];
 }

@@ -7,7 +7,7 @@
 }:
 
 let
-  cfg = config.myConfig.apps.ssh;
+  cfg = config.myConfig.system.ssh;
 
   requiredSSHPkgs = with pkgs; [
     openssh

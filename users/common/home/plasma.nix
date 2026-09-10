@@ -66,7 +66,7 @@
           {
             iconTasks = {
               launchers =
-                lib.optionals osConfig.myConfig.apps.browser.core [
+                lib.optionals osConfig.myConfig.apps.network.browser.core [
                   "applications:torbrowser.desktop"
                   "applications:firefox.desktop"
                 ]

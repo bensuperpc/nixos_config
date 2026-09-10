@@ -8,7 +8,7 @@
 }:
 
 {
-  programs.firefox = lib.mkIf osConfig.myConfig.apps.browser.core {
+  programs.firefox = lib.mkIf osConfig.myConfig.apps.network.browser.core {
     enable = true;
     configPath = "${config.xdg.configHome}/mozilla/firefox";
     policies = {

@@ -17,11 +17,11 @@ in
 {
   assertions = [
     {
-      assertion = config.myConfig.apps.browser.core;
+      assertion = config.myConfig.apps.network.browser.core;
       message = "Browser core group must be enabled";
     }
     {
-      assertion = config.myConfig.apps.browser.extra;
+      assertion = config.myConfig.apps.network.browser.extra;
       message = "Browser extra group must be enabled";
     }
     {

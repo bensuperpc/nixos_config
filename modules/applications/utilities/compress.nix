@@ -7,7 +7,7 @@
 }:
 
 let
-  cfg = config.myConfig.apps.compress;
+  cfg = config.myConfig.apps.utilities.compress;
 
   generated = moduleHelpers.mkPackageGroupModule {
     inherit cfg;
@@ -37,6 +37,6 @@ let
   };
 in
 {
-  options.myConfig.apps.compress = generated.options;
+  options.myConfig.apps.utilities.compress = generated.options;
   inherit (generated) config;
 }

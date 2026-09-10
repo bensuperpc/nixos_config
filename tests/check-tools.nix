@@ -20,23 +20,23 @@ in
 {
   assertions = [
     {
-      assertion = config.myConfig.apps.tools.system;
+      assertion = config.myConfig.apps.utilities.tools.system;
       message = "Tools system group must be enabled";
     }
     {
-      assertion = config.myConfig.apps.tools.network;
+      assertion = config.myConfig.apps.utilities.tools.network;
       message = "Tools network group must be enabled";
     }
     {
-      assertion = config.myConfig.apps.tools.cli;
+      assertion = config.myConfig.apps.utilities.tools.cli;
       message = "Tools CLI group must be enabled";
     }
     {
-      assertion = config.myConfig.apps.tools.security;
+      assertion = config.myConfig.apps.utilities.tools.security;
       message = "Tools security group must be enabled";
     }
     {
-      assertion = config.myConfig.apps.tools.archive;
+      assertion = config.myConfig.apps.utilities.tools.archive;
       message = "Tools archive group must be enabled";
     }
   ]

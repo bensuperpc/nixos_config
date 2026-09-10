@@ -20,19 +20,19 @@ in
 {
   assertions = [
     {
-      assertion = config.myConfig.apps.communication.chat;
+      assertion = config.myConfig.apps.network.communication.chat;
       message = "Communication chat group must be enabled";
     }
     {
-      assertion = config.myConfig.apps.communication.voice;
+      assertion = config.myConfig.apps.network.communication.voice;
       message = "Communication voice group must be enabled";
     }
     {
-      assertion = config.myConfig.apps.communication.mail;
+      assertion = config.myConfig.apps.network.communication.mail;
       message = "Communication mail group must be enabled";
     }
     {
-      assertion = config.myConfig.apps.communication.terminal;
+      assertion = config.myConfig.apps.network.communication.terminal;
       message = "Communication terminal group must be enabled";
     }
   ]

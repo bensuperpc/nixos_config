@@ -36,7 +36,7 @@ let
     # Enable Wayland for Firefox
     MOZ_ENABLE_WAYLAND = "1";
 
-    SDL_VIDEODRIVER = "wayland";
+    SDL_VIDEODRIVER = "wayland,x11";
 
     # Java GUI apps
     _JAVA_AWT_WM_NONREPARENTING = "1";

@@ -65,3 +65,36 @@ jobs:
       - run: >
           nix build ".#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel"
           --dry-run --show-trace -L
+
+  # sbom:
+  #   if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+  #   needs: discover-hosts
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       host: ${{ fromJson(needs.discover-hosts.outputs.hosts) }}
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: DeterminateSystems/nix-installer-action@main
+  #     - uses: DeterminateSystems/magic-nix-cache-action@main
+  #       with:
+  #         use-flakehub: false
+  #     - name: Build ${{ matrix.host }}
+  #       run: >
+  #         nix build ".#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel"
+  #         --show-trace -L --out-link "result-${{ matrix.host }}"
+  #     - name: Generate SBOM
+  #       run: >
+  #         nix run nixpkgs#sbomnix -- "./result-${{ matrix.host }}"
+  #         --csv "sbom-${{ matrix.host }}.csv"
+  #         --cdx "sbom-${{ matrix.host }}.cdx.json"
+  #         --spdx "sbom-${{ matrix.host }}.spdx.json"
+  #     - uses: actions/upload-artifact@v4
+  #       with:
+  #         name: sbom-${{ matrix.host }}
+  #         path: |
+  #           sbom-${{ matrix.host }}.csv
+  #           sbom-${{ matrix.host }}.cdx.json
+  #           sbom-${{ matrix.host }}.spdx.json
+  #         retention-days: 90

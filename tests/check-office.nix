@@ -17,23 +17,23 @@ in
 {
   assertions = [
     {
-      assertion = config.myConfig.apps.office.suite;
+      assertion = config.myConfig.apps.desktop.office.suite;
       message = "Office suite group must be enabled";
     }
     {
-      assertion = config.myConfig.apps.office.writing;
+      assertion = config.myConfig.apps.desktop.office.writing;
       message = "Office writing group must be enabled";
     }
     {
-      assertion = config.myConfig.apps.office.notes;
+      assertion = config.myConfig.apps.desktop.office.notes;
       message = "Office notes group must be enabled";
     }
     {
-      assertion = config.myConfig.apps.printing.service;
+      assertion = config.myConfig.apps.desktop.printing.service;
       message = "Printing service must be enabled";
     }
     {
-      assertion = config.myConfig.apps.printing3d.tools;
+      assertion = config.myConfig.apps.desktop.printing3d.tools;
       message = "3D printing tools must be enabled";
     }
     {
