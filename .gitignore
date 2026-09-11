@@ -1,1 +1,4 @@
 build/*
+tests/**/build_test/
+tests/**/target/
+tests/**/__pycache__/

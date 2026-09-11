@@ -11,12 +11,15 @@ let
   );
 in
 pkgs.mkShell {
-  packages = [
-    my-python
-    pkgs.ruff
-    pkgs.pyright
-    pkgs.sqlite
-  ];
+  packages =
+    with pkgsSets.stable-2605;
+    [
+      ruff
+      pyright
+      sqlite
+      openssl
+    ]
+    ++ [ my-python ];
 
   buildInputs = with pkgsSets.stable-2605; [
     # zlib

@@ -39,6 +39,7 @@ let
           can-utils
           pico-sdk
           pioasm
+          libusb1
         ];
       };
       numeric = {

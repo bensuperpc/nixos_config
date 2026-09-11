@@ -16,6 +16,7 @@ This repository contains my personal NixOS flake used to manage my desktops, ser
 - Profile-driven capabilities via `appProfiles`, `platformProfiles`, and `policyProfiles`
 - Shared user configuration across hosts via `users/<name>/`
 - Deterministic package versions + support older/newer package version via `pkgsSets`
+- Devshells for C/C++ (GCC), Qt6, Python 3.14, Rust, and Java 21
 - Makefile helpers for common maintenance, validation, and deployment tasks
 
 ![my desktop environment](assets/image.webp)
@@ -64,15 +65,15 @@ Defined in `systems/systems.nix`.
 
 Hosts without an IP address are excluded from remote deployment targets.
 
-| Host             | Role        | Status         |
-| ---------------- | ----------- | -------------- |
-| `server-1-m710q` | full        | active         |
-| `rainbow-dash`   | full        | active         |
-| `discord-wsl`    | wsl         | active         |
-| `fluttershy`     | server      | WIP (disabled) |
-| `celestia`       | family      | WIP (disabled) |
-| `luna`           | family      | WIP (disabled) |
-| `pinkie-pie`     | desktop     | WIP (disabled) |
+| Host             | Role    | Status         |
+| ---------------- | ------- | -------------- |
+| `server-1-m710q` | full    | active         |
+| `rainbow-dash`   | full    | active         |
+| `discord-wsl`    | wsl     | active         |
+| `fluttershy`     | server  | WIP (disabled) |
+| `celestia`       | family  | WIP (disabled) |
+| `luna`           | family  | WIP (disabled) |
+| `pinkie-pie`     | desktop | WIP (disabled) |
 
 ## Prerequisites
 
@@ -280,15 +281,15 @@ i18n.defaultLocale           = "en_US.UTF-8";
 
 Roles are defined in `lib/host-schema.nix` and provide default `platformProfiles`, `appProfiles`, and `policyProfiles`. Hosts can extend or override those defaults.
 
-| Role          | Platform profiles                                                     | App profiles                                                                                                                  | Policy / extra profiles |
-| ------------- | --------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
-| `minimal`     | `platform/base`                                                       | _(none)_                                                                                                                      | _(none)_                |
-| `server`      | `platform/base`, `platform/no-gui`                                    | `apps/docker`                                                                                                                 | _(none)_                |
-| `wsl`         | `platform/base`, `platform/no-gpu`, `platform/no-gui`, `platform/wsl` | `apps/docker`                                                                                                                 | _(none)_                |
-| `desktop`     | `platform/base`, `platform/kde-plasma`                                | `apps/custom`, `apps/desktop-runtime`, `apps/desktop`, `apps/multimedia`, `apps/utilities`, `apps/office`                     | `policy/kernel-latest`     |
-| `workstation` | `platform/base`, `platform/kde-plasma`                                | `apps/custom`, `apps/desktop-runtime`, `apps/desktop`, `apps/dev-all`, `apps/multimedia`, `apps/utilities`, `apps/office`, `apps/virtualization`, `apps/network-servers` | `policy/kernel-latest`     |
-| `full`        | `platform/base`, `platform/kde-plasma`                                | `apps/custom`, `apps/docker`, `apps/games`, `apps/desktop-runtime`, `apps/desktop`, `apps/browser`, `apps/torrent`, `apps/communication`, `apps/dev-all`, `apps/multimedia`, `apps/files`, `apps/utilities`, `apps/office`, `apps/virtualization`, `apps/network-servers`, `apps/ai` | `policy/kernel-latest`     |
-| `family`      | `platform/base`, `platform/kde-plasma`                                | `apps/desktop-runtime`, `apps/desktop`, `apps/browser`, `apps/communication`, `apps/torrent`, `apps/multimedia`, `apps/office`, `apps/files`, `apps/utilities` | `policy/kernel-latest`     |
+| Role          | Platform profiles                                                     | App profiles                                                                                                                                                                                                                                                                         | Policy / extra profiles |
+| ------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------- |
+| `minimal`     | `platform/base`                                                       | _(none)_                                                                                                                                                                                                                                                                             | _(none)_                |
+| `server`      | `platform/base`, `platform/no-gui`                                    | `apps/docker`                                                                                                                                                                                                                                                                        | _(none)_                |
+| `wsl`         | `platform/base`, `platform/no-gpu`, `platform/no-gui`, `platform/wsl` | `apps/docker`                                                                                                                                                                                                                                                                        | _(none)_                |
+| `desktop`     | `platform/base`, `platform/kde-plasma`                                | `apps/custom`, `apps/desktop-runtime`, `apps/desktop`, `apps/multimedia`, `apps/utilities`, `apps/office`                                                                                                                                                                            | `policy/kernel-latest`  |
+| `workstation` | `platform/base`, `platform/kde-plasma`                                | `apps/custom`, `apps/desktop-runtime`, `apps/desktop`, `apps/dev-all`, `apps/multimedia`, `apps/utilities`, `apps/office`, `apps/virtualization`, `apps/network-servers`                                                                                                             | `policy/kernel-latest`  |
+| `full`        | `platform/base`, `platform/kde-plasma`                                | `apps/custom`, `apps/docker`, `apps/games`, `apps/desktop-runtime`, `apps/desktop`, `apps/browser`, `apps/torrent`, `apps/communication`, `apps/dev-all`, `apps/multimedia`, `apps/files`, `apps/utilities`, `apps/office`, `apps/virtualization`, `apps/network-servers`, `apps/ai` | `policy/kernel-latest`  |
+| `family`      | `platform/base`, `platform/kde-plasma`                                | `apps/desktop-runtime`, `apps/desktop`, `apps/browser`, `apps/communication`, `apps/torrent`, `apps/multimedia`, `apps/office`, `apps/files`, `apps/utilities`                                                                                                                       | `policy/kernel-latest`  |
 
 ## Adding a Host
 
@@ -343,19 +344,21 @@ make <host>.push   # once ip is set
 
 Hardware drivers and platform flags are activated via `platformProfiles`:
 
-| Profile                      | NixOS option set                           | Description                                          |
-| ---------------------------- | ------------------------------------------ | ---------------------------------------------------- |
-| `platform/gpu-intel-old`     | `myConfig.drivers.gpu.intel = "old"`       | Intel iGPU (Sandy Bridge, Ivy Bridge, Haswell…)      |
-| `platform/gpu-intel-skylake` | `myConfig.drivers.gpu.intel = "skylake"`   | Intel iGPU (Skylake to Raptor Lake)                  |
-| `platform/gpu-intel-xe`      | `myConfig.drivers.gpu.intel = "xe"`        | Intel GPU (Xe / Arc, Alder Lake and newer)           |
-| `platform/gpu-amd`           | `myConfig.drivers.gpu.amd.enable = true`   | AMD GPU: combinable with an Intel profile           |
-| `platform/bluetooth`         | `myConfig.drivers.bluetooth.enable = true` | Bluetooth stack                                      |
-| `platform/wireless`          | `myConfig.drivers.wireless.enable = true`  | Wireless networking                                  |
-| `platform/tpm`               | `myConfig.system.tpm.enable = true`        | TPM 2.0 support and systemd-cryptenroll integration  |
-| `platform/secureboot`        | `myConfig.system.secureboot.enable = true` | Secure Boot via Lanzaboote; replaces `systemd-boot` |
-| `platform/no-gpu`            | _(assertion only)_                         | Headless / server: asserts no GPU profile is active |
+| Profile                      | NixOS option set                           | Description                                                                            |
+| ---------------------------- | ------------------------------------------ | -------------------------------------------------------------------------------------- |
+| `platform/gpu-intel-old`     | `myConfig.drivers.gpu.intel = "old"`       | Intel iGPU (Sandy Bridge, Ivy Bridge, Haswell…)                                        |
+| `platform/gpu-intel-skylake` | `myConfig.drivers.gpu.intel = "skylake"`   | Intel iGPU (Skylake to Raptor Lake)                                                    |
+| `platform/gpu-intel-xe`      | `myConfig.drivers.gpu.intel = "xe"`        | Intel GPU (Xe / Arc, Alder Lake and newer)                                             |
+| `platform/cpu-intel`         | `myConfig.cpu.intel.enable = true`         | Intel CPU (KVM)                                                                        |
+| `platform/gpu-amd`           | `myConfig.drivers.gpu.amd.enable = true`   | AMD GPU (GCN and RDNA)                                                                 |
+| `platform/cpu-amd`           | `myConfig.cpu.amd.enable = true`           | AMD CPU (KVM)                                                                          |
+| `platform/bluetooth`         | `myConfig.drivers.bluetooth.enable = true` | Bluetooth stack                                                                        |
+| `platform/wireless`          | `myConfig.drivers.wireless.enable = true`  | Wireless networking                                                                    |
+| `platform/tpm`               | `myConfig.system.tpm.enable = true`        | TPM 2.0 support and systemd-cryptenroll integration                                    |
+| `platform/secureboot`        | `myConfig.system.secureboot.enable = true` | Secure Boot via Lanzaboote; replaces `systemd-boot`                                    |
+| `platform/no-gpu`            | _(assertion only)_                         | Headless / server: asserts no GPU profile is active                                    |
 | `platform/no-gui`            | _(assertion only)_                         | Headless: asserts `myConfig.gui.desktop == "none"` and no Xorg/Wayland services active |
-| `platform/wsl`               | _(WSL module)_                             | Windows Subsystem for Linux: enables NixOS-WSL support |
+| `platform/wsl`               | _(WSL module)_                             | Windows Subsystem for Linux: enables NixOS-WSL support                                 |
 
 > `myConfig.drivers.gpu.intel` and `myConfig.drivers.gpu.amd.enable` can be set directly in `systems/<host>/configuration.nix` without a profile.
 
@@ -363,9 +366,9 @@ Hardware drivers and platform flags are activated via `platformProfiles`:
 
 Desktop environment is activated via `platformProfiles`:
 
-| Profile               | `myConfig.gui.desktop` value | Description                                                                                   |
-| --------------------- | ---------------------------- | --------------------------------------------------------------------------------------------- |
-| `platform/kde-plasma` | `"plasma"`                   | KDE Plasma 6: sets `myConfig.gui.desktop = "plasma"` and `myConfig.gui.extraPackages = true` |
+| Profile               | `myConfig.gui.desktop` value | Description                                                                                      |
+| --------------------- | ---------------------------- | ------------------------------------------------------------------------------------------------ |
+| `platform/kde-plasma` | `"plasma"`                   | KDE Plasma 6: sets `myConfig.gui.desktop = "plasma"` and `myConfig.gui.extraPackages = true`     |
 | `platform/lxqt`       | `"lxqt"`                     | LXQt (SDDM + Xorg): sets `myConfig.gui.desktop = "lxqt"` and `myConfig.gui.extraPackages = true` |
 
 > `myConfig.gui.desktop` can also be set directly in `systems/<host>/configuration.nix` without a profile.
@@ -374,15 +377,35 @@ Desktop environment is activated via `platformProfiles`:
 
 Policy profiles are activated via role defaults or `policyProfiles`:
 
-| Profile                         | `myConfig.boot.kernel` value | Description                                              |
-| ------------------------------- | ---------------------------- | -------------------------------------------------------- |
-| `policy/kernel-latest`          | `"latest"`                   | Latest upstream kernel                                   |
+| Profile                         | `myConfig.boot.kernel` value | Description                                             |
+| ------------------------------- | ---------------------------- | ------------------------------------------------------- |
+| `policy/kernel-latest`          | `"latest"`                   | Latest upstream kernel                                  |
 | `policy/kernel-zen`             | `"zen"`                      | Zen kernel: desktop/gaming optimised                    |
-| `policy/kernel-latest-libre`    | `"libre"`                    | Latest libre kernel (no binary blobs)                    |
-| `policy/kernel-latest-hardened` | `"hardened"`                 | Latest hardened kernel (security-focused)                |
+| `policy/kernel-latest-libre`    | `"libre"`                    | Latest libre kernel (no binary blobs)                   |
+| `policy/kernel-latest-hardened` | `"hardened"`                 | Latest hardened kernel (security-focused)               |
 | `policy/kernel-lts`             | `"lts"`                      | LTS kernel: set `myConfig.boot.kernel = "lts"` directly |
 
 > `myConfig.boot.kernel` can also be set directly in `systems/<host>/configuration.nix` without a profile.
+
+
+## Development Shells
+
+Defined in `devshells/`, each provides an isolated environment for a specific stack.
+
+```bash
+nix develop .#gcc        # GCC 15 + CMake/GDB/Ninja toolchain
+```
+
+| Devshell              | Description                                          |
+| --------------------- | ---------------------------------------------------- |
+| `devshells/qt6`       | Qt6 + CMake/GCC 15/GDB/Ninja toolchain               |
+| `devshells/gcc`       | GCC 15 + CMake/GDB/Ninja toolchain                   |
+| `devshells/python313` | Python 3.14 toolchain                                |
+| `devshells/rust`      | Rust toolchain (cargo, rustc, clippy, rust-analyzer) |
+| `devshells/java`      | Java toolchain (jdk21, maven, gradle)                |
+
+
+Optionally, with `direnv` installed, add a `.envrc` with `use flake .#qt6` and run `direnv allow` to enter the shell automatically when `cd`-ing into the directory.
 
 ## Useful Resources
 
