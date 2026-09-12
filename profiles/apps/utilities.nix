@@ -6,8 +6,8 @@
 }:
 {
   imports = [
-    #../../tests/check-math.nix
-    #../../tests/check-tools.nix
+    ../../tests/check-math.nix
+    ../../tests/check-tools.nix
   ];
 
   myConfig.apps.utilities = {

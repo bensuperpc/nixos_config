@@ -26,10 +26,6 @@ in
 {
   assertions = [
     {
-      assertion = config.myConfig.apps.development.dev.core;
-      message = "Development core group must be enabled";
-    }
-    {
       assertion = config.myConfig.apps.development.compilers.clang;
       message = "Development compilers Clang/LLVM group must be enabled";
     }

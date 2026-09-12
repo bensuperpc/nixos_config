@@ -8,13 +8,18 @@
 
 let
   requiredToolsPkgs = with pkgs; [
-    wget
-    curl
-    btop
-    tree
-    parallel
-    cryptsetup
-    fastfetch
+    # tools.system
+    htop
+    bottom
+    # tools.network
+    parsync
+    # tools.cli
+    ripgrep
+    fd
+    # tools.security
+    osslsigncode
+    # tools.archive
+    internetarchive
   ];
 in
 {

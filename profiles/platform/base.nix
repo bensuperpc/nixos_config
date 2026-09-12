@@ -7,7 +7,7 @@
 
 {
   imports = [
-    #../../tests/check-common.nix
+    ../../tests/check-common.nix
     ../../tests/check-ssh.nix
   ];
 

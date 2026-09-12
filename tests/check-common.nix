@@ -22,6 +22,10 @@ let
     "tooling"
   ] false config;
   # enableNetworkCliTooling = config.myConfig.apps.network.cli.tooling or false;
+
+  # WSL guests hand networking, boot and swap management to the Windows host
+  # (see modules/drivers/wsl.nix), so these invariants only apply to real installs.
+  isWsl = config.myConfig.drivers.wsl.enable or false;
 in
 {
   assertions = [
@@ -29,14 +33,12 @@ in
       assertion = config.boot.tmp.useZram;
       message = "Zram must be enabled";
     }
-    # {
-    #   assertion = config.boot.tmp.zramSettings."zram-size" == "ram * 0.5";
-    #   message = "Zram size must be set to 50% of RAM";
-    # }
     {
       assertion = config.zramSwap.enable;
       message = "Zram must be enabled";
     }
+  ]
+  ++ lib.optionals (!isWsl) [
     {
       assertion = config.networking.networkmanager.enable;
       message = "NetworkManager must be enabled";

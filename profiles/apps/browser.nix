@@ -6,7 +6,7 @@
 }:
 {
   imports = [
-    #../../tests/check-browser.nix
+    ../../tests/check-browser.nix
   ];
 
   myConfig.apps.network.browser = {

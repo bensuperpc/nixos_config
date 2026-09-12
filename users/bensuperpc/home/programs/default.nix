@@ -15,6 +15,7 @@
     ./tmux.nix
     ./chromium.nix
     ./firefox.nix
+    ./flatpak.nix
     ./shell.nix
   ];
 

@@ -6,7 +6,7 @@
 }:
 {
   imports = [
-    #../../tests/check-torrent.nix
+    ../../tests/check-torrent.nix
   ];
 
   myConfig.apps.network.torrent = {

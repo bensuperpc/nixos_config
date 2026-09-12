@@ -7,7 +7,7 @@
   deployUser = "bensuperpc";
 
   appProfiles = [
-    "apps/development"
+    "apps/dev-all"
     "apps/games"
     "apps/docker"
     "apps/browser"

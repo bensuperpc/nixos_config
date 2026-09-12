@@ -9,6 +9,9 @@
   python313 = import ./python313.nix {
     inherit pkgs pkgsSets;
   };
+  python2 = import ./python2.nix {
+    inherit pkgs pkgsSets;
+  };
   rust = import ./rust.nix {
     inherit pkgs pkgsSets;
   };

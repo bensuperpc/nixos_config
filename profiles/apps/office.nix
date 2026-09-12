@@ -6,7 +6,7 @@
 }:
 {
   imports = [
-    #../../tests/check-office.nix
+    ../../tests/check-office.nix
   ];
 
   myConfig.apps.desktop = {

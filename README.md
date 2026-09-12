@@ -16,7 +16,7 @@ This repository contains my personal NixOS flake used to manage my desktops, ser
 - Profile-driven capabilities via `appProfiles`, `platformProfiles`, and `policyProfiles`
 - Shared user configuration across hosts via `users/<name>/`
 - Deterministic package versions + support older/newer package version via `pkgsSets`
-- Devshells for C/C++ (GCC), Qt6, Python 3.14, Rust, and Java 21
+- Devshells for C/C++ (GCC), Qt6, Python 3.13, Rust, and Java 21
 - Makefile helpers for common maintenance, validation, and deployment tasks
 
 ![my desktop environment](assets/image.webp)
@@ -251,7 +251,7 @@ make <host>.push   # deploy with Colmena (switch)
 make <host>.boot   # deploy with Colmena (boot, then reboot)
 ```
 
-Current `SERVERS` value: `server-1-m710q fluttershy discord-wsl`.
+Current `SERVERS` value: `server-1-m710q rainbow-dash discord-wsl`.
 
 > Note: `Makefile` host list and `systems/systems.nix` host list should be kept in sync.
 
@@ -285,7 +285,7 @@ Roles are defined in `lib/host-schema.nix` and provide default `platformProfiles
 | ------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------- |
 | `minimal`     | `platform/base`                                                       | _(none)_                                                                                                                                                                                                                                                                             | _(none)_                |
 | `server`      | `platform/base`, `platform/no-gui`                                    | `apps/docker`                                                                                                                                                                                                                                                                        | _(none)_                |
-| `wsl`         | `platform/base`, `platform/no-gpu`, `platform/no-gui`, `platform/wsl` | `apps/docker`                                                                                                                                                                                                                                                                        | _(none)_                |
+| `wsl`         | `platform/base`, `platform/gpu-software`, `platform/no-gui`, `platform/wsl` | _(none by default; add `apps/docker` etc. per host, see `discord-wsl`)_                                                                                                                                                                                                       | _(none)_                |
 | `desktop`     | `platform/base`, `platform/kde-plasma`                                | `apps/custom`, `apps/desktop-runtime`, `apps/desktop`, `apps/multimedia`, `apps/utilities`, `apps/office`                                                                                                                                                                            | `policy/kernel-latest`  |
 | `workstation` | `platform/base`, `platform/kde-plasma`                                | `apps/custom`, `apps/desktop-runtime`, `apps/desktop`, `apps/dev-all`, `apps/multimedia`, `apps/utilities`, `apps/office`, `apps/virtualization`, `apps/network-servers`                                                                                                             | `policy/kernel-latest`  |
 | `full`        | `platform/base`, `platform/kde-plasma`                                | `apps/custom`, `apps/docker`, `apps/games`, `apps/desktop-runtime`, `apps/desktop`, `apps/browser`, `apps/torrent`, `apps/communication`, `apps/dev-all`, `apps/multimedia`, `apps/files`, `apps/utilities`, `apps/office`, `apps/virtualization`, `apps/network-servers`, `apps/ai` | `policy/kernel-latest`  |
@@ -400,7 +400,7 @@ nix develop .#gcc        # GCC 15 + CMake/GDB/Ninja toolchain
 | --------------------- | ---------------------------------------------------- |
 | `devshells/qt6`       | Qt6 + CMake/GCC 15/GDB/Ninja toolchain               |
 | `devshells/gcc`       | GCC 15 + CMake/GDB/Ninja toolchain                   |
-| `devshells/python313` | Python 3.14 toolchain                                |
+| `devshells/python313` | Python 3.13 toolchain                                |
 | `devshells/rust`      | Rust toolchain (cargo, rustc, clippy, rust-analyzer) |
 | `devshells/java`      | Java toolchain (jdk21, maven, gradle)                |
 

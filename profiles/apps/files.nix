@@ -6,7 +6,7 @@
 }:
 {
   imports = [
-    #../../tests/check-files.nix
+    ../../tests/check-files.nix
   ];
 
   myConfig.apps.files = {

@@ -61,11 +61,15 @@ let
     inputs.nixos-wsl.nixosModules.wsl
     inputs.nix-ld.nixosModules.nix-ld
     inputs.lanzaboote.nixosModules.lanzaboote
+    inputs.nix-flatpak.nixosModules.nix-flatpak
     ({ config, ... }: {
       home-manager = {
         useGlobalPkgs = true;
         useUserPackages = true;
-        sharedModules = [ inputs.plasma-manager.homeModules.plasma-manager ];
+        sharedModules = [
+          inputs.plasma-manager.homeModules.plasma-manager
+          inputs.nix-flatpak.homeManagerModules.nix-flatpak
+        ];
         extraSpecialArgs = {
           inherit inputs;
           inherit pkgsSets moduleHelpers;

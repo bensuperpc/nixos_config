@@ -48,7 +48,6 @@ in
         inherit (cfg) system;
         specialArgs = {
           inherit inputs moduleHelpers;
-          inherit (cfg) host;
         };
         inherit (cfg) modules;
       }

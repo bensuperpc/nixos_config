@@ -14,13 +14,18 @@
       inputs.nixpkgs-lib.follows = "nixpkgs";
     };
 
-    nix-helper = {
-      url = "github:nix-community/nh/master";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # nix-helper = {
+    #   url = "github:nix-community/nh/master";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
 
     lanzaboote = {
       url = "github:nix-community/lanzaboote/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    nix-flatpak = {
+      url = "github:gmodena/nix-flatpak/main";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

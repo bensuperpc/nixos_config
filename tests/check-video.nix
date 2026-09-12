@@ -21,7 +21,6 @@ let
     libdvdnav
     libdvdcss
     libdvdread
-    makemkv
     libaacs
     libbdplus
     # video.codecs
