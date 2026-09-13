@@ -121,7 +121,7 @@ in
             else
               (_pyFinal: _pyPrev: { });
         }).withPackages
-        enabledOptionalsPackages
+          enabledOptionalsPackages
       )
     ];
     environment.shellAliases = {

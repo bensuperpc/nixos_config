@@ -3,6 +3,7 @@
   lib,
   pkgs,
   moduleHelpers,
+  pkgsSets,
   ...
 }:
 
@@ -21,10 +22,14 @@ let
       };
       cad = {
         description = "Install 3D modeling and CAD tools (Blender, FreeCAD)";
-        packages = with pkgs; [
-          blender
-          freecad
-        ];
+        packages =
+          with pkgs;
+          [
+            blender
+          ]
+          ++ (with pkgsSets.stable-2605; [
+            freecad
+          ]);
       };
     };
   };

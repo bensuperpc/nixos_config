@@ -17,7 +17,7 @@ in
   options.myConfig.apps.custom = {
     libraries = moduleHelpers.mkDisabledOption "Install local custom libraries";
     raylib60 = moduleHelpers.mkDisabledOption "Install raylib 6.0 overlay";
-    svtav1410 = moduleHelpers.mkDisabledOption "Install SVT-AV1 4.1.0 package";
+    raylib-cpp = moduleHelpers.mkDisabledOption "Install raylib-cpp library";
   };
 
   config = {
@@ -26,8 +26,8 @@ in
         (pkgs.callPackage packages/bs-thread-pool.nix { })
         (pkgs.callPackage packages/fake-function-framework.nix { })
       ]
-      ++ lib.optionals cfg.svtav1410 [
-        (pkgs.callPackage packages/svt-av1.nix { })
+      ++ lib.optionals cfg.raylib-cpp [
+        (pkgs.callPackage packages/raylib-cpp.nix { })
       ];
   };
 

@@ -18,4 +18,7 @@
   java = import ./java.nix {
     inherit pkgs pkgsSets;
   };
+  raylib = import ./raylib.nix {
+    inherit pkgs pkgsSets;
+  };
 }

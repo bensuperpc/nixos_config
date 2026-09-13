@@ -26,7 +26,6 @@
 
     nix-flatpak = {
       url = "github:gmodena/nix-flatpak/main";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # Hardware support

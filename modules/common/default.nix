@@ -20,5 +20,6 @@
     ./logs.nix
     ./impermanence
     ./snapper.nix
+    ./oom.nix
   ];
 }
