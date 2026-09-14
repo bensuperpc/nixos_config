@@ -19,6 +19,11 @@
     #   inputs.nixpkgs.follows = "nixpkgs";
     # };
 
+    microvm = {
+      url = "github:microvm-nix/microvm.nix/main";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     lanzaboote = {
       url = "github:nix-community/lanzaboote/master";
       inputs.nixpkgs.follows = "nixpkgs";

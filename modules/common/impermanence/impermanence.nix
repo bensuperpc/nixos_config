@@ -12,6 +12,7 @@ let
   persistDirectoriesDefault = [
     "/var/lib/nixos"
     "/var/lib/libvirt"
+    "/var/lib/microvms"
     "/var/lib/bluetooth"
     "/var/lib/syncthing"
     "/var/lib/clamav"

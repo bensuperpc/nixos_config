@@ -27,7 +27,7 @@ in
     services.flatpak = {
       enable = true;
       update.onActivation = true;
-      packages = cfg.packages;
+      inherit (cfg) packages;
     };
   };
 }

@@ -1,4 +1,7 @@
-{ ... }:
+{
+  config,
+  ...
+}:
 {
   imports = [
     ../../tests/check-network.nix

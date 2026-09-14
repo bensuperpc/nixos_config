@@ -61,6 +61,7 @@ let
     inputs.nixos-wsl.nixosModules.wsl
     inputs.nix-ld.nixosModules.nix-ld
     inputs.lanzaboote.nixosModules.lanzaboote
+    inputs.microvm.nixosModules.host
     inputs.nix-flatpak.nixosModules.nix-flatpak
     ({ config, ... }: {
       home-manager = {

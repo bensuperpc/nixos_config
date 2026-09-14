@@ -18,6 +18,7 @@ This repository contains my personal NixOS flake used to manage my desktops, ser
 - Deterministic package versions + support older/newer package version via `pkgsSets`
 - Devshells for C/C++ (GCC), Qt6, Python 3.13, Rust, and Java 21
 - Makefile helpers for common maintenance, validation, and deployment tasks
+- `microvm.nix` host support (WIP) for running lightweight VMs
 
 ![my desktop environment](assets/image.webp)
 
