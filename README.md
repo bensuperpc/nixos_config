@@ -46,6 +46,7 @@ This repository contains my personal NixOS flake used to manage my desktops, ser
 │       ├── multimedia   # Video, audio, image
 │       ├── games        # Steam, emulators, Minecraft
 │       ├── desktop      # Desktop integration, fonts, printing
+│       ├── microvm      # Lightweight VMs (QEMU, Docker, OCI containers)
 │       ├── network      # Browsers, communication, torrent
 │       ├── files        # Backup, sync, crypto
 │       ├── utilities    # Misc tools, KVM, math, antivirus

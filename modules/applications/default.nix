@@ -16,5 +16,6 @@
     ./desktop
     ./utilities
     ./ai
+    ./microvm
   ];
 }

@@ -36,6 +36,10 @@ in
           enable = true;
           dates = "weekly";
         };
+        # rootless = {
+        #   enable = true;
+        #   setSocketVariable = true;
+        # };
       };
     };
 

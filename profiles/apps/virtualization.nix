@@ -10,7 +10,7 @@
   ];
 
   myConfig.apps.utilities.kvm.host = true;
-  myConfig.apps.utilities.microvm = {
+  myConfig.apps.microvm = {
     host = true;
     examples = {
       test = true;
