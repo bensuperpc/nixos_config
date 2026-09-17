@@ -29,6 +29,9 @@ let
     "/var/lib/systemd/timers"
     "/var/lib/unbound"
     "/etc/secureboot"
+    # Caddy
+    "/var/lib/acme"
+    "/var/lib/caddy"
   ];
 
   persistFilesDefault = [

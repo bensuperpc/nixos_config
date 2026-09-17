@@ -2,12 +2,13 @@
   config,
   lib,
   moduleHelpers,
+  pkgsSets,
   ...
 }:
 
 let
   cfg = config.myConfig.apps.microvm;
-  dockerTest = import ./vm/dockerTest.nix;
+  dockerTest = import ./vm/dockerTest/main.nix { inherit pkgsSets; };
   anyExampleEnabled = cfg.examples.test;
 in
 {

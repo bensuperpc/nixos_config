@@ -18,6 +18,8 @@ in
     libraries = moduleHelpers.mkDisabledOption "Install local custom libraries";
     raylib60 = moduleHelpers.mkDisabledOption "Install raylib 6.0 overlay";
     raylib-cpp = moduleHelpers.mkDisabledOption "Install raylib-cpp library";
+    fastnoise2 = moduleHelpers.mkDisabledOption "Install FastNoise2 library";
+    libnbtplusplus = moduleHelpers.mkDisabledOption "Install libnbtplusplus library";
   };
 
   config = {
@@ -28,6 +30,12 @@ in
       ]
       ++ lib.optionals cfg.raylib-cpp [
         (pkgs.callPackage packages/raylib-cpp.nix { })
+      ]
+      ++ lib.optionals cfg.fastnoise2 [
+        (pkgs.callPackage packages/fastnoise2.nix { })
+      ]
+      ++ lib.optionals cfg.libnbtplusplus [
+        (pkgs.callPackage packages/libnbtplusplus.nix { })
       ];
   };
 

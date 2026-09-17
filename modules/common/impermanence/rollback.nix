@@ -35,7 +35,7 @@ in
 
       serviceConfig = {
         Type = "oneshot";
-        TimeoutStartSec = "30s";
+        TimeoutStartSec = "45s";
       };
 
       script = ''

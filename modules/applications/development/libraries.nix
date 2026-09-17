@@ -31,6 +31,7 @@ let
           simdjson
           nlohmann_json
           simdutf
+          openvdb
         ];
       };
       embedded = {
@@ -65,6 +66,7 @@ let
           glew
           xdg-utils-cxx
           imgui
+          kompute
         ];
       };
       compute = {

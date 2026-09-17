@@ -1,10 +1,16 @@
+{ pkgsSets }:
+
+let
+  containers = import ./containers.nix { pkgs = pkgsSets.stable-2605; };
+in
 {
   microvm-net = {
     autostart = true;
+    restartIfChanged = true;
+    pkgs = pkgsSets.stable-2605;
     config =
       { lib, pkgs, ... }:
       let
-        indexHtml = pkgs.writeText "index.html" "microvm-net is up";
       in
       {
         networking.hostName = "microvm-net";
@@ -54,7 +60,8 @@
             {
               image = "nix-store-overlay.img";
               mountPoint = "/nix/.rw-store";
-              size = 2048;
+              size = 16384;
+              direct = true;
             }
             {
               image = "docker-data.img";
@@ -89,23 +96,7 @@
           };
           oci-containers = {
             backend = "docker";
-            containers.caddy = {
-              autoStart = true;
-              # readOnly = true;
-              image = "caddy:alpine";
-              ports = [ "80:80" ];
-              volumes = [
-                "${indexHtml}:/usr/share/caddy/index.html:ro"
-                # "caddy_data:/data"
-                # "caddy_config:/config"
-              ];
-              capabilities = {
-                NET_BIND_SERVICE = true;
-                # CAP_DAC_OVERRIDE = true;
-                # CAP_NET_RAW = true;
-                ALL = false;
-              };
-            };
+            inherit containers;
           };
         };
       };
