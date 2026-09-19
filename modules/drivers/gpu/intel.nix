@@ -37,6 +37,7 @@ in
           libvdpau-va-gl
           libva
           libva-vdpau-driver
+          intel-vaapi-driver
         ];
       };
       environment.systemPackages = with pkgs; [
@@ -46,7 +47,7 @@ in
     })
 
     (lib.mkIf (variant == "old") {
-      hardware.graphics.extraPackages = with pkgs; [ intel-vaapi-driver ];
+      hardware.graphics.extraPackages = with pkgs; [ ];
     })
 
     (lib.mkIf (variant == "skylake") {

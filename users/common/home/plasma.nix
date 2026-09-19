@@ -3,6 +3,7 @@
   config,
   osConfig,
   lib,
+  pkgs,
   ...
 }:
 
@@ -164,5 +165,11 @@
     configFile = {
       baloofilerc."Basic Settings"."Indexing-Enabled" = false;
     };
+  };
+
+  services.kdeconnect = {
+    enable = true;
+    package = pkgs.kdePackages.kdeconnect-kde;
+    indicator = true;
   };
 }

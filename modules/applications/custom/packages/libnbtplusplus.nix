@@ -10,7 +10,7 @@
   zlib,
 }:
 
-stdenv.mkDerivation (finalAttrs: {
+stdenv.mkDerivation rec {
   pname = "libnbtplusplus";
   version = "2.3.0";
 
@@ -47,4 +47,4 @@ stdenv.mkDerivation (finalAttrs: {
     homepage = "https://github.com/PrismLauncher/libnbtplusplus";
     license = lib.licenses.gpl3Plus;
   };
-})
+}

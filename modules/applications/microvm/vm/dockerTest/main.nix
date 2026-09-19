@@ -10,8 +10,6 @@ in
     pkgs = pkgsSets.stable-2605;
     config =
       { lib, pkgs, ... }:
-      let
-      in
       {
         networking.hostName = "microvm-net";
         system.stateVersion = lib.trivial.release;

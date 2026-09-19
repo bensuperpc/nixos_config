@@ -8,6 +8,7 @@
 
 let
   cfg = config.myConfig.apps.ai;
+  llamaCppFixed = pkgs.llama-cpp.override { nodejs_latest = pkgs.nodejs_22; };
 
   generated = moduleHelpers.mkPackageGroupModule {
     inherit cfg;
@@ -17,8 +18,8 @@ let
         packages = with pkgs; [
           ollama
           ollama-vulkan
-          llama-cpp
-          llama-cpp-vulkan
+          llamaCppFixed
+          (llamaCppFixed.override { vulkanSupport = true; })
         ];
       };
     };

@@ -3,6 +3,7 @@
   imports = [
     ./network
     ./nixos
+    ./services
     ./boot.nix
     ./kernel.nix
     ./audio.nix
@@ -12,14 +13,10 @@
     ./hardware-tools.nix
     ./locales.nix
     ./tools.nix
-    ./power-management.nix
-    ./ssh.nix
     ./user.nix
     ./tpm.nix
     ./secureboot.nix
-    ./logs.nix
     ./impermanence
     ./snapper.nix
-    ./oom.nix
   ];
 }

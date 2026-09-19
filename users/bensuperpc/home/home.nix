@@ -18,10 +18,6 @@ let
   ];
 in
 {
-  imports = [
-    ../../common/home
-  ];
-
   home = {
     username = "${userVars.user}";
     homeDirectory = "/home/${userVars.user}";

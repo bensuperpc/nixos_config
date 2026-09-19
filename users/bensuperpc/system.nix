@@ -42,7 +42,10 @@
   ];
 
   home-manager.users.${userVars.user} = {
-    imports = [ ./home ];
+    imports = [
+      ./home
+      ./../common/home
+    ];
     _module.args.userVars = userVars;
     home.stateVersion = "26.05"; # config.system.stateVersion;
   };

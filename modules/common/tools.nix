@@ -21,6 +21,7 @@ let
     fastfetch # System information tool
     fio # Benchmarking tool for storage devices
     yazi # CLI file manager
+    fff
   ];
 
   nixToolsPackages = with pkgs; [

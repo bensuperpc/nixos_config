@@ -11,6 +11,6 @@
     ../../tests/check-gui.nix
   ];
 
-  myConfig.gui.desktop = "plasma";
-  myConfig.gui.extraPackages = true;
+  config.myConfig.gui.desktop = "plasma";
+  config.myConfig.gui.extraPackages = true;
 }
