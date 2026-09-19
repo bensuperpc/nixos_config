@@ -40,7 +40,6 @@ in
       maxretry = 5;
       ignoreIP = [
         "127.0.0.0/8"
-        "192.168.1.0/24"
       ];
       bantime = "24h";
       bantime-increment = {

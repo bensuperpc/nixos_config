@@ -57,7 +57,7 @@ let
     inputs.home-manager.nixosModules.home-manager
     inputs.impermanence.nixosModules.impermanence
     inputs.disko.nixosModules.disko
-    inputs.agenix.nixosModules.default
+    inputs.sops-nix.nixosModules.sops
     inputs.nixos-wsl.nixosModules.wsl
     inputs.nix-ld.nixosModules.nix-ld
     inputs.lanzaboote.nixosModules.lanzaboote

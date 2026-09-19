@@ -68,10 +68,9 @@
     };
 
     # For secrets management
-    agenix = {
-      url = "github:ryantm/agenix/main";
+    sops-nix = {
+      url = "github:Mic92/sops-nix/master";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.home-manager.follows = "home-manager";
     };
 
     # WSL support

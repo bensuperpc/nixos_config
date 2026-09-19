@@ -24,8 +24,10 @@ in
     };
 
     initrd = {
-      systemd.enable = true;
-      systemd.emergencyAccess = true;
+      systemd = {
+        enable = true;
+        emergencyAccess = true;
+      };
     };
     tmp = {
       useZram = true;
