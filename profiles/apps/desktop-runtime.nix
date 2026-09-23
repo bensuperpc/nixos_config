@@ -1,13 +1,5 @@
+{ lib, ... }:
 {
-  config,
-  ...
-}:
-{
-  imports = [
-    ../../tests/check-network.nix
-    ../../tests/check-terminal.nix
-  ];
-
-  myConfig.apps.network.cli.tooling = true;
-  myConfig.apps.desktop.terminal.enable = true;
+  myConfig.apps.network.cli.enable = lib.mkDefault true;
+  myConfig.apps.desktop.terminal.enable = lib.mkDefault true;
 }

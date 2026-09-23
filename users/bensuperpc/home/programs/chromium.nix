@@ -2,12 +2,13 @@
   config,
   osConfig,
   lib,
-  pkgs,
-  userVars,
+  moduleHelpers,
   ...
 }:
 
 let
+  cfg = config.myConfig.apps.chromium;
+
   chromiumExtensions = [
     "ddkjiahejlhfcafbddmgiahcphecmpfh" # uBlock Origin Lite
     "nngceckbapebfimnlniiiahkandclblb" # Bitwarden
@@ -19,7 +20,10 @@ let
   ];
 in
 {
-  programs.chromium = lib.mkIf osConfig.myConfig.apps.network.browser.core {
+  options.myConfig.apps.chromium.enable =
+    moduleHelpers.mkBoolOption osConfig.myConfig.apps.network.browser.core "Chromium with its extensions (follows the system `apps.network.browser.core` toggle by default)";
+
+  config.programs.chromium = lib.mkIf cfg.enable {
     enable = true;
     extensions = chromiumExtensions;
   };

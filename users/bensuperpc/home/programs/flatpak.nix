@@ -1,11 +1,19 @@
 {
-  lib,
+  config,
   osConfig,
+  lib,
+  moduleHelpers,
   ...
 }:
 
+let
+  cfg = config.myConfig.apps.flatpak;
+in
 {
-  services.flatpak = lib.mkIf osConfig.myConfig.apps.desktop.flatpak.enable {
+  options.myConfig.apps.flatpak.enable =
+    moduleHelpers.mkBoolOption osConfig.myConfig.apps.desktop.flatpak.enable "Per-user declarative Flatpak apps (follows the system `apps.desktop.flatpak.enable` toggle by default)";
+
+  config.services.flatpak = lib.mkIf cfg.enable {
     enable = true;
     packages = [
     ];

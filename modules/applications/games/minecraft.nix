@@ -19,7 +19,7 @@ let
           jre25_minimal # 26.1+
         ];
       };
-      installJres = {
+      jres = {
         description = "Install multiple Java runtimes for modpack compatibility";
         packages = with pkgs; [
           jre8 # MC 1.12-1.16 (older works but with some issues)
@@ -28,7 +28,7 @@ let
           jre21_minimal # MC 1.20-1.21
         ];
       };
-      installTools = {
+      tools = {
         description = "Install Minecraft tools";
         packages = with pkgs; [
           mcaselector

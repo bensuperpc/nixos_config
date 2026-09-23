@@ -1,6 +1,5 @@
 {
   config,
-  lib,
   pkgs,
   moduleHelpers,
   ...
@@ -58,6 +57,7 @@ let
         description = "Install media and animation utilities";
         packages = with pkgs; [
           mediainfo
+          tesseract
           pencil2d
         ];
       };

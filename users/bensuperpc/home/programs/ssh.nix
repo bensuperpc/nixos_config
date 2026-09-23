@@ -1,14 +1,43 @@
 {
   config,
-  osConfig,
   lib,
-  pkgs,
+  moduleHelpers,
   userVars,
   ...
 }:
 
+let
+  cfg = config.myConfig.apps.ssh;
+  hosts = {
+    "github.com".key = userVars.githubSSHKeyName;
+    "gitlab.com".key = userVars.gitlabSSHKeyName;
+    "codeberg.org".key = userVars.codebergSSHKeyName;
+    "code.forgejo.org".key = userVars.forgejoSSHKeyName;
+    "192.168.1.79" = {
+      key = userVars.localSSHKeyName;
+      port = 4444;
+    };
+  };
+
+  mkHost =
+    host:
+    {
+      key,
+      port ? 22,
+    }:
+    {
+      HostName = host;
+      User = userVars.user;
+      Port = port;
+      Compression = true;
+      IdentityFile = "~/.ssh/${key}";
+    };
+in
 {
-  programs.ssh = {
+  options.myConfig.apps.ssh.enable =
+    moduleHelpers.mkEnabledOption "SSH client configuration (one key per forge)";
+
+  config.programs.ssh = lib.mkIf cfg.enable {
     enable = true;
     enableDefaultConfig = false;
 
@@ -17,41 +46,7 @@
         ServerAliveInterval = 60;
         IdentityFile = "~/.ssh/${userVars.defaultOnlineSSHKeyName}";
       };
-      "github.com" = {
-        HostName = "github.com";
-        User = "${userVars.user}";
-        Port = 22;
-        Compression = true;
-        IdentityFile = "~/.ssh/${userVars.githubSSHKeyName}";
-      };
-      "gitlab.com" = {
-        HostName = "gitlab.com";
-        User = "${userVars.user}";
-        Port = 22;
-        Compression = true;
-        IdentityFile = "~/.ssh/${userVars.gitlabSSHKeyName}";
-      };
-      "codeberg.org" = {
-        HostName = "codeberg.org";
-        User = "${userVars.user}";
-        Port = 22;
-        Compression = true;
-        IdentityFile = "~/.ssh/${userVars.codebergSSHKeyName}";
-      };
-      "code.forgejo.org" = {
-        HostName = "code.forgejo.org";
-        User = "${userVars.user}";
-        Port = 22;
-        Compression = true;
-        IdentityFile = "~/.ssh/${userVars.forgejoSSHKeyName}";
-      };
-      "192.168.1.79" = {
-        HostName = "192.168.1.79";
-        User = "${userVars.user}";
-        Port = 4444;
-        Compression = true;
-        IdentityFile = "~/.ssh/${userVars.localSSHKeyName}";
-      };
-    };
+    }
+    // lib.mapAttrs mkHost hosts;
   };
 }

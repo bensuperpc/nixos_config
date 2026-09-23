@@ -1,14 +1,10 @@
-{ pkgs, pkgsSets, ... }:
+{ pkgs }:
 
 pkgs.mkShell {
-  packages = with pkgsSets.stable-2605; [
+  packages = with pkgs; [
     openjdk21
     maven
     gradle
-  ];
-
-  buildInputs = with pkgsSets.stable-2605; [
-    # none
   ];
 
   shellHook = ''

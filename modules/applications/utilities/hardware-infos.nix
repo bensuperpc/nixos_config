@@ -1,44 +1,37 @@
 {
   config,
-  lib,
   pkgs,
   moduleHelpers,
   ...
 }:
 
 let
-  cfgGui = config.myConfig.apps.utilities.hardware.gui;
-  cfgCli = config.myConfig.apps.utilities.hardware.cli;
+  cfg = config.myConfig.apps.utilities.hardware;
 
-  guiPackages = with pkgs; [
-    # Hardware tools/info
-    hardinfo2
-    hwinfo
-    lshw-gui
-    # lact # AMD GPU info tool
-  ];
-
-  cliPackages = with pkgs; [
-    # Hardware tools/info
-    libtool
-    cpuid
-    smartmontools
-    inxi
-    #lshw
-    #inxi
-  ];
-
-  enabledPackages = lib.optionals cfgGui.tools guiPackages ++ lib.optionals cfgCli.tools cliPackages;
+  generated = moduleHelpers.mkPackageGroupModule {
+    inherit cfg;
+    groups = {
+      gui = {
+        description = "Install hardware GUI tools";
+        packages = with pkgs; [
+          hardinfo2
+          hwinfo
+          lshw-gui
+          # lact # AMD GPU info tool
+        ];
+      };
+      cli = {
+        description = "Install hardware CLI tools";
+        packages = with pkgs; [
+          cpuid
+          smartmontools
+          inxi
+        ];
+      };
+    };
+  };
 in
 {
-  options.myConfig.apps.utilities.hardware = {
-    gui.tools = moduleHelpers.mkDisabledOption "Install hardware GUI tools";
-    cli.tools = moduleHelpers.mkDisabledOption "Install hardware CLI tools";
-  };
-
-  config = lib.mkMerge [
-    {
-      environment.systemPackages = enabledPackages;
-    }
-  ];
+  options.myConfig.apps.utilities.hardware = generated.options;
+  inherit (generated) config;
 }

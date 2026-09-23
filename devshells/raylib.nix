@@ -1,16 +1,14 @@
-{ pkgs, pkgsSets, ... }:
+{ pkgs }:
 
 let
-  raylib-cpp =
-    pkgsSets.unstable.callPackage ../modules/applications/custom/packages/raylib-cpp.nix
-      { };
+  raylib-cpp = pkgs.callPackage ../modules/applications/custom/packages/raylib-cpp.nix { };
 in
 pkgs.mkShell {
-  nativeBuildInputs = with pkgsSets.unstable; [
+  nativeBuildInputs = with pkgs; [
     makeWrapper
     pkg-config
   ];
-  packages = with pkgsSets.unstable; [
+  packages = with pkgs; [
     cmake
     ninja
     gcc
@@ -19,7 +17,7 @@ pkgs.mkShell {
     bashInteractive
   ];
 
-  buildInputs = with pkgsSets.unstable; [
+  buildInputs = with pkgs; [
     raylib
     raylib-cpp
     gtest

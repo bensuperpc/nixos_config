@@ -1,6 +1,5 @@
 {
   config,
-  lib,
   pkgs,
   moduleHelpers,
   ...
@@ -12,8 +11,8 @@ let
   generated = moduleHelpers.mkPackageGroupModule {
     inherit cfg;
     groups = {
-      tools = {
-        description = "Install flashing tools";
+      enable = {
+        description = "Install flashing and embedded bus tools";
         packages = with pkgs; [
           qFlipper
           rpi-imager
@@ -22,6 +21,8 @@ let
           openocd
           esptool
           platformio
+          can-utils
+          pioasm
         ];
       };
     };

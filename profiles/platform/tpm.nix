@@ -1,4 +1,3 @@
-{ config, ... }:
-{
-  config.myConfig.system.tpm.enable = true;
+_: {
+  myConfig.system.tpm.enable = true;
 }

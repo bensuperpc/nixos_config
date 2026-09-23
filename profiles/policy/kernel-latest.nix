@@ -1,3 +1,4 @@
-_: {
-  myConfig.boot.kernel = "latest";
+{ lib, ... }:
+{
+  myConfig.boot.kernel = lib.mkDefault "latest";
 }

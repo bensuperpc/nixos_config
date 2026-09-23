@@ -1,23 +1,19 @@
+# Personal CLI tools; the shared zsh/starship/direnv setup lives in users/common/home/shell.nix.
 {
   config,
   lib,
-  pkgs,
+  moduleHelpers,
   ...
 }:
 
+let
+  cfg = config.myConfig.apps.cliTools;
+in
 {
-  programs = {
-    zsh = {
-      enable = true;
-      autosuggestion.enable = true;
-      syntaxHighlighting.enable = true;
-    };
+  options.myConfig.apps.cliTools.enable =
+    moduleHelpers.mkEnabledOption "Shell helpers (fzf, zoxide, eza, bat)";
 
-    starship = {
-      enable = true;
-      enableZshIntegration = true;
-    };
-
+  config.programs = lib.mkIf cfg.enable {
     fzf = {
       enable = true;
       enableZshIntegration = true;
@@ -37,12 +33,6 @@
 
     bat = {
       enable = true;
-    };
-
-    direnv = {
-      enable = true;
-      enableZshIntegration = true;
-      nix-direnv.enable = true;
     };
   };
 }

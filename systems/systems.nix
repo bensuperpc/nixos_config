@@ -10,7 +10,6 @@ let
     "rainbow-dash" = import ./rainbow-dash/definition.nix;
     "fluttershy" = import ./fluttershy/definition.nix;
     "pinkie-pie" = import ./pinkie-pie/definition.nix;
-    "discord-wsl" = import ./discord-wsl/definition.nix;
   };
 
   # Keep incomplete hosts in inventory files while excluding them from global eval/build.

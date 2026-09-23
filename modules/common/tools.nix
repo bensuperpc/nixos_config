@@ -1,6 +1,4 @@
 {
-  config,
-  lib,
   pkgs,
   ...
 }:
@@ -30,17 +28,17 @@ let
   ];
 in
 {
-  # programs.dconf.enable = true;
-
   environment.systemPackages = toolsPackages ++ nixToolsPackages;
 
   programs = {
-    # nix-ld and nix-ld.dev are mutually exclusive.
-    # nix-ld.enable = true;
-    nix-ld.dev.enable = true;
+    nix-ld.enable = true;
 
-    nh.enable = true;
+    nh = {
+      enable = true;
+      flake = "github:bensuperpc/nixos_config";
+    };
 
     yazi.enable = true;
+    nix-index-database.comma.enable = true;
   };
 }

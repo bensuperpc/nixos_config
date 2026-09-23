@@ -67,10 +67,8 @@
           {
             iconTasks = {
               launchers =
-                lib.optionals osConfig.myConfig.apps.network.browser.core [
-                  "applications:torbrowser.desktop"
-                  "applications:firefox.desktop"
-                ]
+                lib.optional osConfig.myConfig.apps.network.browser.core "applications:torbrowser.desktop"
+                ++ lib.optional (config.myConfig.apps.firefox.enable or false) "applications:firefox.desktop"
                 ++ [
                   "applications:org.kde.konsole.desktop"
                   "applications:org.kde.dolphin.desktop"
@@ -167,7 +165,7 @@
     };
   };
 
-  services.kdeconnect = {
+  services.kdeconnect = lib.mkIf (osConfig.myConfig.gui.desktop != "none") {
     enable = true;
     package = pkgs.kdePackages.kdeconnect-kde;
     indicator = true;

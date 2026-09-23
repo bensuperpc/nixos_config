@@ -1,30 +1,28 @@
 {
   config,
-  lib,
   pkgs,
   userVars,
   ...
 }:
 {
-  users.groups.${userVars.user} = {
-    members = [ ];
-  };
+  users.groups.${userVars.user} = { };
+
+  sops.secrets."bensuperpc/password".neededForUsers = true;
 
   users.users.${userVars.user} = {
     isNormalUser = true;
     description = userVars.fullName;
-    initialPassword = "password";
     group = userVars.user;
     inherit (userVars) extraGroups;
     openssh.authorizedKeys.keys = userVars.sshPubKeyAccess;
     shell = pkgs.zsh;
+    hashedPasswordFile = config.sops.secrets."bensuperpc/password".path;
   };
 
   security.sudo.extraRules = [
     {
       users = [ userVars.user ];
       commands = [
-        # Allow running any command without password (TODO: Remove later)
         {
           command = "ALL";
           options = [ "NOPASSWD" ];
@@ -47,6 +45,6 @@
       ./../common/home
     ];
     _module.args.userVars = userVars;
-    home.stateVersion = "26.05"; # config.system.stateVersion;
+    home.stateVersion = config.system.stateVersion;
   };
 }

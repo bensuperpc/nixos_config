@@ -1,8 +1,6 @@
 {
   config,
-  lib,
   pkgs,
-  pkgsSets,
   moduleHelpers,
   ...
 }:
@@ -18,7 +16,6 @@ let
         packages = with pkgs; [
           clang
           llvm
-          libllvm
         ];
       };
       lowLevel = {
@@ -30,12 +27,11 @@ let
         ];
       };
       protobuf = {
-        description = "Install Protocol Buffers compilers and libraries";
+        description = "Install Protocol Buffers compilers and code generators";
         packages = with pkgs; [
           protobuf
           protobufc
           nanopb
-          nanopbMalloc
         ];
       };
       wasm = {
@@ -44,7 +40,6 @@ let
           emscripten
           wasmi
           wasmer
-          emscriptenStdenv
         ];
       };
       embedded = {
@@ -52,17 +47,6 @@ let
         packages = with pkgs; [
           tinycc
           sdcc
-          linuxHeaders
-          musl
-        ];
-      };
-      stdenvs = {
-        description = "Install alternate stdenv variants for testing builds";
-        packages = with pkgs; [
-          clangStdenv
-          distccStdenv
-          ccacheStdenv
-          gccStdenv
         ];
       };
     };

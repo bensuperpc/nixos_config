@@ -24,7 +24,6 @@ let
         packages = with pkgs; [
           syncthing
           syncthingtray
-          localsend
         ];
       };
       networkShares = {
@@ -51,8 +50,8 @@ in
         # openDefaultPorts = true;
       };
 
-      # Localsend firewall (correct nix style)
       programs.localsend = {
+        enable = true;
         openFirewall = true;
       };
     })

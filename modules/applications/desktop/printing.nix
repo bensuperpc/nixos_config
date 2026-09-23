@@ -2,7 +2,6 @@
   config,
   lib,
   pkgs,
-  pkgsSets,
   moduleHelpers,
   ...
 }:
@@ -10,33 +9,30 @@
 let
   cfg = config.myConfig.apps.desktop.printing;
 
-  cupsDrivers =
-    (with pkgs; [
-      gutenprint
-      # Brother
-      brlaser
-      brgenml1lpr
-      # Samsung
-      splix
-      # samsung-unified-linux-driver # Non-free
-      # Epson
-      epson-escpr2
-      epson-escpr
-      # Lexmark
-      postscript-lexmark
-      # HP
-      hplip
-      # hplipWithPlugin # Non-free
-    ])
-    ++ (with pkgsSets.stable-2605; [
-    ]);
+  cupsDrivers = with pkgs; [
+    gutenprint
+    # Brother
+    brlaser
+    brgenml1lpr
+    # Samsung
+    splix
+    # samsung-unified-linux-driver # Non-free
+    # Epson
+    epson-escpr2
+    epson-escpr
+    # Lexmark
+    postscript-lexmark
+    # HP
+    hplip
+    # hplipWithPlugin # Non-free
+  ];
 in
 {
   options.myConfig.apps.desktop.printing = {
-    service = moduleHelpers.mkDisabledOption "Enable printing services";
+    enable = moduleHelpers.mkDisabledOption "Enable printing services";
   };
 
-  config = lib.mkIf cfg.service {
+  config = lib.mkIf cfg.enable {
     # services.avahi = {
     #   enable = true;
     #   nssmdns4 = true;

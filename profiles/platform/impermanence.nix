@@ -1,6 +1,5 @@
-{ config, ... }:
-{
-  config.myConfig.system.impermanence = {
+_: {
+  myConfig.system.impermanence = {
     enable = true;
   };
 }

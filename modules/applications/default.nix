@@ -1,12 +1,8 @@
 {
-  config,
-  lib,
-  pkgs,
   ...
 }:
 {
   imports = [
-    ./custom
     ./multimedia
     ./development
     ./games

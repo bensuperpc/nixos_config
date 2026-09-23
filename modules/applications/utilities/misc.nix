@@ -1,6 +1,5 @@
 {
   config,
-  lib,
   pkgs,
   moduleHelpers,
   ...
@@ -38,13 +37,13 @@ let
           dos2unix
           fdupes
           flex
-          fmt
           help2man
           onboard
           jp2a
           llmfit
           colorls
-          eza
+          xxhash
+          libxml2 # xmllint
           jhead
         ];
       };
@@ -54,6 +53,7 @@ let
           # bitwarden-desktop
           # bitwarden-cli
           osslsigncode
+          openssl
         ];
       };
       archive = {

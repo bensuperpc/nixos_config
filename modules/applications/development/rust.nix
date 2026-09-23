@@ -1,6 +1,5 @@
 {
   config,
-  lib,
   pkgs,
   moduleHelpers,
   ...
@@ -12,7 +11,7 @@ let
   generated = moduleHelpers.mkPackageGroupModule {
     inherit cfg;
     groups = {
-      toolchain = {
+      enable = {
         description = "Install Rust toolchain";
         packages = with pkgs; [
           rustc

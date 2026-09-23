@@ -1,20 +1,19 @@
-{ pkgs, pkgsSets, ... }:
+{ pkgs }:
 
 pkgs.mkShell {
-  nativeBuildInputs = with pkgsSets.stable-2605; [
+  nativeBuildInputs = with pkgs; [
     makeWrapper
   ];
-  packages = with pkgsSets.stable-2605; [
+  packages = with pkgs; [
     cmake
     ninja
     gcc
     valgrind
     gdb
-    ninja
     bashInteractive
   ];
 
-  buildInputs = with pkgsSets.stable-2605; [
+  buildInputs = with pkgs; [
     gtest
     gbenchmark
     boost

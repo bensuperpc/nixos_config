@@ -9,42 +9,51 @@
 let
   cfg = config.myConfig.apps.network.torrent;
 
-  qbittorrentPackages = with pkgs; [
-    qbittorrent
-    qbittorrent-nox
-  ];
-
-  transmissionPackages = with pkgs; [
-    transmission_4
-    transmission_4-qt
-  ];
-
-  helperPackages = with pkgs; [
-    mkbrr
-  ];
-
-  enabledOptionalsPackages =
-    lib.optionals cfg.qbittorrent qbittorrentPackages
-    ++ lib.optionals cfg.transmission transmissionPackages
-    ++ lib.optionals cfg.helpers helperPackages;
-
-  anyEnabled = cfg.qbittorrent || cfg.transmission || cfg.helpers;
+  generated = moduleHelpers.mkPackageGroupModule {
+    inherit cfg;
+    groups = {
+      qbittorrent = {
+        description = "Install qBittorrent client";
+        packages = with pkgs; [
+          qbittorrent
+          qbittorrent-nox
+        ];
+      };
+      transmission = {
+        description = "Install Transmission client";
+        packages = with pkgs; [
+          transmission_4
+          transmission_4-qt
+        ];
+      };
+      helpers = {
+        description = "Install torrent helper tools";
+        packages = with pkgs; [ mkbrr ];
+      };
+    };
+  };
 in
 {
-  options.myConfig.apps.network.torrent = {
-    qbittorrent = moduleHelpers.mkDisabledOption "Install qBittorrent client";
-    transmission = moduleHelpers.mkDisabledOption "Install Transmission client";
-    helpers = moduleHelpers.mkDisabledOption "Install torrent helper tools";
-    openFirewall = moduleHelpers.mkDisabledOption "Open firewall for torrent clients";
+  options.myConfig.apps.network.torrent = generated.options // {
+    openFirewall = moduleHelpers.mkDisabledOption "Open the peer ports of the torrent clients in the firewall";
+
+    ports = lib.mkOption {
+      type = lib.types.listOf lib.types.port;
+      default = [
+        6881
+        51413
+      ];
+      description = "Peer ports (TCP and UDP) opened by openFirewall. Must match the port set in each client (qBittorrent 6881, Transmission 51413 by default).";
+    };
   };
 
   config = lib.mkMerge [
-    (lib.mkIf anyEnabled {
-      environment.systemPackages = enabledOptionalsPackages;
-    })
+    generated.config
     (lib.mkIf cfg.openFirewall {
-      services.qbittorrent.openFirewall = lib.mkIf cfg.qbittorrent true;
-      services.transmission.openFirewall = lib.mkIf cfg.transmission true;
+      networking.firewall = {
+        allowedTCPPorts = cfg.ports;
+        allowedUDPPorts = cfg.ports;
+      };
     })
   ];
 }

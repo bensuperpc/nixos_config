@@ -32,11 +32,12 @@ in
       xserver.enable = true;
     };
 
-    # Disable udiskie, already include in plasma
+    # Installs KDE Connect and opens its TCP/UDP 1714-1764 range.
+    programs.kdeconnect.enable = cfg.extraPackages;
 
     environment.systemPackages =
       with pkgs;
-      lib.optionals (cfg.desktop == "plasma" && cfg.extraPackages) [
+      lib.optionals cfg.extraPackages [
         # Theme and icons
         kdePackages.breeze
         kdePackages.breeze-gtk
@@ -46,26 +47,15 @@ in
         kdePackages.oxygen-icons
         kdePackages.oxygen-sounds
 
-        # Core KDE frameworks and runtime components
-        kdePackages.extra-cmake-modules
-        kdePackages.kcodecs
-        kdePackages.kcoreaddons
-        kdePackages.kded
-        kdePackages.kdoctools
-        kdePackages.kfilemetadata
-        kdePackages.kguiaddons
         kdePackages.kholidays
         kdePackages.kidletime
         kdePackages.knewstuff
-        kdePackages.solid
-        kdePackages.karchive
         kdePackages.dolphin-plugins
         kdePackages.dolphin
         kdePackages.kio-snapshot
 
         # Desktop integration and shell
         kdePackages.flatpak-kcm
-        kdePackages.kdeconnect-kde
         kdePackages.plasma-browser-integration
         kdePackages.plasma-keyboard
         kdePackages.plasma-thunderbolt
@@ -109,13 +99,11 @@ in
         kdePackages.partitionmanager
         kdePackages.umbrello
         kdePackages.yakuake
-        kdePackages.threadweaver
         # kdePackages.neochat # Unsafe due olm dependency
         kdePackages.massif-visualizer
         kdePackages.marble
         kdePackages.lokalize
         kdePackages.ksystemstats
-        kdePackages.kstatusnotifieritem
         kdePackages.krunner
         kdePackages.krfb
         kdePackages.korganizer
@@ -126,11 +114,8 @@ in
         kdePackages.kmag
         kdePackages.klevernotes
         kdePackages.kjournald
-        kdePackages.kdiagram
         kdePackages.kdf
         kdePackages.kcron
-        kdePackages.kcrash
-        kdePackages.kcompletion
         kdePackages.kbackup
         kdePackages.kalarm
         kdePackages.kaccounts-integration
@@ -150,7 +135,6 @@ in
         kdePackages.kimageannotator
         kdePackages.koko
         kdePackages.kwave
-        kdePackages.mpvqt
         kdePackages.spectacle
         kdePackages.okular
         kdePackages.kup
@@ -170,7 +154,6 @@ in
 
         # Education and science
         # kdePackages.itinerary # Unsafe due olm dependency
-        kdePackages.kcalutils
         kdePackages.step
         kdePackages.kig
         kdePackages.kgeography

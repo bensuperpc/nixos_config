@@ -1,7 +1,4 @@
+{ lib, ... }:
 {
-  config,
-  ...
-}:
-{
-  myConfig.apps.ai.enable = true;
+  myConfig.apps.ai.enable = lib.mkDefault true;
 }

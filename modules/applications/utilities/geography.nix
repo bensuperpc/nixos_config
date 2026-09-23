@@ -1,6 +1,5 @@
 {
   config,
-  lib,
   pkgs,
   moduleHelpers,
   ...
@@ -12,7 +11,7 @@ let
   generated = moduleHelpers.mkPackageGroupModule {
     inherit cfg;
     groups = {
-      viewer = {
+      enable = {
         description = "Install geography packages (e.g., QGIS)";
         packages = with pkgs; [ qgis ];
       };

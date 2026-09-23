@@ -1,17 +1,18 @@
-{ pkgsSets, ... }:
+{ pkgs }:
 
 let
-  pkgs = import pkgsSets.stable-2605.path {
-    inherit (pkgsSets.stable-2605) system;
+  # Python 2 is marked insecure
+  insecurePkgs = import pkgs.path {
+    inherit (pkgs.stdenv.hostPlatform) system;
     config = {
       allowUnfree = true;
       permittedInsecurePackages = [ "python-2.7.18.12" ];
     };
   };
 in
-pkgs.mkShell {
+insecurePkgs.mkShell {
   packages = [
-    pkgs.python2
+    insecurePkgs.python2
   ];
 
   shellHook = ''

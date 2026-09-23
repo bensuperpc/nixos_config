@@ -1,13 +1,8 @@
 {
-  config,
   lib,
-  pkgs,
   ...
 }:
 {
-  imports = [
-    ../../tests/check-files.nix
-  ];
 
   myConfig.apps.files = {
     backup = {
@@ -23,9 +18,7 @@
       mobile = lib.mkDefault true;
     };
 
-    crypto = {
-      veracrypt = lib.mkDefault true;
-    };
+    crypto.enable = lib.mkDefault true;
 
     tools = {
       search = lib.mkDefault true;

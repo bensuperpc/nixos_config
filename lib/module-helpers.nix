@@ -1,35 +1,24 @@
 { lib, ... }:
 let
-  mkEnabledOption =
-    description:
-    (lib.mkEnableOption description)
-    // {
-      default = true;
+  mkBoolOption =
+    default: description:
+    lib.mkOption {
+      type = lib.types.bool;
+      inherit default description;
     };
-  mkDisabledOption =
-    description:
-    (lib.mkEnableOption description)
-    // {
-      default = false;
-    };
+  mkEnabledOption = mkBoolOption true;
+  mkDisabledOption = mkBoolOption false;
 
   mkPackageGroupModule =
     { cfg, groups }:
     let
-      names = lib.attrNames groups;
-      enabledPackages = lib.unique (
-        lib.concatMap (name: lib.optionals cfg.${name} groups.${name}.packages) names
-      );
-      anyEnabled = lib.any (name: cfg.${name}) names;
-      mkOptionFor =
-        group:
-        if group.enabledByDefault or false then
-          mkEnabledOption group.description
-        else
-          mkDisabledOption group.description;
+      enabledGroups = lib.filter (name: cfg.${name}) (lib.attrNames groups);
+      enabledPackages = lib.unique (lib.concatMap (name: groups.${name}.packages or [ ]) enabledGroups);
+      anyEnabled = enabledGroups != [ ];
+      mkOptionFor = group: mkBoolOption (group.enabledByDefault or false) group.description;
     in
     {
-      inherit anyEnabled;
+      inherit anyEnabled enabledGroups;
       options = lib.mapAttrs (_: mkOptionFor) groups;
       config = lib.mkIf anyEnabled {
         environment.systemPackages = enabledPackages;
@@ -37,5 +26,10 @@ let
     };
 in
 {
-  inherit mkEnabledOption mkDisabledOption mkPackageGroupModule;
+  inherit
+    mkBoolOption
+    mkEnabledOption
+    mkDisabledOption
+    mkPackageGroupModule
+    ;
 }

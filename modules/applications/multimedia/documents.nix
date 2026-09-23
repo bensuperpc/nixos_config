@@ -1,6 +1,5 @@
 {
   config,
-  lib,
   pkgs,
   moduleHelpers,
   ...
@@ -21,6 +20,7 @@ let
         packages = with pkgs; [
           pdfarranger
           pdftk
+          qpdf
         ];
       };
     };

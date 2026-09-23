@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ config, varsHost, ... }:
 
 let
   ntpServers = [
@@ -9,20 +9,13 @@ let
   ];
 in
 {
-  # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-
   services.timesyncd = {
     enable = true;
     servers = ntpServers;
   };
 
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
   networking = {
+    hostName = varsHost.name;
     networkmanager = {
       enable = true;
     };
@@ -33,7 +26,13 @@ in
     };
   };
 
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
+  # Some programs need SUID wrappers
   programs.mtr.enable = true;
+
+  assertions = [
+    {
+      assertion = config.networking.firewall.enable;
+      message = "The firewall must stay enabled.";
+    }
+  ];
 }

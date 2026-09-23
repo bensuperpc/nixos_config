@@ -1,6 +1,5 @@
 {
   config,
-  lib,
   pkgs,
   moduleHelpers,
   ...
@@ -13,10 +12,10 @@ let
     inherit cfg;
     groups = {
       enable = {
-        description = "Activate VS Code and IDE tooling";
+        description = "Activate IDE tooling";
         packages = with pkgs; [
-          vscode
           pragtical
+          vscode
         ];
       };
     };

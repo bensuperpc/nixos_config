@@ -1,6 +1,5 @@
 {
   config,
-  lib,
   pkgs,
   moduleHelpers,
   ...
@@ -12,8 +11,8 @@ let
   generated = moduleHelpers.mkPackageGroupModule {
     inherit cfg;
     groups = {
-      veracrypt = {
-        description = "Install VeraCrypt";
+      enable = {
+        description = "Install file encryption tools (VeraCrypt, Cryptomator)";
         packages = with pkgs; [
           veracrypt
           cryptomator

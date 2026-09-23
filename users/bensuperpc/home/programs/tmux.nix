@@ -1,14 +1,19 @@
 {
   config,
-  osConfig,
   lib,
   pkgs,
-  userVars,
+  moduleHelpers,
   ...
 }:
 
+let
+  cfg = config.myConfig.apps.tmux;
+in
 {
-  programs.tmux = {
+  options.myConfig.apps.tmux.enable =
+    moduleHelpers.mkEnabledOption "tmux with its plugins and configuration";
+
+  config.programs.tmux = lib.mkIf cfg.enable {
     enable = true;
     plugins = with pkgs; [
       tmuxPlugins.sensible

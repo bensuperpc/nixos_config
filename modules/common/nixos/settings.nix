@@ -29,17 +29,19 @@ let
   cfg = config.myConfig.system.nixos;
 in
 {
-  options.myConfig.system.nixos.enableCommunitySubstituters =
+  options.myConfig.system.nixos.communitySubstituters.enable =
     moduleHelpers.mkDisabledOption "Enable community substituters for Nix";
 
   config = {
-    warnings = lib.optionals cfg.enableCommunitySubstituters [
+    warnings = lib.optionals cfg.communitySubstituters.enable [
       "You enabled community substituters for Nix, be careful and make sure you trust the sources you are downloading from!"
     ];
 
     services.fstrim.enable = true;
 
     environment.etc.nixos-current-system-flake-src.source = inputs.self;
+
+    system.configurationRevision = inputs.self.rev or inputs.self.dirtyRev or null;
 
     nix = {
       settings = {
@@ -71,9 +73,9 @@ in
         trusted-users = trustedUsers;
 
         substituters =
-          baseSubstituters ++ lib.optionals cfg.enableCommunitySubstituters communitySubstituters;
+          baseSubstituters ++ lib.optionals cfg.communitySubstituters.enable communitySubstituters;
         trusted-public-keys =
-          baseTrustedPublicKeys ++ lib.optionals cfg.enableCommunitySubstituters communityTrustedPublicKeys;
+          baseTrustedPublicKeys ++ lib.optionals cfg.communitySubstituters.enable communityTrustedPublicKeys;
       };
 
       # auto-optimise-store hardlinks the store synchronously after every

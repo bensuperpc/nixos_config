@@ -10,7 +10,7 @@ let
 in
 {
   options.myConfig.system.power.management = {
-    services = moduleHelpers.mkDisabledOption "power management services for desktop/laptop machines";
+    enable = moduleHelpers.mkDisabledOption "power management services for desktop/laptop machines";
 
     backend = lib.mkOption {
       type = lib.types.enum [
@@ -19,11 +19,11 @@ in
         "tlp"
       ];
       default = "power-profiles-daemon";
-      description = "Power management backend to use when services is enabled.";
+      description = "Power management backend to use when enabled.";
     };
   };
 
-  config = lib.mkIf cfg.services {
+  config = lib.mkIf cfg.enable {
     services = {
       power-profiles-daemon.enable = cfg.backend == "power-profiles-daemon";
       tuned.enable = cfg.backend == "tuned";

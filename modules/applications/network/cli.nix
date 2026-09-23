@@ -1,6 +1,5 @@
 {
   config,
-  lib,
   pkgs,
   moduleHelpers,
   ...
@@ -12,7 +11,7 @@ let
   generated = moduleHelpers.mkPackageGroupModule {
     inherit cfg;
     groups = {
-      tooling = {
+      enable = {
         description = "Install networking and diagnostics tools";
         packages = with pkgs; [
           wireshark

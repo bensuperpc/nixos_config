@@ -1,7 +1,4 @@
 {
-  config,
-  lib,
-  pkgs,
   ...
 }:
 
@@ -9,7 +6,6 @@
   imports = [
     ./ide.nix
     ./dev.nix
-    ./libraries.nix
     ./qt6.nix
     ./python.nix
     ./modeling.nix

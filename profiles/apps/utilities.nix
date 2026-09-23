@@ -1,27 +1,21 @@
 {
-  config,
   lib,
-  pkgs,
   ...
 }:
 {
-  imports = [
-    ../../tests/check-math.nix
-    ../../tests/check-tools.nix
-  ];
 
   myConfig.apps.utilities = {
     electronic = {
       design = lib.mkDefault true;
       diagnostics = lib.mkDefault true;
     };
-    flashing.tools = lib.mkDefault true;
+    flashing.enable = lib.mkDefault true;
 
     math = {
       geometry = lib.mkDefault true;
       plotting = lib.mkDefault true;
     };
-    geography.viewer = lib.mkDefault true;
+    geography.enable = lib.mkDefault true;
 
     tools = {
       system = lib.mkDefault true;
@@ -32,11 +26,8 @@
       crackingPassword = lib.mkDefault true;
     };
 
-    compress = {
-      base = lib.mkDefault true;
-      tools = lib.mkDefault true;
-    };
+    compress.enable = lib.mkDefault true;
 
-    antivirus.scanner = lib.mkDefault true;
+    antivirus.enable = lib.mkDefault true;
   };
 }

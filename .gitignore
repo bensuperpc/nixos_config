@@ -2,3 +2,5 @@ build/*
 tests/**/build_test/
 tests/**/target/
 tests/**/__pycache__/
+secrets/age/
+tests/**/build/

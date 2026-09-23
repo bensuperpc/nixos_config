@@ -29,8 +29,10 @@ in
                 type = "filesystem";
                 format = "vfat";
                 mountpoint = "/boot";
+                # Keep the kernels, initrds, systemd-boot seed etc... Private to root.
                 mountOptions = [
-                  "defaults"
+                  "fmask=0077"
+                  "dmask=0077"
                 ];
               };
             };

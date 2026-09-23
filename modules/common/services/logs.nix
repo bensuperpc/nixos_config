@@ -1,12 +1,3 @@
 {
-  config,
-  lib,
-  moduleHelpers,
-  ...
-}:
-
-{
-  services.journald = {
-    storage = "persistent";
-  };
+  services.journald.settings.Journal.Storage = "persistent";
 }

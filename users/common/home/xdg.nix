@@ -1,9 +1,6 @@
-# More info: https://nix-community.github.io/plasma-manager/options.xhtml
 {
-  config,
   lib,
   osConfig,
-  pkgs,
   ...
 }:
 
@@ -76,10 +73,6 @@
         "inode/directory" = [ "org.kde.dolphin.desktop" ];
         # https://github.com/microsoft/vscode/issues/146408
         "x-scheme-handler/vscode" = [ "code-url-handler.desktop" ];
-      };
-      associations.removed = {
-      };
-      associations.added = {
       };
     };
   };

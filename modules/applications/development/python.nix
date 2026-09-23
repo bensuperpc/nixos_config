@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  pkgs,
   pkgsSets,
   moduleHelpers,
   ...
@@ -10,103 +9,97 @@
 let
   cfg = config.myConfig.apps.development.python;
 
-  corePythonPackages =
-    ps: with ps; [
-      numpy
-      loguru
-      qrcode
-      isort
-      environs
-      virtualenv
-      sh
-      av
-      # pipx # buggy in 1.8.0 with python 3.14
-      ninja
-    ];
-
-  dataSciencePythonPackages =
-    ps: with ps; [
-      matplotlib
-      mpmath
-      pandas
-      scikit-learn
-      scipy
-      sympy
-      seaborn
-    ];
-
-  webPythonPackages =
-    ps: with ps; [
-      flask
-      fastapi
-      uvicorn
-      requests
-      scrapy
-      beautifulsoup4
-      boto3
-      internetarchive
-    ];
-
-  automationPythonPackages =
-    ps: with ps; [
-      celery
-      cantools
-      canopen
-    ];
-
-  llmPythonPackages =
-    ps: with ps; [
-      unsloth
-      transformers
-      datasets
-      peft
-      trl
-      torch
-    ];
-
-  testingPythonPackages =
-    ps: with ps; [
-      pytest
-      pytest-bdd
-      sphinx
-      robotframework
-      robotframework-seleniumlibrary
-      robotframework-requests
-      robotframework-pythonlibcore
-      robotframework-databaselibrary
-      robotframework-assertion-engine
-    ];
-
-  enabledOptionalsPackages =
-    ps:
-    with ps;
-    lib.optionals cfg.core (corePythonPackages ps)
-    ++ lib.optionals cfg.dataScience (dataSciencePythonPackages ps)
-    ++ lib.optionals cfg.web (webPythonPackages ps)
-    ++ lib.optionals cfg.automation (automationPythonPackages ps)
-    ++ lib.optionals cfg.llm (llmPythonPackages ps)
-    ++ lib.optionals cfg.testing (testingPythonPackages ps);
-
-  anyEnabled = lib.any (x: x) [
-    cfg.core
-    cfg.dataScience
-    cfg.web
-    cfg.automation
-    cfg.testing
-    cfg.llm
-  ];
-in
-{
-  options.myConfig.apps.development.python = {
-    core = moduleHelpers.mkDisabledOption "Install core Python development packages";
-    dataScience = moduleHelpers.mkDisabledOption "Install Python data science and math packages";
-    web = moduleHelpers.mkDisabledOption "Install Python web, scraping, and API packages";
-    automation = moduleHelpers.mkDisabledOption "Install Python automation, CAN, and Robot Framework packages";
-    testing = moduleHelpers.mkDisabledOption "Install Python testing and documentation packages";
-    llm = moduleHelpers.mkDisabledOption "Install Python LLM and AI packages";
+  groups = {
+    core = {
+      description = "Install core Python development packages";
+      pythonPackages =
+        ps: with ps; [
+          numpy
+          loguru
+          qrcode
+          isort
+          environs
+          virtualenv
+          sh
+          av
+          # pipx # buggy in 1.8.0 with python 3.14
+          ninja
+        ];
+    };
+    dataScience = {
+      description = "Install Python data science and math packages";
+      pythonPackages =
+        ps: with ps; [
+          matplotlib
+          mpmath
+          pandas
+          scikit-learn
+          scipy
+          sympy
+          seaborn
+        ];
+    };
+    web = {
+      description = "Install Python web, scraping, and API packages";
+      pythonPackages =
+        ps: with ps; [
+          flask
+          fastapi
+          uvicorn
+          requests
+          scrapy
+          beautifulsoup4
+          boto3
+          internetarchive
+        ];
+    };
+    automation = {
+      description = "Install Python automation and CAN packages";
+      pythonPackages =
+        ps: with ps; [
+          celery
+          cantools
+          canopen
+        ];
+    };
+    llm = {
+      description = "Install Python LLM and AI packages";
+      pythonPackages =
+        ps: with ps; [
+          unsloth
+          transformers
+          datasets
+          peft
+          trl
+          torch
+        ];
+    };
+    testing = {
+      description = "Install Python testing, documentation, and Robot Framework packages";
+      pythonPackages =
+        ps: with ps; [
+          pytest
+          pytest-bdd
+          sphinx
+          robotframework
+          robotframework-seleniumlibrary
+          robotframework-requests
+          robotframework-pythonlibcore
+          robotframework-databaselibrary
+          robotframework-assertion-engine
+        ];
+    };
   };
 
-  config = lib.mkIf anyEnabled {
+  generated = moduleHelpers.mkPackageGroupModule { inherit cfg groups; };
+
+  enabledPythonPackages =
+    ps: lib.concatMap (name: groups.${name}.pythonPackages ps) generated.enabledGroups;
+in
+{
+  options.myConfig.apps.development.python = generated.options;
+
+  config = lib.mkIf generated.anyEnabled {
     environment.systemPackages = [
       (
         (pkgsSets.stable-2605.python313.override {
@@ -121,7 +114,7 @@ in
             else
               (_pyFinal: _pyPrev: { });
         }).withPackages
-          enabledOptionalsPackages
+          enabledPythonPackages
       )
     ];
     environment.shellAliases = {

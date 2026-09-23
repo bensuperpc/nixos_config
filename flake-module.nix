@@ -1,17 +1,13 @@
 {
   inputs,
   lib,
-  self,
   ...
 }:
 let
   # Map of nixpkgs source inputs, keyed by channel name.
   nixpkgsSources = {
     stable-2605 = inputs.nixpkgs-2605;
-    stable-2511 = inputs.nixpkgs-2511;
-    stable-2505 = inputs.nixpkgs-2505;
     unstable = inputs.nixpkgs-unstable;
-    master = inputs.nixpkgs-master;
   };
 
   pkgsCache = lib.genAttrs [ "x86_64-linux" "aarch64-linux" ] (
@@ -27,83 +23,65 @@ let
 
   moduleHelpers = import ./lib/module-helpers.nix { inherit lib; };
 
+  specialArgs = { inherit inputs moduleHelpers; };
+
   mkHostConfig = import ./lib/mksystem.nix {
     inherit
       inputs
       lib
-      pkgsCache
       moduleHelpers
+      pkgsCache
       ;
   };
   hosts = import ./systems/systems.nix { inherit lib; };
 
   hostConfigs = lib.mapAttrs mkHostConfig hosts;
   deployableHostConfigs = lib.filterAttrs (_: cfg: cfg.host.ip != null) hostConfigs;
+
+  nixosSystemParity = {
+    nixpkgs.flake.source = inputs.nixpkgs.outPath;
+    system.nixos = {
+      versionSuffix = inputs.nixpkgs.lib.trivial.versionSuffix;
+      revision = inputs.nixpkgs.lib.trivial.revisionWithDefault null;
+    };
+  };
 in
 {
   flake = {
     nixosConfigurations = lib.mapAttrs (
-      _name: cfg:
+      _: cfg:
       lib.nixosSystem {
-        inherit (cfg) system;
-        specialArgs = {
-          inherit inputs moduleHelpers;
-        };
-        inherit (cfg) modules;
+        inherit (cfg) system modules;
+        inherit specialArgs;
       }
     ) hostConfigs;
 
     colmenaHive = inputs.colmena.lib.makeHive (
       {
         meta = {
-          nixpkgs = import inputs.nixpkgs {
-            system = "x86_64-linux";
-            config.allowUnfree = true;
-          };
-          specialArgs = { inherit inputs moduleHelpers; };
+          nixpkgs = pkgsCache.x86_64-linux.unstable;
+          nodeNixpkgs = lib.mapAttrs (_: cfg: pkgsCache.${cfg.system}.unstable) deployableHostConfigs;
+          inherit specialArgs;
         };
       }
-      // (lib.mapAttrs (_name: cfg: {
+      // lib.mapAttrs (_: cfg: {
         deployment = {
           targetHost = cfg.host.ip;
           targetUser = cfg.host.deployUser;
           targetPort = cfg.host.port;
           buildOnTarget = true;
-          allowLocalDeployment = false;
+          # `colmena apply-local --sudo` on the host itself (needs a local checkout).
+          allowLocalDeployment = true;
         };
-        imports = cfg.modules;
-      }) deployableHostConfigs)
+        imports = cfg.modules ++ [ nixosSystemParity ];
+      }) deployableHostConfigs
     );
-
-    deploy = {
-      nodes = lib.mapAttrs (name: cfg: {
-        hostname = cfg.host.ip;
-        profiles.system = {
-          user = cfg.host.deployUser;
-          sshUser = cfg.host.deployUser;
-          # Self-reference: resolved lazily after nixosConfigurations is built.
-          path = inputs.deploy-rs.lib.${cfg.system}.activate.nixos self.nixosConfigurations.${name};
-        };
-      }) deployableHostConfigs;
-    };
   };
 
+  # Per-channel package sets, a module argument of the perSystem modules (flake/dev.nix).
   perSystem =
-    { pkgs, ... }@args:
-    let
-      pkgsSets = pkgsCache.${args.system};
-    in
+    { system, ... }:
     {
-      devShells = import ./devshells { inherit pkgs pkgsSets; };
-
-      checks.deadnix =
-        pkgs.runCommand "deadnix-check"
-          {
-            nativeBuildInputs = [ pkgs.deadnix ];
-          }
-          ''
-            deadnix -f -L ${self}
-            touch $out
-          '';
+      _module.args.pkgsSets = pkgsCache.${system};
     };
 }

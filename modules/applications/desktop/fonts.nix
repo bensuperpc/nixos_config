@@ -18,29 +18,21 @@ let
   ];
 in
 {
-  imports = [
-    (lib.mkAliasOptionModule
-      [ "myConfig" "apps" "additionalFonts" ]
-      [ "myConfig" "apps" "desktop" "fonts" ]
-    )
-  ];
-
-  options.myConfig.apps.desktop = {
-    fonts.nerdFonts = moduleHelpers.mkDisabledOption "Enable Nerd Fonts package set";
+  options.myConfig.apps.desktop.fonts = {
+    enable = moduleHelpers.mkEnabledOption "Noto fonts and fontconfig";
+    nerdFonts = moduleHelpers.mkDisabledOption "Install the Nerd Fonts package set";
   };
 
-  config = lib.mkMerge [
-    {
-      fonts = {
-        fontconfig.enable = true;
-        enableDefaultPackages = true;
-        packages =
-          defaultFonts
-          # More info: https://nixos.wiki/wiki/Fonts
-          ++ lib.optionals cfg.nerdFonts (
-            builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts)
-          );
-      };
-    }
-  ];
+  config = lib.mkIf cfg.enable {
+    fonts = {
+      fontconfig.enable = true;
+      enableDefaultPackages = true;
+      packages =
+        defaultFonts
+        # More info: https://nixos.wiki/wiki/Fonts
+        ++ lib.optionals cfg.nerdFonts (
+          builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts)
+        );
+    };
+  };
 }

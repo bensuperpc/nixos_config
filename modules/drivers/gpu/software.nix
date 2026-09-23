@@ -1,8 +1,6 @@
-# More info: https://wiki.nixos.org/wiki/AMD_GPU
 {
   config,
   lib,
-  pkgs,
   moduleHelpers,
   ...
 }:

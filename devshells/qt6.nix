@@ -1,30 +1,29 @@
-{ pkgs, pkgsSets, ... }:
+{ pkgs }:
 
 pkgs.mkShell {
-  nativeBuildInputs = with pkgsSets.stable-2605; [
+  nativeBuildInputs = with pkgs; [
     qt6.wrapQtAppsHook
     makeWrapper
   ];
-  packages = with pkgsSets.stable-2605; [
+  packages = with pkgs; [
     cmake
     ninja
     gcc
     valgrind
     gdb
-    ninja
     qt6.qttools
     bashInteractive
   ];
 
   buildInputs =
-    with pkgsSets.stable-2605;
+    with pkgs;
     [
       gtest
       gbenchmark
       boost
       openssl
     ]
-    ++ (with pkgsSets.stable-2605.qt6; [
+    ++ (with pkgs.qt6; [
       qtbase
       qtwebengine
       qtdeclarative

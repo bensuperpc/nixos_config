@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  pkgs,
   moduleHelpers,
   ...
 }:
@@ -11,7 +10,7 @@ let
 in
 {
   options.myConfig.system.tpm = {
-    enable = moduleHelpers.mkEnabledOption "enable TPM support";
+    enable = moduleHelpers.mkEnabledOption "TPM 2.0 support";
   };
 
   config = lib.mkIf cfg.enable {

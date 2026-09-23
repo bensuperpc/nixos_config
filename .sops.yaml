@@ -1,0 +1,11 @@
+keys:
+  - &admin_bensuperpc age1xsvvcapreepd7tkwlcmnrx207qm54x7srnwe0wxlmzl2v20vxqlsncecya
+  - &server_1_m710q age17ht0wefecdy2ef04e6gjr3zkakj8uzffx47q9dss2mnssurqn9pq02kjcf
+
+# One file per host (systems/<host>/secrets.yaml), readable by the admin key and that host only.
+creation_rules:
+  - path_regex: systems/server-1-m710q/secrets\.yaml$
+    key_groups:
+      - age:
+          - *admin_bensuperpc
+          - *server_1_m710q

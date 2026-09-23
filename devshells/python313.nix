@@ -1,7 +1,7 @@
-{ pkgs, pkgsSets, ... }:
+{ pkgs }:
 
 let
-  my-python = pkgsSets.stable-2605.python3.withPackages (
+  my-python = pkgs.python3.withPackages (
     ps: with ps; [
       pandas
       requests
@@ -12,7 +12,7 @@ let
 in
 pkgs.mkShell {
   packages =
-    with pkgsSets.stable-2605;
+    with pkgs;
     [
       ruff
       pyright
@@ -20,10 +20,6 @@ pkgs.mkShell {
       openssl
     ]
     ++ [ my-python ];
-
-  buildInputs = with pkgsSets.stable-2605; [
-    # zlib
-  ];
 
   shellHook = ''
     echo "Welcome to your Nix-managed Python environment!"

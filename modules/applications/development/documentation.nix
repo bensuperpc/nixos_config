@@ -37,12 +37,12 @@ in
 {
   options.myConfig.apps.development.documentation = generated.options // {
     # Toggles NixOS's own manual/option-doc build, not a package group.
-    nixosDocumentation = moduleHelpers.mkDisabledOption "Install NixOS manual pages";
+    nixos = moduleHelpers.mkDisabledOption "Install NixOS manual pages";
   };
 
   config = lib.mkMerge [
     generated.config
-    (lib.mkIf cfg.nixosDocumentation {
+    (lib.mkIf cfg.nixos {
       documentation = {
         enable = true;
         dev.enable = true;

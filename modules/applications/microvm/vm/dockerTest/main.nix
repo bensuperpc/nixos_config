@@ -9,7 +9,7 @@ in
     restartIfChanged = true;
     pkgs = pkgsSets.stable-2605;
     config =
-      { lib, pkgs, ... }:
+      { lib, ... }:
       {
         networking.hostName = "microvm-net";
         system.stateVersion = lib.trivial.release;
@@ -79,7 +79,8 @@ in
           enable = true;
           settings.PermitRootLogin = "yes";
         };
-        users.users.root.initialPassword = "microvm";
+
+        users.users.root.hashedPasswordFile = "/mnt/shared/root-password-hash";
 
         virtualisation = {
           containers.enable = true;

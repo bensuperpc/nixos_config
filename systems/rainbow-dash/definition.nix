@@ -1,5 +1,5 @@
 {
-  enabled = true;
+  enabled = false;
   role = "full";
   system = "x86_64-linux";
   ip = "192.168.1.112";
@@ -14,7 +14,6 @@
     "platform/cpu-amd"
     "platform/tpm"
     "platform/bluetooth"
-    "platform/wireless"
     "platform/snapper"
     "platform/impermanence"
   ];

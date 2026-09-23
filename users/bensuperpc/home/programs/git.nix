@@ -2,15 +2,21 @@
   config,
   osConfig,
   lib,
-  pkgs,
+  moduleHelpers,
   userVars,
   ...
 }:
 
+let
+  cfg = config.myConfig.apps.git;
+in
 {
-  programs.git = lib.mkIf osConfig.myConfig.apps.development.dev.tooling {
+  options.myConfig.apps.git.enable =
+    moduleHelpers.mkBoolOption osConfig.myConfig.apps.development.dev.base "Git identity and SSH signing (follows the system `apps.development.dev.base` toggle by default)";
+
+  config.programs.git = lib.mkIf cfg.enable {
     enable = true;
-    lfs.enable = true;
+    # dysk.enable = true;
     settings = {
       user = {
         name = "${userVars.fullName}";

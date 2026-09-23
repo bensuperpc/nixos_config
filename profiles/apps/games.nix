@@ -1,13 +1,8 @@
 {
-  config,
   lib,
-  pkgs,
   ...
 }:
 {
-  imports = [
-    ../../tests/check-game.nix
-  ];
 
   myConfig.apps.games = {
     emulator = {
@@ -21,14 +16,14 @@
     steam = {
       client = lib.mkDefault true;
       performanceTools = lib.mkDefault true;
-      useProtonGE = lib.mkDefault true;
-      enableNtsync = lib.mkDefault true;
+      protonGE = lib.mkDefault true;
+      ntsync = lib.mkDefault true;
     };
 
     minecraft = {
       launcher = lib.mkDefault true;
-      installJres = lib.mkDefault true;
-      installTools = lib.mkDefault true;
+      jres = lib.mkDefault true;
+      tools = lib.mkDefault true;
     };
 
     games = {

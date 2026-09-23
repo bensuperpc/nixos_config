@@ -1,8 +1,6 @@
 {
   config,
-  lib,
   pkgs,
-  pkgsSets,
   moduleHelpers,
   ...
 }:
@@ -13,7 +11,7 @@ let
   generated = moduleHelpers.mkPackageGroupModule {
     inherit cfg;
     groups = {
-      tools = {
+      enable = {
         description = "Install 3D printing tools";
         packages = with pkgs; [
           prusa-slicer
