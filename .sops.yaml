@@ -1,0 +1,18 @@
+keys:
+  - &admin_bensuperpc age1xsvvcapreepd7tkwlcmnrx207qm54x7srnwe0wxlmzl2v20vxqlsncecya
+  - &server_1_m710q age17ht0wefecdy2ef04e6gjr3zkakj8uzffx47q9dss2mnssurqn9pq02kjcf
+
+creation_rules:
+  # Shared secrets
+  - path_regex: secrets/common\.yaml$
+    key_groups:
+      - age:
+          - *admin_bensuperpc
+          - *server_1_m710q
+
+  # Host-scoped secrets
+  - path_regex: secrets/hosts/server-1-m710q\.yaml$
+    key_groups:
+      - age:
+          - *admin_bensuperpc
+          - *server_1_m710q

@@ -79,7 +79,8 @@ in
           enable = true;
           settings.PermitRootLogin = "yes";
         };
-        users.users.root.initialPassword = "microvm";
+
+        users.users.root.hashedPasswordFile = "/mnt/shared/root-password-hash";
 
         virtualisation = {
           containers.enable = true;

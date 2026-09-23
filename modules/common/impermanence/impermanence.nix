@@ -85,5 +85,11 @@ in
       directories = cfg.rollback.persistDirectories;
       files = cfg.rollback.persistFiles;
     };
+
+    sops.age.sshKeyPaths =
+      lib.mkIf (lib.elem "/etc/ssh/ssh_host_ed25519_key" cfg.rollback.persistFiles)
+        [
+          "/persist/etc/ssh/ssh_host_ed25519_key"
+        ];
   };
 }

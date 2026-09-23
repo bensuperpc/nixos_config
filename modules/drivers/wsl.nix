@@ -19,6 +19,9 @@ in
       enable = true;
     };
 
+    # sops.age.sshKeyPaths = [ ];
+    # sops.age.keyFile = "/etc/sops/age/keys.txt";
+
     boot.loader = {
       systemd-boot.enable = lib.mkForce false;
       efi.canTouchEfiVariables = lib.mkForce false;

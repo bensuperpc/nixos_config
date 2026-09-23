@@ -4,6 +4,7 @@
     ./settings.nix
     ./services.nix
     ./maintenance.nix
+    ./secrets.nix
   ];
 
   # services.nix-serve = {

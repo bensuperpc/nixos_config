@@ -5,6 +5,16 @@
     policyProfiles = [ ];
   };
 
+  # First-install role: minimal + SSH, without sops-nix.
+  bootstrap = {
+    platformProfiles = [
+      "platform/base"
+      "platform/bootstrap"
+    ];
+    appProfiles = [ ];
+    policyProfiles = [ ];
+  };
+
   wsl = {
     platformProfiles = [
       "platform/base"
