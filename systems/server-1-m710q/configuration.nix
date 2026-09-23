@@ -1,23 +1,13 @@
-# My NixOS test server configuration.
+# Intel Skylake mini PC (Lenovo M710q), full role.
 
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}:
-{
+_: {
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
     ./disko.nix
   ];
 
-  networking.hostName = "server-1-m710q";
-
-  # myConfig.system.impermanence = {
-  #   enable = true;
-  # };
+  myConfig.apps.microvm.examples.test = true;
 
   # Don't touch that unless you know what you're doing!
   system.stateVersion = "26.05"; # Did you read the comment?

@@ -1,17 +1,13 @@
 { lib, ... }:
 let
-  mkEnabledOption =
-    description:
-    (lib.mkEnableOption description)
-    // {
-      default = true;
+  mkBoolOption =
+    default: description:
+    lib.mkOption {
+      type = lib.types.bool;
+      inherit default description;
     };
-  mkDisabledOption =
-    description:
-    (lib.mkEnableOption description)
-    // {
-      default = false;
-    };
+  mkEnabledOption = mkBoolOption true;
+  mkDisabledOption = mkBoolOption false;
 
   mkPackageGroupModule =
     { cfg, groups }:

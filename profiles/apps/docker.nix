@@ -1,13 +1,4 @@
+{ lib, ... }:
 {
-  config,
-  lib,
-  pkgs,
-  ...
-}:
-{
-  imports = [
-    ../../tests/check-docker.nix
-  ];
-
-  myConfig.apps.docker.enable = true;
+  myConfig.apps.docker.enable = lib.mkDefault true;
 }

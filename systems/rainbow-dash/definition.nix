@@ -1,6 +1,7 @@
 {
   enabled = true;
-  role = "full";
+  # Target role "full": switch after sops enrollment (ageRecipient, see README).
+  role = "bootstrap";
   system = "x86_64-linux";
   ip = "192.168.1.112";
   port = 22;
@@ -14,7 +15,6 @@
     "platform/cpu-amd"
     "platform/tpm"
     "platform/bluetooth"
-    "platform/wireless"
     "platform/snapper"
     "platform/impermanence"
   ];

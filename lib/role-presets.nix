@@ -1,13 +1,21 @@
 {
   minimal = {
-    platformProfiles = [ "platform/base" ];
+    platformProfiles = [ ];
+    appProfiles = [ ];
+    policyProfiles = [ ];
+  };
+
+  # First-install role: minimal + SSH, without sops-nix.
+  bootstrap = {
+    platformProfiles = [
+      "platform/bootstrap"
+    ];
     appProfiles = [ ];
     policyProfiles = [ ];
   };
 
   wsl = {
     platformProfiles = [
-      "platform/base"
       "platform/gpu-software"
       "platform/no-gui"
       "platform/wsl"
@@ -18,7 +26,6 @@
 
   server = {
     platformProfiles = [
-      "platform/base"
       "platform/no-gui"
     ];
     appProfiles = [ "apps/docker" ];
@@ -27,7 +34,6 @@
 
   desktop = {
     platformProfiles = [
-      "platform/base"
       "platform/kde-plasma"
     ];
     appProfiles = [
@@ -43,7 +49,6 @@
 
   workstation = {
     platformProfiles = [
-      "platform/base"
       "platform/kde-plasma"
     ];
     appProfiles = [
@@ -62,7 +67,6 @@
 
   full = {
     platformProfiles = [
-      "platform/base"
       "platform/kde-plasma"
     ];
     appProfiles = [
@@ -88,7 +92,6 @@
 
   family = {
     platformProfiles = [
-      "platform/base"
       "platform/kde-plasma"
     ];
     appProfiles = [

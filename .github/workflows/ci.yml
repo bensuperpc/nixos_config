@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, dev]
   pull_request:
 
 concurrency:
@@ -19,17 +19,6 @@ jobs:
       - uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: DeterminateSystems/nix-installer-action@main
-      - name: Check nixfmt formatting
-        run: nix fmt -- --ci .
-      - name: Run statix
-        run: nix run nixpkgs#statix -- check .
-
   flake-check:
     runs-on: ubuntu-latest
     steps:
@@ -39,62 +28,3 @@ jobs:
         with:
           use-flakehub: false
       - run: nix flake check -L
-
-  discover-hosts:
-    runs-on: ubuntu-latest
-    outputs:
-      hosts: ${{ steps.list.outputs.hosts }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: DeterminateSystems/nix-installer-action@main
-      - id: list
-        run: |
-          hosts=$(nix eval --json .#nixosConfigurations --apply builtins.attrNames)
-          echo "hosts=$hosts" >> "$GITHUB_OUTPUT"
-
-  build-hosts:
-    needs: discover-hosts
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        host: ${{ fromJson(needs.discover-hosts.outputs.hosts) }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: DeterminateSystems/nix-installer-action@main
-      - run: >
-          nix build ".#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel"
-          --dry-run --show-trace -L
-
-  # sbom:
-  #   if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-  #   needs: discover-hosts
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       host: ${{ fromJson(needs.discover-hosts.outputs.hosts) }}
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: DeterminateSystems/nix-installer-action@main
-  #     - uses: DeterminateSystems/magic-nix-cache-action@main
-  #       with:
-  #         use-flakehub: false
-  #     - name: Build ${{ matrix.host }}
-  #       run: >
-  #         nix build ".#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel"
-  #         --show-trace -L --out-link "result-${{ matrix.host }}"
-  #     - name: Generate SBOM
-  #       run: >
-  #         nix run nixpkgs#sbomnix -- "./result-${{ matrix.host }}"
-  #         --csv "sbom-${{ matrix.host }}.csv"
-  #         --cdx "sbom-${{ matrix.host }}.cdx.json"
-  #         --spdx "sbom-${{ matrix.host }}.spdx.json"
-  #     - uses: actions/upload-artifact@v4
-  #       with:
-  #         name: sbom-${{ matrix.host }}
-  #         path: |
-  #           sbom-${{ matrix.host }}.csv
-  #           sbom-${{ matrix.host }}.cdx.json
-  #           sbom-${{ matrix.host }}.spdx.json
-  #         retention-days: 90

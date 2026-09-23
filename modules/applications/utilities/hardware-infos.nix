@@ -20,7 +20,7 @@ let
 
   cliPackages = with pkgs; [
     # Hardware tools/info
-    libtool
+    # libtool
     cpuid
     smartmontools
     inxi
@@ -36,9 +36,5 @@ in
     cli.tools = moduleHelpers.mkDisabledOption "Install hardware CLI tools";
   };
 
-  config = lib.mkMerge [
-    {
-      environment.systemPackages = enabledPackages;
-    }
-  ];
+  config.environment.systemPackages = enabledPackages;
 }

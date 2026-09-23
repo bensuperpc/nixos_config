@@ -35,7 +35,16 @@ in
     qbittorrent = moduleHelpers.mkDisabledOption "Install qBittorrent client";
     transmission = moduleHelpers.mkDisabledOption "Install Transmission client";
     helpers = moduleHelpers.mkDisabledOption "Install torrent helper tools";
-    openFirewall = moduleHelpers.mkDisabledOption "Open firewall for torrent clients";
+    openFirewall = moduleHelpers.mkDisabledOption "Open the peer ports of the torrent clients in the firewall";
+
+    ports = lib.mkOption {
+      type = lib.types.listOf lib.types.port;
+      default = [
+        6881
+        51413
+      ];
+      description = "Peer ports (TCP and UDP) opened by openFirewall. Must match the port set in each client (qBittorrent 6881, Transmission 51413 by default).";
+    };
   };
 
   config = lib.mkMerge [
@@ -43,8 +52,10 @@ in
       environment.systemPackages = enabledOptionalsPackages;
     })
     (lib.mkIf cfg.openFirewall {
-      services.qbittorrent.openFirewall = lib.mkIf cfg.qbittorrent true;
-      services.transmission.openFirewall = lib.mkIf cfg.transmission true;
+      networking.firewall = {
+        allowedTCPPorts = cfg.ports;
+        allowedUDPPorts = cfg.ports;
+      };
     })
   ];
 }

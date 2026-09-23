@@ -1,5 +1,4 @@
 {
-  name = "bensuperpc";
   user = "bensuperpc";
   fullName = "Bensuperpc";
   email = "bensuperpc@gmail.com";

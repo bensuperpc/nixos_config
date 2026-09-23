@@ -2,25 +2,24 @@
   config,
   lib,
   pkgs,
-  moduleHelpers,
   ...
 }:
 
 let
   cfg = config.myConfig.system.impermanence;
+  inherit (cfg) rollback;
 in
 {
-  config = lib.mkIf cfg.enable {
-    programs.fuse.userAllowOther = true;
+  config = lib.mkIf (cfg.enable && rollback.enable) {
+    assertions = [
+      {
+        assertion = config.boot.initrd.systemd.enable;
+        message = "myConfig.system.impermanence.rollback needs boot.initrd.systemd.enable = true.";
+      }
+    ];
 
-    fileSystems."/persist".neededForBoot = true;
-    fileSystems."/var/log".neededForBoot = true;
-
-    security.sudo.extraConfig = ''
-      Defaults lecture = never
-    '';
-
-    boot.initrd.systemd.services.rollback = lib.mkIf cfg.rollback.enable {
+    boot.initrd.systemd.services.rollback = {
+      description = "Rollback the btrfs root subvolume to its blank snapshot";
       wantedBy = [ "initrd.target" ];
       after = [ "cryptsetup.target" ];
       before = [ "sysroot.mount" ];
@@ -41,9 +40,9 @@ in
       script = ''
         set -euo pipefail
 
-        DEVICE="${cfg.rollback.device}"
-        ROOT="${cfg.rollback.rootSubvol}"
-        BLANK="${cfg.rollback.blankSubvol}"
+        DEVICE="${rollback.device}"
+        ROOT="${rollback.rootSubvol}"
+        BLANK="${rollback.blankSubvol}"
 
         MNT=$(mktemp -d)
         trap 'umount "$MNT" 2>/dev/null || true; rmdir "$MNT"' EXIT

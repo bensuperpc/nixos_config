@@ -1,23 +1,8 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}:
+# Personal CLI tools; the shared zsh/starship/direnv setup lives in users/common/home/shell.nix.
+_:
 
 {
   programs = {
-    zsh = {
-      enable = true;
-      autosuggestion.enable = true;
-      syntaxHighlighting.enable = true;
-    };
-
-    starship = {
-      enable = true;
-      enableZshIntegration = true;
-    };
-
     fzf = {
       enable = true;
       enableZshIntegration = true;
@@ -37,12 +22,6 @@
 
     bat = {
       enable = true;
-    };
-
-    direnv = {
-      enable = true;
-      enableZshIntegration = true;
-      nix-direnv.enable = true;
     };
   };
 }

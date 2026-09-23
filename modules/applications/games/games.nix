@@ -1,6 +1,5 @@
 {
   config,
-  lib,
   pkgs,
   pkgsSets,
   moduleHelpers,
@@ -60,7 +59,6 @@ let
         packages = with pkgs; [
           heroic
           lgogdownloader
-          lgogdownloader-gui
           lutris
         ];
       };

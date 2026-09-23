@@ -4,20 +4,12 @@
   inputs = {
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     nixpkgs-2605.url = "github:NixOS/nixpkgs/nixos-26.05";
-    nixpkgs-2511.url = "github:NixOS/nixpkgs/nixos-25.11";
-    nixpkgs-2505.url = "github:NixOS/nixpkgs/nixos-25.05";
-    nixpkgs-master.url = "github:NixOS/nixpkgs/master";
     nixpkgs.follows = "nixpkgs-unstable";
 
     flake-parts = {
       url = "github:hercules-ci/flake-parts/main";
       inputs.nixpkgs-lib.follows = "nixpkgs";
     };
-
-    # nix-helper = {
-    #   url = "github:nix-community/nh/master";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
 
     microvm = {
       url = "github:microvm-nix/microvm.nix/main";
@@ -32,15 +24,6 @@
     nix-flatpak = {
       url = "github:gmodena/nix-flatpak/main";
     };
-
-    # Hardware support
-    # nixos-hardware.url = "github:NixOS/nixos-hardware/master";
-
-    # Already included in nixpkgs
-    # compose2nix = {
-    #   url = "github:aksiksi/compose2nix/main";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
 
     home-manager = {
       url = "github:nix-community/home-manager/master";
@@ -80,40 +63,31 @@
       inputs.flake-compat.follows = "flake-compat";
     };
 
-    # Run unpackaged binaries in NixOS
-    nix-ld = {
-      url = "github:Mic92/nix-ld/main";
+    nix-index-database = {
+      url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # nix-alien = {
-    #   url = "github:thiagokokada/nix-alien/main";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
 
-    # Deployment tools
+    nixpkgs-esp-dev.url = "github:mirrexagon/nixpkgs-esp-dev";
+
     colmena = {
       url = "github:zhaofengli/colmena/main";
-      inputs.flake-compat.follows = "flake-compat";
-    };
-
-    deploy-rs = {
-      url = "github:serokell/deploy-rs/master";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-compat.follows = "flake-compat";
+      inputs.stable.follows = "nixpkgs-2605";
     };
   };
 
   outputs =
     inputs@{ flake-parts, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
-      imports = [ ./flake-module.nix ];
+      imports = [
+        ./flake-module.nix # package sets, hosts (nixosConfigurations, colmenaHive)
+        ./flake/dev.nix # formatter, devShells
+        ./flake/checks.nix # checks (= CI)
+      ];
       systems = [
         "x86_64-linux"
         "aarch64-linux"
       ];
-      perSystem = { pkgs, ... }: {
-        # nix fmt
-        formatter = pkgs.nixfmt-tree;
-      };
     };
 }

@@ -21,7 +21,7 @@ in
 
     environment.systemPackages =
       with pkgs;
-      lib.optionals (cfg.desktop == "lxqt" && cfg.extraPackages) [
+      lib.optionals cfg.extraPackages [
         xdg-utils
         flatpak-xdg-utils
       ];

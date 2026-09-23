@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  pkgs,
   moduleHelpers,
   ...
 }:
@@ -19,13 +18,15 @@ in
       enable = true;
     };
 
+    # WSL manages resolv.conf itself.
+    myConfig.system.secureDns.enable = lib.mkDefault false;
+
     boot.loader = {
       systemd-boot.enable = lib.mkForce false;
       efi.canTouchEfiVariables = lib.mkForce false;
     };
 
     networking = {
-      nameservers = lib.mkForce [ ];
       nftables.enable = lib.mkForce false;
       firewall.enable = lib.mkForce false;
       networkmanager.enable = lib.mkForce false;
@@ -35,24 +36,5 @@ in
       resolved.enable = lib.mkForce false;
       timesyncd.enable = lib.mkForce false;
     };
-
-    # loginctl enable-linger $USER
-    # then wsl --shutdown
-
-    # systemd.user.services.dbus = {
-    #   wantedBy = [ "default.target" ];
-    #   serviceConfig = {
-    #     ExecStart = "${pkgs.dbus}/bin/dbus-daemon --session --address=systemd: --nofork --nopidfile --systemd-activation";
-    #   };
-    # };
-
-    # systemd.user.services.dbus = {
-    #   wantedBy = [ "default.target" ];
-    #   wants = [ "dbus.socket" ];
-    #   after = [ "dbus.socket" ];
-    # };
-    # systemd.user.sockets.dbus = {
-    #   wantedBy = [ "sockets.target" ];
-    # };
   };
 }

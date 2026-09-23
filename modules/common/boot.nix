@@ -1,4 +1,4 @@
-{ lib, pkgs, ... }:
+{ config, pkgs, ... }:
 
 let
   bootKernelParams = [
@@ -22,13 +22,14 @@ in
         editor = false;
       };
     };
-
     initrd = {
       systemd = {
         enable = true;
-        emergencyAccess = true;
+        # Disable for security reasons
+        emergencyAccess = false;
       };
     };
+
     tmp = {
       useZram = true;
       zramSettings.zram-size = "ram * 0.20";
@@ -37,4 +38,15 @@ in
     kernelParams = bootKernelParams;
   };
   environment.systemPackages = bootPackages;
+
+  assertions = [
+    {
+      assertion =
+        config.wsl.enable
+        || config.boot.loader.systemd-boot.enable
+        || config.boot.lanzaboote.enable
+        || config.boot.loader.grub.enable;
+      message = "No bootloader enabled: enable systemd-boot (or Lanzaboote via platform/secureboot).";
+    }
+  ];
 }

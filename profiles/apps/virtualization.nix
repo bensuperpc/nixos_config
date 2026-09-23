@@ -1,19 +1,6 @@
+{ lib, ... }:
 {
-  config,
-  lib,
-  pkgs,
-  ...
-}:
-{
-  imports = [
-    ../../tests/check-virtualization.nix
-  ];
-
-  myConfig.apps.utilities.kvm.host = true;
-  myConfig.apps.microvm = {
-    host = true;
-    examples = {
-      test = true;
-    };
-  };
+  # MicroVM examples need per-host secrets: enable them from systems/<host>/configuration.nix.
+  myConfig.apps.utilities.kvm.host = lib.mkDefault true;
+  myConfig.apps.microvm.host = lib.mkDefault true;
 }

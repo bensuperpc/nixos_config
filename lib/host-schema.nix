@@ -2,34 +2,44 @@
 
 let
   rolePresets = import ./role-presets.nix;
+  supportedRoles = builtins.attrNames rolePresets;
+
+  # Anything else in a definition.nix file throws an error.
+  allowedKeys = [
+    "enabled"
+    "role"
+    "system"
+    "systemName"
+    "ip"
+    "port"
+    "users"
+    "deployUser"
+    "ageRecipient"
+    "platformProfiles"
+    "appProfiles"
+    "policyProfiles"
+  ];
 
   normalizeHost =
     name: raw:
     let
       role = raw.role or "minimal";
-      supportedRoles = builtins.attrNames rolePresets;
       rolePreset =
-        if lib.hasAttr role rolePresets then
-          rolePresets.${role}
-        else
-          throw "Unknown host role '${role}' for host '${name}'. Supported roles: ${lib.concatStringsSep ", " supportedRoles}";
+        rolePresets.${role}
+          or (throw "Unknown host role '${role}' for host '${name}'. Supported roles: ${lib.concatStringsSep ", " supportedRoles}");
+
+      unknownKeys = lib.subtractLists allowedKeys (builtins.attrNames raw);
 
       users = lib.unique (raw.users or [ ]);
 
-      platformProfiles = lib.unique (
-        (rolePreset.platformProfiles or [ ]) ++ (raw.platformProfiles or [ ])
-      );
-      appProfiles = lib.unique ((rolePreset.appProfiles or [ ]) ++ (raw.appProfiles or [ ]));
-      policyProfiles = lib.unique ((rolePreset.policyProfiles or [ ]) ++ (raw.policyProfiles or [ ]));
-
-      allProfiles = lib.unique (platformProfiles ++ appProfiles ++ policyProfiles);
-
-      ip = raw.ip or null;
-      port = raw.port or 22;
-      enabled = raw.enabled or true;
-      deployUser = raw.deployUser or (lib.head users);
+      profilesOf = kind: lib.unique ((rolePreset.${kind} or [ ]) ++ (raw.${kind} or [ ]));
+      platformProfiles = profilesOf "platformProfiles";
+      appProfiles = profilesOf "appProfiles";
+      policyProfiles = profilesOf "policyProfiles";
     in
-    if !(raw ? system) then
+    if unknownKeys != [ ] then
+      throw "Host '${name}' has unknown field(s): ${lib.concatStringsSep ", " unknownKeys}. Allowed: ${lib.concatStringsSep ", " allowedKeys}."
+    else if !(raw ? system) then
       throw "Host '${name}' is missing required field 'system'."
     else if users == [ ] then
       throw "Host '${name}' has no users. Define users = [ ... ]."
@@ -42,22 +52,19 @@ let
         inherit
           role
           users
-          deployUser
           platformProfiles
           appProfiles
           policyProfiles
-          allProfiles
-          ip
-          port
-          enabled
           ;
+        allProfiles = lib.unique (platformProfiles ++ appProfiles ++ policyProfiles);
+        deployUser = raw.deployUser or (lib.head users);
+        ip = raw.ip or null;
+        port = raw.port or 22;
+        ageRecipient = raw.ageRecipient or null;
         systemName = raw.systemName or name;
         inherit (raw) system;
       };
-
 in
 {
-  inherit rolePresets normalizeHost;
-
-  normalizeHosts = hosts: lib.mapAttrs normalizeHost hosts;
+  normalizeHosts = lib.mapAttrs normalizeHost;
 }

@@ -1,4 +1,3 @@
-{ config, ... }:
-{
-  config.myConfig.system.secureboot.enable = true;
+_: {
+  myConfig.system.secureboot.enable = true;
 }

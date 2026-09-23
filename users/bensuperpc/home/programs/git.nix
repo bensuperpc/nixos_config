@@ -1,16 +1,14 @@
 {
-  config,
   osConfig,
   lib,
-  pkgs,
   userVars,
   ...
 }:
 
 {
-  programs.git = lib.mkIf osConfig.myConfig.apps.development.dev.tooling {
+  programs.git = lib.mkIf osConfig.myConfig.apps.development.dev.base {
     enable = true;
-    lfs.enable = true;
+    # dysk.enable = true;
     settings = {
       user = {
         name = "${userVars.fullName}";

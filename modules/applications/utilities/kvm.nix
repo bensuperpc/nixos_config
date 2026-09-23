@@ -29,7 +29,6 @@ let
       };
     };
   };
-  anyEnabled = generated.anyEnabled || cfg.enableGuestServices;
 in
 {
   options.myConfig.apps.utilities.kvm = generated.options // {
@@ -42,12 +41,10 @@ in
 
   config = lib.mkMerge [
     generated.config
-    (lib.mkIf anyEnabled {
-      # virtualisation.spiceUSBRedirection.enable = true;
+    (lib.mkIf generated.anyEnabled {
       virtualisation.libvirtd = {
         enable = true;
         allowedBridges = [ "virbr0" ];
-        # qemu.swtpm.enable = true;
         qemu.package = pkgs.qemu_kvm;
         qemu.vhostUserPackages = vhostPackages;
       };
@@ -57,10 +54,11 @@ in
         RuntimeDirectory = "libvirt";
         LoadCredentialEncrypted = lib.mkForce [ "" ];
       };
+    })
 
-      # For guest only
-      services.qemuGuest.enable = cfg.enableGuestServices;
-      services.spice-vdagentd.enable = cfg.enableGuestServices;
+    (lib.mkIf cfg.enableGuestServices {
+      services.qemuGuest.enable = true;
+      services.spice-vdagentd.enable = true;
     })
   ];
 }

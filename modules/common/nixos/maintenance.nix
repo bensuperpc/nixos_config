@@ -7,10 +7,6 @@
 
 let
   cfg = config.myConfig.system.nixos;
-  garbageCollectorDates = [
-    "03:00"
-    "15:00"
-  ];
   autoUpgradeDates = [
     "03:00"
   ];
@@ -23,14 +19,10 @@ in
 
   config = lib.mkMerge [
     (lib.mkIf cfg.enableGarbageCollector {
-      nix = {
-        gc = {
-          automatic = true;
-          persistent = true;
-          randomizedDelaySec = "30min";
-          dates = garbageCollectorDates;
-          options = "--delete-older-than 30d";
-        };
+      programs.nh.clean = {
+        enable = true;
+        dates = "daily";
+        extraArgs = "--keep 5 --keep-since 30d";
       };
     })
     (lib.mkIf cfg.enableAutoUpgrade {

@@ -1,6 +1,4 @@
 {
-  config,
-  osConfig,
   lib,
   pkgs,
   userVars,
@@ -19,7 +17,7 @@ let
 in
 {
   home = {
-    username = "${userVars.user}";
+    username = userVars.user;
     homeDirectory = "/home/${userVars.user}";
 
     packages = with pkgs; [
@@ -50,16 +48,5 @@ in
         fi
       '') sshKeys
     );
-
-    cloneNixosConfig = lib.hm.dag.entryAfter [ "installPackages" ] ''
-      TARGET_DIR="$HOME/Repository/nixos_config"
-      if [ ! -d "$TARGET_DIR" ]; then
-        echo "Cloning the NixOS configuration repository into $TARGET_DIR..."
-        mkdir -p "$(dirname "$TARGET_DIR")"
-        ${pkgs.git}/bin/git clone https://github.com/bensuperpc/nixos_config.git "$TARGET_DIR"
-      else
-        echo "The repository already exists in $TARGET_DIR, skipping this step."
-      fi
-    '';
   };
 }

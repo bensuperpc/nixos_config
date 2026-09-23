@@ -1,4 +1,9 @@
-{ pkgs, pkgsSets, ... }:
+{
+  pkgs,
+  pkgsSets,
+  espIdf,
+  ...
+}:
 {
   qt6 = import ./qt6.nix {
     inherit pkgs pkgsSets;
@@ -22,3 +27,15 @@
     inherit pkgs pkgsSets;
   };
 }
+// builtins.listToAttrs (
+  map
+    (target: {
+      name = target;
+      value = import ./esp-idf.nix { inherit pkgs espIdf target; };
+    })
+    [
+      "esp32c5"
+      "esp32c6"
+      "esp32p4"
+    ]
+)

@@ -1,10 +1,4 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}:
-{
+_: {
   # Use dbus-broker as the D-Bus implementation.
   services.dbus = {
     enable = true;

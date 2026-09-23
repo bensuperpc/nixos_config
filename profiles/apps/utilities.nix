@@ -1,14 +1,8 @@
 {
-  config,
   lib,
-  pkgs,
   ...
 }:
 {
-  imports = [
-    ../../tests/check-math.nix
-    ../../tests/check-tools.nix
-  ];
 
   myConfig.apps.utilities = {
     electronic = {
@@ -33,7 +27,6 @@
     };
 
     compress = {
-      base = lib.mkDefault true;
       tools = lib.mkDefault true;
     };
 

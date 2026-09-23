@@ -22,6 +22,7 @@ in
 {
   options.myConfig.apps.docker = {
     enable = moduleHelpers.mkDisabledOption "Enable Docker engine and tooling";
+    exposePublishedPorts = moduleHelpers.mkDisabledOption "Bind docker port to 127.0.0.1 (you must explicitly bind to 0.0.0.0:PORT to expose a container)";
   };
 
   config = lib.mkIf cfg.enable {
@@ -36,13 +37,12 @@ in
           enable = true;
           dates = "weekly";
         };
-        # rootless = {
-        #   enable = true;
-        #   setSocketVariable = true;
-        # };
+        daemon.settings = lib.mkIf (!cfg.exposePublishedPorts) {
+          ip = "127.0.0.1";
+        };
       };
     };
 
-    environment.systemPackages = lib.mkIf config.virtualisation.docker.enable dockerPackages;
+    environment.systemPackages = dockerPackages;
   };
 }

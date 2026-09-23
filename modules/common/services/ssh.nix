@@ -3,6 +3,7 @@
   lib,
   pkgs,
   moduleHelpers,
+  varsHost,
   ...
 }:
 
@@ -16,49 +17,57 @@ let
 in
 {
   options.myConfig.system.ssh = {
-    enable = moduleHelpers.mkEnabledOption "Activate SSH service";
-    openFirewall = moduleHelpers.mkEnabledOption "Automatically open port 22 in the firewall.";
-    useFail2ban = moduleHelpers.mkEnabledOption "Automatically enable Fail2ban to protect SSH.";
+    enable = moduleHelpers.mkEnabledOption "OpenSSH server (client tools are always installed)";
+    openFirewall = moduleHelpers.mkEnabledOption "Open the SSH port in the firewall";
+    useFail2ban = moduleHelpers.mkEnabledOption "Fail2ban protection for SSH";
   };
 
-  config = lib.mkIf cfg.enable {
-    environment.systemPackages = sshPackages;
-
-    services.openssh = {
-      enable = true;
-      ports = [ 22 ];
-      inherit (cfg) openFirewall;
-      settings = {
-        PasswordAuthentication = false;
-        KbdInteractiveAuthentication = false;
-        PermitRootLogin = "no";
-      };
-    };
-
-    services.fail2ban = lib.mkIf cfg.useFail2ban {
-      enable = true;
-      maxretry = 5;
-      ignoreIP = [
-        "127.0.0.0/8"
-      ];
-      bantime = "24h";
-      bantime-increment = {
+  config = lib.mkMerge [
+    {
+      environment.systemPackages = sshPackages;
+      assertions =
+        let
+          sshd = config.services.openssh;
+        in
+        lib.optionals sshd.enable [
+          {
+            assertion =
+              sshd.settings.PasswordAuthentication == false
+              && sshd.settings.KbdInteractiveAuthentication == false;
+            message = "sshd must stay key-only (PasswordAuthentication and KbdInteractiveAuthentication disabled).";
+          }
+          {
+            assertion = sshd.settings.PermitRootLogin == "no";
+            message = "sshd must not allow root login (PermitRootLogin = \"no\").";
+          }
+        ];
+    }
+    (lib.mkIf cfg.enable {
+      services.openssh = {
         enable = true;
-        multipliers = "1 2 4 8 16 32 64";
-        maxtime = "168h";
-        overalljails = true;
+        ports = [ varsHost.port ];
+        inherit (cfg) openFirewall;
+        settings = {
+          PasswordAuthentication = false;
+          KbdInteractiveAuthentication = false;
+          PermitRootLogin = "no";
+        };
       };
-      # jails = {
-      #   apache-nohome-iptables.settings = {
-      #     filter = "apache-nohome";
-      #     action = ''iptables-multiport[name=HTTP, port="http,https"]'';
-      #     logpath = "/var/log/httpd/error_log*";
-      #     backend = "auto";
-      #     findtime = 600;
-      #     bantime  = 600;
-      #     maxretry = 5;
-      #   };
-      # };
-    };
-  };
+
+      services.fail2ban = lib.mkIf cfg.useFail2ban {
+        enable = true;
+        maxretry = 5;
+        ignoreIP = [
+          "127.0.0.0/8"
+        ];
+        bantime = "24h";
+        bantime-increment = {
+          enable = true;
+          multipliers = "1 2 4 8 16 32 64";
+          maxtime = "168h";
+          overalljails = true;
+        };
+      };
+    })
+  ];
 }

@@ -1,10 +1,4 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}:
-{
+_: {
   services.earlyoom = {
     enable = true;
     freeMemThreshold = 10;

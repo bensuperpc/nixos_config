@@ -1,6 +1,5 @@
 {
   config,
-  lib,
   pkgs,
   moduleHelpers,
   ...
@@ -12,10 +11,6 @@ let
   generated = moduleHelpers.mkPackageGroupModule {
     inherit cfg;
     groups = {
-      base = {
-        description = "Install core compression tools";
-        packages = [ ];
-      };
       tools = {
         description = "Install extended compression tools";
         packages = with pkgs; [

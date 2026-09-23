@@ -8,6 +8,7 @@
 
 let
   cfg = config.myConfig.apps.custom;
+  customPackages = import ./packages pkgs;
 in
 {
   imports = [
@@ -25,28 +26,11 @@ in
   config = {
     environment.systemPackages =
       lib.optionals cfg.libraries [
-        (pkgs.callPackage packages/bs-thread-pool.nix { })
-        (pkgs.callPackage packages/fake-function-framework.nix { })
+        customPackages.bs-thread-pool
+        customPackages.fake-function-framework
       ]
-      ++ lib.optionals cfg.raylib-cpp [
-        (pkgs.callPackage packages/raylib-cpp.nix { })
-      ]
-      ++ lib.optionals cfg.fastnoise2 [
-        (pkgs.callPackage packages/fastnoise2.nix { })
-      ]
-      ++ lib.optionals cfg.libnbtplusplus [
-        (pkgs.callPackage packages/libnbtplusplus.nix { })
-      ];
+      ++ lib.optional cfg.raylib-cpp customPackages.raylib-cpp
+      ++ lib.optional cfg.fastnoise2 customPackages.fastnoise2
+      ++ lib.optional cfg.libnbtplusplus customPackages.libnbtplusplus;
   };
-
-  # nixpkgs.overlays = [
-  #   (final: prev: {
-  #     lager = prev.lager.override {
-  #       boost = pkgsSets.stable-2605.boost;
-  #     };
-  #     gource = prev.gource.override {
-  #       boost = pkgsSets.stable-2605.boost;
-  #     };
-  #   })
-  # ];
 }

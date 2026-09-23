@@ -1,9 +1,7 @@
 {
   config,
-  lib,
   pkgs,
   moduleHelpers,
-  pkgsSets,
   ...
 }:
 
@@ -15,26 +13,22 @@ let
     groups = {
       nintendo = {
         description = "Install Nintendo family emulators";
-        packages =
-          with pkgs;
-          [
-            dolphin-emu # Nintendo GameCube/Wii
-            simple64 # Nintendo 64
-            mupen64plus # Nintendo 64
-            n64recomp # Nintendo 64
-            snes9x # Super Nintendo Entertainment System
-            zsnes2 # Super Nintendo Entertainment System
-            bsnes-hd # Super Nintendo Entertainment System
-            mgba # Game Boy Advance
-            sameboy # Game Boy
-            melonds # Nintendo DS
-            ryubing # Switch 1 emulator
-            eden # Switch 1 emulator
-            cemu # Wii U
-            azahar # 3DS
-          ]
-          ++ (with pkgsSets.stable-2605; [
-          ]);
+        packages = with pkgs; [
+          dolphin-emu # Nintendo GameCube/Wii
+          simple64 # Nintendo 64
+          mupen64plus # Nintendo 64
+          n64recomp # Nintendo 64
+          snes9x # Super Nintendo Entertainment System
+          zsnes2 # Super Nintendo Entertainment System
+          bsnes-hd # Super Nintendo Entertainment System
+          mgba # Game Boy Advance
+          sameboy # Game Boy
+          melonds # Nintendo DS
+          ryubing # Switch 1 emulator
+          eden # Switch 1 emulator
+          cemu # Wii U
+          azahar # 3DS
+        ];
       };
       sega = {
         description = "Install Sega family emulators";
@@ -45,15 +39,11 @@ let
       };
       sony = {
         description = "Install Sony family emulators";
-        packages =
-          with pkgs;
-          [
-            ppsspp-sdl-wayland
-            pcsx2 # PlayStation 2
-            rpcs3 # PlayStation 3
-          ]
-          ++ (with pkgsSets.stable-2605; [
-          ]);
+        packages = with pkgs; [
+          ppsspp-sdl-wayland
+          pcsx2 # PlayStation 2
+          rpcs3 # PlayStation 3
+        ];
       };
       retro = {
         description = "Install retro and multi-system emulators";

@@ -1,6 +1,7 @@
 {
   enabled = true;
-  role = "server";
+  # Target role "server": switch after sops enrollment (ageRecipient, see README).
+  role = "bootstrap";
   system = "x86_64-linux";
   ip = "192.168.1.32";
   port = 22;
@@ -12,5 +13,6 @@
   platformProfiles = [
     "platform/gpu-intel-skylake"
     "platform/tpm"
+    "platform/impermanence"
   ];
 }

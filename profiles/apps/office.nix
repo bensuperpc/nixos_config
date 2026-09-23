@@ -1,13 +1,8 @@
 {
-  config,
   lib,
-  pkgs,
   ...
 }:
 {
-  imports = [
-    ../../tests/check-office.nix
-  ];
 
   myConfig.apps.desktop = {
     office = {

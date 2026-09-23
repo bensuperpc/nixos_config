@@ -1,13 +1,8 @@
 {
-  config,
   lib,
-  pkgs,
   ...
 }:
 {
-  imports = [
-    ../../tests/check-game.nix
-  ];
 
   myConfig.apps.games = {
     emulator = {

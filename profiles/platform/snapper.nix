@@ -1,4 +1,3 @@
-{ config, ... }:
-{
-  config.myConfig.system.snapper.enable = true;
+_: {
+  myConfig.system.snapper.enable = true;
 }

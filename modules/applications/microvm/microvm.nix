@@ -9,14 +9,13 @@
 let
   cfg = config.myConfig.apps.microvm;
   dockerTest = import ./vm/dockerTest/main.nix { inherit pkgsSets; };
-  anyExampleEnabled = cfg.examples.test;
 in
 {
   options.myConfig.apps.microvm = {
     host = moduleHelpers.mkDisabledOption "Enable the MicroVM host service (microvm-host)";
 
     examples = {
-      test = moduleHelpers.mkDisabledOption "Test the MicroVM host service with a networked VM";
+      test = moduleHelpers.mkDisabledOption "Test the MicroVM host service with a networked VM (needs microvm/dockerTest/root-password in the host sops file)";
     };
   };
 
@@ -26,15 +25,21 @@ in
     })
     (lib.mkIf cfg.examples.test {
       microvm.vms = dockerTest;
-      # networking.firewall.allowedTCPPorts = [
-      #   8080
-      # ];
-    })
-    (lib.mkIf anyExampleEnabled {
+
+      # From the host sops file (systems/<host>/secrets.yaml, see nixos/secrets.nix).
+      sops.secrets."microvm/dockerTest/root-password" = {
+        path = "/srv/microvm-shared/microvm-shared/root-password-hash";
+        mode = "0444";
+      };
+
       assertions = [
         {
           assertion = cfg.host;
-          message = "myConfig.apps.microvm.examples.* require myConfig.apps.microvm.host = true;";
+          message = "myConfig.apps.microvm.examples.* require myConfig.apps.microvm.host = true.";
+        }
+        {
+          assertion = config.myConfig.system.secrets.enable;
+          message = "myConfig.apps.microvm.examples.test needs sops (host enrolled, see README).";
         }
       ];
     })

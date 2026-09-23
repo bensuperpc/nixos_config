@@ -32,11 +32,12 @@ in
       xserver.enable = true;
     };
 
-    # Disable udiskie, already include in plasma
+    # Installs KDE Connect and opens its TCP/UDP 1714-1764 range.
+    programs.kdeconnect.enable = cfg.extraPackages;
 
     environment.systemPackages =
       with pkgs;
-      lib.optionals (cfg.desktop == "plasma" && cfg.extraPackages) [
+      lib.optionals cfg.extraPackages [
         # Theme and icons
         kdePackages.breeze
         kdePackages.breeze-gtk
@@ -65,7 +66,6 @@ in
 
         # Desktop integration and shell
         kdePackages.flatpak-kcm
-        kdePackages.kdeconnect-kde
         kdePackages.plasma-browser-integration
         kdePackages.plasma-keyboard
         kdePackages.plasma-thunderbolt

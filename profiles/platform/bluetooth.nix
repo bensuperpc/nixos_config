@@ -1,4 +1,3 @@
-{ config, ... }:
-{
-  config.myConfig.drivers.bluetooth.enable = true;
+_: {
+  myConfig.drivers.bluetooth.enable = true;
 }

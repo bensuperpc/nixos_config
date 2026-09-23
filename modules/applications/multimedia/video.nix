@@ -1,6 +1,5 @@
 {
   config,
-  lib,
   pkgs,
   pkgsSets,
   moduleHelpers,
@@ -69,18 +68,14 @@ let
       };
       opticalMedia = {
         description = "Install DVD and Blu-ray tooling";
-        packages =
-          (with pkgs; [
-            libdvdcss
-            libdvdnav
-            libdvdread
-            mkvtoolnix
-            libaacs
-            libbdplus
-          ])
-          ++ (with pkgsSets.stable-2605; [
-            # makemkv
-          ]);
+        packages = with pkgs; [
+          libdvdcss
+          libdvdnav
+          libdvdread
+          mkvtoolnix
+          libaacs
+          libbdplus
+        ];
       };
       downloaders = {
         description = "Install media download tools";

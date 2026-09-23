@@ -1,13 +1,15 @@
-{ config, lib, ... }:
+{ lib, ... }:
 {
-  config.myConfig = {
+  myConfig = {
     drivers.wsl.enable = true;
     system = {
-      firmware.enable = lib.mkForce false;
+      firmware.enable = false;
+      # No sshd, hence no host key for sops to decrypt with.
+      secrets.enable = lib.mkDefault false;
       ssh = {
-        enable = lib.mkForce false;
-        openFirewall = lib.mkForce false;
-        useFail2ban = lib.mkForce false;
+        enable = false;
+        openFirewall = false;
+        useFail2ban = false;
       };
     };
   };

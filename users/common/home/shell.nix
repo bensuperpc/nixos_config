@@ -2,7 +2,6 @@
   config,
   osConfig,
   lib,
-  pkgs,
   ...
 }:
 
@@ -34,12 +33,12 @@
         plugins = [
           "git"
           "sudo"
-          "command-not-found"
+          # "command-not-found" (handled by nix-index)
+          # "z"
           "extract"
           "history"
           "ssh"
           "python"
-          "z"
           #        "zsh-autosuggestions"
           #        "zsh-syntax-highlighting"
           # "ssh-agent"

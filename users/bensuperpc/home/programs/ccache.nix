@@ -1,5 +1,4 @@
 {
-  config,
   osConfig,
   lib,
   pkgs,
@@ -15,7 +14,7 @@
       CCACHE_DIR = "$HOME/.cache/ccache";
     };
     activation = {
-      setupCcache = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+      setupCcache = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
         mkdir -p $HOME/.cache/ccache
       '';
     };

@@ -1,6 +1,5 @@
 # More info: https://nix-community.github.io/plasma-manager/options.xhtml
 {
-  config,
   osConfig,
   lib,
   pkgs,
@@ -167,7 +166,7 @@
     };
   };
 
-  services.kdeconnect = {
+  services.kdeconnect = lib.mkIf (osConfig.myConfig.gui.desktop != "none") {
     enable = true;
     package = pkgs.kdePackages.kdeconnect-kde;
     indicator = true;

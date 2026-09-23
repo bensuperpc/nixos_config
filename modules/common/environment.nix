@@ -1,6 +1,5 @@
 {
   config,
-  lib,
   pkgs,
   ...
 }:
@@ -13,12 +12,13 @@ let
     helix
   ];
 
+  flake = config.programs.nh.flake;
+
   shellAliases = {
-    nrs = "nixos-rebuild switch --max-jobs auto --flake /etc/nixos#${config.networking.hostName}";
-    nrb = "nixos-rebuild build --max-jobs auto --flake /etc/nixos#${config.networking.hostName}";
-    nrt = "nixos-rebuild test --max-jobs auto --flake /etc/nixos#${config.networking.hostName}";
-    nfu = "nix flake update /etc/nixos";
-    nsc = "nix-collect-garbage --delete-older-than 14d";
+    nrs = "nixos-rebuild switch --max-jobs auto --flake ${flake}#${config.networking.hostName}";
+    nrb = "nixos-rebuild build --max-jobs auto --flake ${flake}#${config.networking.hostName}";
+    nrt = "nixos-rebuild test --max-jobs auto --flake ${flake}#${config.networking.hostName}";
+    nsc = "nh clean all --keep 5 --keep-since 14d";
     nsr = "nix-collect-garbage --repair";
     nso = "nix-store --optimise";
     nds = "nix path-info -Sh /run/current-system";

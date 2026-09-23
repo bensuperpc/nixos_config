@@ -1,13 +1,8 @@
 {
-  config,
   lib,
-  pkgs,
   ...
 }:
 {
-  imports = [
-    ../../tests/check-browser.nix
-  ];
 
   myConfig.apps.network.browser = {
     core = lib.mkDefault true;

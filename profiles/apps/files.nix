@@ -1,13 +1,8 @@
 {
-  config,
   lib,
-  pkgs,
   ...
 }:
 {
-  imports = [
-    ../../tests/check-files.nix
-  ];
 
   myConfig.apps.files = {
     backup = {

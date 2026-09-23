@@ -41,6 +41,8 @@ in
 
     environment.etc.nixos-current-system-flake-src.source = inputs.self;
 
+    system.configurationRevision = inputs.self.rev or inputs.self.dirtyRev or null;
+
     nix = {
       settings = {
         experimental-features = [

@@ -2,15 +2,10 @@
   inputs,
   lib,
   pkgsCache,
-  moduleHelpers,
-  ...
 }:
 
 name: cfg:
 let
-  # All packages and configurations
-  mainPkgs = [ ../modules ];
-
   requirePath =
     what: path:
     if builtins.pathExists path then
@@ -18,14 +13,11 @@ let
     else
       throw "Host '${name}' is missing ${what}: ${toString path}";
 
-  allProfiles =
-    cfg.allProfiles
-      or (throw "Host '${name}' is missing 'allProfiles'. Ensure systems/systems.nix is normalized via lib/host-schema.nix.");
-
   # Import profiles from normalized host schema.
-  profilesModules = map (p: requirePath "profile" ../profiles/${p}.nix) allProfiles;
+  profilesModules = map (p: requirePath "profile" ../profiles/${p}.nix) cfg.allProfiles;
 
-  varsUsers = lib.genAttrs (cfg.users or [ ]) (
+  # Variables of every user of the host, keyed by user name.
+  varsUsers = lib.genAttrs cfg.users (
     u: import (requirePath "user variables" ../users/${u}/variables.nix)
   );
 
@@ -33,37 +25,35 @@ let
   usersModules = map (u: {
     _module.args.userVars = varsUsers.${u};
     imports = [ (requirePath "user system module" ../users/${u}/system.nix) ];
-  }) (cfg.users or [ ]);
+  }) cfg.users;
 
   varsHost = {
     name = cfg.systemName;
-    inherit (cfg) role;
-    inherit (cfg) enabled;
-    inherit (cfg) users;
-    inherit (cfg) deployUser;
-    inherit (cfg) ip;
-    inherit (cfg) port;
+    inherit (cfg)
+      role
+      users
+      deployUser
+      ip
+      port
+      ageRecipient
+      ;
   };
 
   pkgsSets =
-    if builtins.hasAttr cfg.system pkgsCache then
-      pkgsCache.${cfg.system}
-    else
-      throw "Unsupported system '${cfg.system}' for host '${name}'.";
+    pkgsCache.${cfg.system} or (throw "Unsupported system '${cfg.system}' for host '${name}'.");
 
   modules = [
     (requirePath "system configuration" ../systems/${cfg.systemName}/configuration.nix)
-    # inputs.nixos-hardware.nixosModules.dell-xps-13-9380
     inputs.home-manager.nixosModules.home-manager
     inputs.impermanence.nixosModules.impermanence
     inputs.disko.nixosModules.disko
     inputs.sops-nix.nixosModules.sops
     inputs.nixos-wsl.nixosModules.wsl
-    inputs.nix-ld.nixosModules.nix-ld
     inputs.lanzaboote.nixosModules.lanzaboote
     inputs.microvm.nixosModules.host
     inputs.nix-flatpak.nixosModules.nix-flatpak
-    ({ config, ... }: {
+    inputs.nix-index-database.nixosModules.nix-index
+    {
       home-manager = {
         useGlobalPkgs = true;
         useUserPackages = true;
@@ -71,25 +61,17 @@ let
           inputs.plasma-manager.homeModules.plasma-manager
           inputs.nix-flatpak.homeManagerModules.nix-flatpak
         ];
-        extraSpecialArgs = {
-          inherit inputs;
-          inherit pkgsSets moduleHelpers;
-          inherit varsHost;
-        };
+        extraSpecialArgs = { inherit inputs pkgsSets varsHost; };
       };
-      _module.args = {
-        inherit varsUsers;
-        inherit pkgsSets moduleHelpers;
-        inherit varsHost;
-      };
-    })
+      _module.args = { inherit pkgsSets varsHost varsUsers; };
+    }
+    ../modules
   ]
   ++ profilesModules
-  ++ usersModules
-  ++ mainPkgs;
+  ++ usersModules;
 in
 {
   inherit modules;
   host = varsHost;
-  inherit (cfg) system users;
+  inherit (cfg) system;
 }

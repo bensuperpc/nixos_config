@@ -1,16 +1,16 @@
 { lib, ... }:
 
 {
-  time.timeZone = "Europe/Paris";
+  time.timeZone = lib.mkDefault "Europe/Paris";
 
   services.xserver.xkb = {
-    layout = "fr";
-    variant = "";
+    layout = lib.mkDefault "fr";
+    variant = lib.mkDefault "";
   };
-  console.keyMap = "fr";
+  console.keyMap = lib.mkDefault "fr";
 
   i18n = {
-    defaultLocale = "fr_FR.UTF-8";
+    defaultLocale = lib.mkDefault "fr_FR.UTF-8";
 
     extraLocaleSettings = lib.genAttrs [
       "LC_ADDRESS"
@@ -22,6 +22,6 @@
       "LC_PAPER"
       "LC_TELEPHONE"
       "LC_TIME"
-    ] (_: "fr_FR.UTF-8");
+    ] (_: lib.mkDefault "fr_FR.UTF-8");
   };
 }

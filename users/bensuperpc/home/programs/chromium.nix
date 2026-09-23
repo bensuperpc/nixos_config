@@ -1,9 +1,6 @@
 {
-  config,
   osConfig,
   lib,
-  pkgs,
-  userVars,
   ...
 }:
 

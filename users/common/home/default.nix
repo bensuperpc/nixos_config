@@ -1,4 +1,4 @@
-{ osConfig, lib, ... }:
+{ ... }:
 
 {
   imports = [
