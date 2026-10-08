@@ -8,8 +8,26 @@ let
   inherit (pkgsSets) unstable;
 in
 {
+  # Tools to work on this repository: `nix develop`.
+  default = unstable.mkShellNoCC {
+    packages = with unstable; [
+      colmena
+      sops
+      age
+      ssh-to-age
+      mkpasswd
+      jq
+      nixfmt-tree
+      deadnix
+      statix
+    ];
+  };
+
   qt6 = import ./qt6.nix { pkgs = stable; };
   gcc = import ./gcc.nix { pkgs = stable; };
+  clang = import ./clang.nix { pkgs = stable; };
+  wasm = import ./wasm.nix { pkgs = stable; };
+  embedded = import ./embedded.nix { pkgs = stable; };
   python313 = import ./python313.nix { pkgs = stable; };
   python2 = import ./python2.nix { pkgs = stable; };
   rust = import ./rust.nix { pkgs = stable; };

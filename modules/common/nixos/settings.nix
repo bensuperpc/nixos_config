@@ -12,13 +12,6 @@ let
     "@wheel"
   ];
 
-  baseSubstituters = [
-    "https://cache.nixos.org"
-  ];
-  baseTrustedPublicKeys = [
-    "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-  ];
-
   communitySubstituters = [
     "https://nix-community.cachix.org"
   ];
@@ -72,10 +65,8 @@ in
         allowed-users = trustedUsers;
         trusted-users = trustedUsers;
 
-        substituters =
-          baseSubstituters ++ lib.optionals cfg.communitySubstituters.enable communitySubstituters;
-        trusted-public-keys =
-          baseTrustedPublicKeys ++ lib.optionals cfg.communitySubstituters.enable communityTrustedPublicKeys;
+        substituters = lib.mkIf cfg.communitySubstituters.enable communitySubstituters;
+        trusted-public-keys = lib.mkIf cfg.communitySubstituters.enable communityTrustedPublicKeys;
       };
 
       # auto-optimise-store hardlinks the store synchronously after every

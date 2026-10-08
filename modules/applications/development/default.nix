@@ -14,7 +14,6 @@
     ./documentation.nix
     ./nixtools.nix
     ./cpp-tools.nix
-    ./compilers.nix
     ./rust.nix
     ./go.nix
     ./base.nix

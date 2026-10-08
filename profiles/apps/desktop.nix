@@ -1,15 +1,14 @@
+{ moduleHelpers, ... }:
 {
-  lib,
-  ...
-}:
-{
-  myConfig.system.power.management = {
-    enable = lib.mkDefault true;
-    backend = lib.mkDefault "power-profiles-daemon";
-  };
+  myConfig = moduleHelpers.mkDefaults {
+    system.power.management = {
+      enable = true;
+      backend = "power-profiles-daemon";
+    };
 
-  myConfig.apps.utilities.hardware = {
-    gui = lib.mkDefault true;
-    cli = lib.mkDefault true;
+    apps.utilities.hardware = {
+      gui = true;
+      cli = true;
+    };
   };
 }

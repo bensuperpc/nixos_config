@@ -1,7 +1,7 @@
-{ lib, ... }:
+{ moduleHelpers, ... }:
 {
-  myConfig.apps.network.servers = {
-    core = lib.mkDefault true;
-    reverseProxy = lib.mkDefault true;
+  myConfig.apps.network.servers = moduleHelpers.mkDefaults {
+    core = true;
+    reverseProxy = true;
   };
 }

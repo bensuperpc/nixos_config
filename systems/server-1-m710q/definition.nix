@@ -11,8 +11,7 @@
   users = [ "bensuperpc" ];
   deployUser = "bensuperpc";
 
-  appProfiles = [ ];
-  platformProfiles = [
+  profiles = [
     "platform/gpu-intel-skylake"
     "platform/cpu-intel"
     "platform/tpm"

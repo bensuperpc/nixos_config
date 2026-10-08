@@ -14,7 +14,6 @@ let
     # btrfs-assistant
     # Fat32 tools
     dosfstools
-    exfat
     exfatprogs
   ];
 in

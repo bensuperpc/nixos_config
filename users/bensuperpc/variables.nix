@@ -21,7 +21,5 @@
     "audio"
     "video"
     "input"
-    "docker"
-    "libvirtd"
   ];
 }

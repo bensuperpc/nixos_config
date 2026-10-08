@@ -13,10 +13,10 @@ This repository contains my personal NixOS flake used to manage my desktops, ser
 - Home Manager and KDE Plasma 6 desktop environment
 - Declarative disk partitioning with **disko** and impermanence
 - Role-based composition (`minimal`, `server`, `desktop`, `workstation`, `full`, `family`)
-- Profile-driven capabilities via `appProfiles`, `platformProfiles`, and `policyProfiles`
+- Profile-driven capabilities via a single `profiles` list (`platform/*`, `apps/*`, `policy/*`)
 - Shared user configuration across hosts via `users/<name>/`
 - Deterministic package versions + individual packages pinned to the stable channel via `pkgsSets`
-- Devshells for C/C++ (GCC), Qt6, raylib, Python 3.13 and 2, Rust, Java 21, and ESP-IDF (ESP32-C5/C6/P4)
+- Devshells for C/C++ (GCC, Clang), WebAssembly, embedded compilers, Qt6, raylib, Python 3.13 and 2, Rust, Java 21, and ESP-IDF (ESP32-C5/C6/P4)
 - Makefile helpers for common maintenance, validation, and deployment tasks
 - `microvm.nix` host support (WIP) for running lightweight VMs
 
@@ -28,20 +28,19 @@ This repository contains my personal NixOS flake used to manage my desktops, ser
 .
 ├── .github/workflows    # CI: gitleaks + `nix flake check`
 ├── .sops.yaml           # sops-nix recipients and one creation rule per host file
-├── AGENTS.md            # Notes for coding agents
 ├── assets               # Images and media
 ├── devshells            # Development shells
 ├── flake
 │   ├── checks.nix       # Flake checks (= CI)
-│   └── dev.nix          # Formatter and devshells
+│   ├── dev.nix          # Formatter, packages and devshells
+│   └── hosts.nix        # Package sets, hosts, Colmena hive
 ├── flake.lock           # Flake lock file
 ├── flake.nix            # Flake inputs
-├── flake-module.nix     # Flake outputs: package sets, hosts, Colmena hive
 ├── lib
 │   ├── disko-presets.nix   # Shared GPT + ESP + LUKS + btrfs layout
-│   ├── host-schema.nix  # Host normalization, validation and role wiring
+│   ├── host-schema.nix  # Host options (typed), validation and role wiring
 │   ├── mksystem.nix     # Per-host NixOS configuration builder
-│   ├── module-helpers.nix  # Shared option helpers (mkEnabledOption, mkPackageGroupModule, …)
+│   ├── module-helpers.nix  # Shared helpers (mkEnabledOption, mkPackageGroupModule, mkDefaults)
 │   └── role-presets.nix    # Default profile sets for each role
 ├── Makefile
 ├── modules
@@ -59,15 +58,16 @@ This repository contains my personal NixOS flake used to manage my desktops, ser
 │       ├── files        # Backup, sync, crypto
 │       ├── utilities    # Misc tools, KVM, math, antivirus
 │       └── docker       # Docker and Compose services
+├── pkgs                # Custom packages (flake `packages` output)
 ├── profiles            # Composable presets for platform, apps and policy
-├── systems             # Host registry (systems.nix) and per-host definition, hardware, disko and sops files
+├── systems             # Per-host definition, configuration, hardware, disko and sops files
 ├── tests               # Sample projects for the devshells (invariants live in modules as assertions)
 └── users               # Per-user system and Home Manager configuration
 ```
 
 ## Host Inventory
 
-Defined in `systems/systems.nix`.
+Every `systems/<host>/definition.nix` is a host (discovered by `systems/systems.nix`, checked against the options of `lib/host-schema.nix`).
 
 - `enabled = true` (default): host is included in global eval/build outputs.
 - `enabled = false`: host stays in inventory but is excluded from global eval/build outputs.
@@ -89,9 +89,7 @@ Every host needs an `ageRecipient` in its `definition.nix` ([sops-nix enrollment
 
 - Linux machine with Nix installed
 - Flakes enabled (`nix-command` + `flakes`)
-- Optional dependency for remote deployment: `colmena`
-- Optional for Makefile workflow:
-  - Docker
+- Optional dependency for remote deployment: `colmena` (provided by `nix develop`, with `sops`, `ssh-to-age` and the linters)
 - LiveUSB with NixOS installer for new machine installations
 
 ## Quick Start
@@ -302,7 +300,7 @@ sudo sbctl create-keys
 sudo sbctl enroll-keys --microsoft
 ```
 
-3. Add `"platform/secureboot"` to the host's `platformProfiles` in `systems/<host>/definition.nix`.
+3. Add `"platform/secureboot"` to the host's `profiles` in `systems/<host>/definition.nix`.
 4. Rebuild and switch, this is the step that actually signs the Lanzaboote stub and kernel with the keys enrolled in step 2:
 
 ```bash
@@ -317,7 +315,7 @@ sbctl status
 bootctl status
 ```
 
-`myConfig.system.secureboot.pkiBundle` must match the path `sbctl` wrote the keys to (`/var/lib/sbctl` unless `sbctl` is configured otherwise).
+`myConfig.system.secureboot.pkiBundle` must match the path `sbctl` wrote the keys to (`/var/lib/sbctl`, the default, unless `sbctl` is configured otherwise). With impermanence, that directory is persisted as soon as the profile is enabled, so add it before rebooting.
 
 ### Enroll TPM2 for LUKS auto-unlock
 
@@ -369,14 +367,13 @@ nixos-rebuild switch --sudo --flake github:bensuperpc/nixos_config/dev#$(hostnam
 
 ## Make Targets
 
-Common targets (all run inside a `nixos/nix` Docker container, with the repository mounted at
-`/etc/nixos` and the Nix store kept in the `nix-store-vol` Docker volume):
+Common targets (they run the host's `nix`):
 
 ```bash
 make update        # flake update
 make check         # flake check
 make fmt           # format Nix files
-make gc            # garbage collect the Docker volume's store (older than 7 days), not the host's
+make gc            # garbage collect the store of this machine (generations older than 7 days)
 make all-systems   # show all system outputs
 make build-all     # build every host's top-level with nix-fast-build (skips cached ones)
 ```
@@ -397,7 +394,7 @@ make <host>.boot   # deploy with Colmena (boot, then reboot), hosts with an `ip`
 `lib/mksystem.nix` builds each host from:
 
 1. `systems/<host>/configuration.nix` (hardware + `system.stateVersion`)
-2. All profiles resolved from role defaults, host `platformProfiles`, `appProfiles`, and `policyProfiles`
+2. All profiles resolved from role defaults and the host `profiles`
 3. User modules from `users/<name>/system.nix` for each user in `users`
 4. Core modules (`modules/common/`, `modules/drivers/`, `modules/gui/`) and application modules (`modules/applications/`)
 
@@ -406,13 +403,12 @@ Modules receive the following extra arguments:
 - `inputs`, `moduleHelpers` (`specialArgs`)
 - `varsHost`: host metadata (`name`, `role`, `users`, `deployUser`, `ip`, `port`, `ageRecipient`)
 - `pkgsSets.<channel>`: per-channel package sets (`stable-2605`, `unstable`) resolved once per architecture
-- `varsUsers.<username>`: values from each `users/<name>/variables.nix` of the host
-- `userVars` (per-user modules only): values from that user's `users/<name>/variables.nix`
+- `userVars` (Home Manager modules of a user only): values from that user's `users/<name>/variables.nix`
 
 Invariants that matter (key-only SSH, firewall, bootloader, headless platform, impermanence
 prerequisites, sops enrollment) are NixOS `assertions` in the module that owns them, so they apply
-however the feature was enabled. Profiles only set options, with `lib.mkDefault` for app toggles so a
-host can override them in its `configuration.nix`.
+however the feature was enabled. Profiles only set options, with `lib.mkDefault` (`moduleHelpers.mkDefaults`)
+for app toggles so a host can override them in its `configuration.nix`.
 
 Locale and timezone settings use native NixOS options with `lib.mkDefault` in `modules/common/locales.nix`, per-host overrides go directly in `systems/<host>/configuration.nix` using the standard NixOS option names:
 
@@ -423,7 +419,7 @@ i18n.defaultLocale           = "en_US.UTF-8";
 
 ## Host Roles
 
-Roles are defined in `lib/role-presets.nix` and provide default `platformProfiles`, `appProfiles`, and `policyProfiles`. Hosts can extend or override those defaults.
+Roles are defined in `lib/role-presets.nix` and provide a default list of profiles. Hosts extend it with `profiles` in their `definition.nix`.
 
 | Role          | Platform profiles                                                           | App profiles                                                                                                                                                                                                                                                                         | Policy / extra profiles |
 | ------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------- |
@@ -434,17 +430,20 @@ Roles are defined in `lib/role-presets.nix` and provide default `platformProfile
 | `full`        | `platform/kde-plasma`                                                       | `workstation` + `apps/browser`, `apps/communication`, `apps/torrent`, `apps/files`, `apps/docker`, `apps/games`, `apps/ai`                                                                                                                                                           | `policy/kernel-latest`  |
 | `family`      | `platform/kde-plasma`                                                       | `desktop` + `apps/browser`, `apps/communication`, `apps/torrent`, `apps/files`                                                                                                                                                                                                       | `policy/kernel-latest`  |
 
+With impermanence, each module adds the directories it needs to `myConfig.system.impermanence.persistDirectories`
+when it is enabled; add host-specific ones to the same option.
+
 ## Profile Reference
 
 ### Driver & Platform Profiles
 
-Hardware drivers and platform flags are activated via `platformProfiles`:
+Hardware drivers and platform flags are activated via `profiles`:
 
 | Profile                      | NixOS option set                           | Description                                                                            |
 | ---------------------------- | ------------------------------------------ | -------------------------------------------------------------------------------------- |
-| `platform/gpu-intel-old`     | `myConfig.drivers.gpu.intel = "old"`       | Intel iGPU (Haswell and older)                                                         |
-| `platform/gpu-intel-skylake` | `myConfig.drivers.gpu.intel = "skylake"`   | Intel iGPU (Skylake to Comet Lake)                                                     |
-| `platform/gpu-intel-xe`      | `myConfig.drivers.gpu.intel = "xe"`        | Intel GPU (Xe / Arc, Alder Lake and newer)                                             |
+| `platform/gpu-intel-old`     | `myConfig.drivers.gpu.intel.generation = "old"` | Intel iGPU (Haswell and older)                                                         |
+| `platform/gpu-intel-skylake` | `myConfig.drivers.gpu.intel.generation = "skylake"` | Intel iGPU (Broadwell to Comet Lake)                                                   |
+| `platform/gpu-intel-xe`      | `myConfig.drivers.gpu.intel.generation = "xe"` | Intel GPU (Xe / Arc, Alder Lake and newer)                                             |
 | `platform/gpu-software`      | `myConfig.drivers.gpu.software.enable = true` | Software GPU driver stack, no hardware GPU (e.g. virtual machines)                  |
 | `platform/cpu-intel`         | `myConfig.drivers.cpu.intel.enable = true` | Intel CPU (KVM)                                                                        |
 | `platform/cpu-amd`           | `myConfig.drivers.cpu.amd.enable = true`| AMD CPU (KVM)                                                                          |
@@ -456,54 +455,53 @@ Hardware drivers and platform flags are activated via `platformProfiles`:
 | `platform/impermanence`      | `myConfig.system.impermanence.enable = true` | `/persist` bind mounts and root rollback to `@root-blank` at each boot              |
 | `platform/snapper`           | `myConfig.system.snapper.enable = true`    | Snapper btrfs snapshots                                                                |
 
-> `myConfig.drivers.gpu.intel` and `myConfig.drivers.gpu.amd.enable` can be set directly in `systems/<host>/configuration.nix` without a profile.
+> `myConfig.drivers.gpu.intel.{enable,generation}` and `myConfig.drivers.gpu.amd.enable` can be set directly in `systems/<host>/configuration.nix` without a profile.
 
 ### GUI Profiles
 
-Desktop environment is activated via `platformProfiles`:
+Desktop environment is activated via `profiles`:
 
 | Profile               | `myConfig.gui.desktop` value | Description                                                                                      |
 | --------------------- | ---------------------------- | ------------------------------------------------------------------------------------------------ |
-| `platform/kde-plasma` | `"plasma"`                   | KDE Plasma 6: sets `myConfig.gui.desktop = "plasma"` and `myConfig.gui.extraPackages = true`     |
-| `platform/lxqt`       | `"lxqt"`                     | LXQt (SDDM + Xorg): sets `myConfig.gui.desktop = "lxqt"` and `myConfig.gui.extraPackages = true` |
+| `platform/kde-plasma` | `"plasma"`                   | KDE Plasma 6: sets `myConfig.gui.desktop = "plasma"` and `myConfig.gui.plasma.{integration,utilities,multimedia,education}` |
+| `platform/lxqt`       | `"lxqt"`                     | LXQt (SDDM + Xorg): sets `myConfig.gui.desktop = "lxqt"` |
 
 > `myConfig.gui.desktop` can also be set directly in `systems/<host>/configuration.nix` without a profile.
+> `myConfig.gui.plasma.games` and `myConfig.gui.plasma.development` are enabled by `apps/games` and `apps/dev-all`.
 
 ### Policy Profiles
 
-Policy profiles are activated via role defaults or `policyProfiles`:
+Policy profiles are activated via role defaults or `profiles`:
 
-| Profile                         | `myConfig.boot.kernel` value | Description                                             |
+| Profile                         | `myConfig.system.kernel` value | Description                                             |
 | ------------------------------- | ---------------------------- | ------------------------------------------------------- |
 | `policy/kernel-latest`          | `"latest"`                   | Latest upstream kernel (role default, set with `mkDefault`: any other `policy/kernel-*` profile on the host wins) |
 | `policy/kernel-zen`             | `"zen"`                      | Zen kernel: desktop/gaming optimised                    |
-| `policy/kernel-latest-libre`    | `"libre"`                    | Latest libre kernel (no binary blobs)                   |
-| `policy/kernel-latest-hardened` | `"hardened"`                 | Latest hardened kernel (security-focused)               |
 | `policy/kernel-lts`             | `"lts"`                      | Default NixOS LTS kernel (`linuxPackages`)              |
 
-> `myConfig.boot.kernel` can also be set directly in `systems/<host>/configuration.nix` without a profile.
+> `myConfig.system.kernel` can also be set directly in `systems/<host>/configuration.nix` without a profile.
 
 ### App Profiles
 
-Activated via role defaults or `appProfiles`. Every toggle is set with `lib.mkDefault`, so a host can
+Activated via role defaults or `profiles`. Every toggle is set with `lib.mkDefault`, so a host can
 turn a single group off in its `configuration.nix`.
 
 | Profile                | Options set                                                  | Description                                                              |
 | ---------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------ |
 | `apps/ai`              | `myConfig.apps.ai.enable`                                    | AI tools                                                                 |
-| `apps/browser`         | `myConfig.apps.network.browser.{core,extra,cli}`             | Web browsers (GUI and CLI)  |
+| `apps/browser`         | `myConfig.apps.network.browser.{core,privacy,extra,cli}`     | Firefox and Chromium, Tor Browser and LibreWolf, extra and CLI browsers  |
 | `apps/communication`   | `myConfig.apps.network.communication.*`                      | Chat, voice, mail and terminal clients                                   |
 | `apps/desktop`         | `myConfig.system.power.management`, `myConfig.apps.utilities.hardware` | Power profiles daemon, hardware info tools (GUI + CLI)         |
 | `apps/desktop-runtime` | `myConfig.apps.network.cli.enable`, `myConfig.apps.desktop.terminal.enable` | Network CLI tools and extra GPU-accelerated terminals           |
-| `apps/dev-all`         | `myConfig.apps.development.*`                                | Full development stack: compilers, Qt Creator, Python, Rust, Go, IDEs, databases… (libraries live in the devshells) |
+| `apps/dev-all`         | `myConfig.apps.development.*`, `myConfig.gui.plasma.development` | Full development stack: GCC base tools, Qt Creator, Python, Rust, Go, IDEs, databases… (Clang, WebAssembly, embedded compilers, Protocol Buffers and libraries live in the devshells) |
 | `apps/dev-base`        | `myConfig.apps.development.dev.base`                         | Base development tools only                                              |
 | `apps/dev-cpp`         | `myConfig.apps.development.cppTools.*`                       | C/C++ build systems, caching, quality and debugging tools                |
 | `apps/docker`          | `myConfig.apps.docker.enable`                                | Docker and Compose                                                       |
 | `apps/files`           | `myConfig.apps.files.*`                                      | Backup, sync, VeraCrypt, file search/navigation                          |
-| `apps/games`           | `myConfig.apps.games.*`                                      | Steam, emulators, Minecraft, games                                       |
+| `apps/games`           | `myConfig.apps.games.*`, `myConfig.gui.plasma.games`         | Steam, emulators, Minecraft, games                                       |
 | `apps/multimedia`      | `myConfig.apps.multimedia.*`                                 | Video, audio, image and document tools                                   |
 | `apps/network-servers` | `myConfig.apps.network.servers.{core,reverseProxy}`          | Nginx, Caddy, Traefik, HAProxy packages (services stay off)             |
-| `apps/office`          | `myConfig.apps.desktop.{office,printing,printing3d,fonts}`   | Office suite, notes, printing, 3D printing, Nerd Fonts                   |
+| `apps/office`          | `myConfig.apps.desktop.{office,printing,printing3d,fonts}`   | Office suite, notes, printing, 3D printing, a selection of Nerd Fonts    |
 | `apps/torrent`         | `myConfig.apps.network.torrent.*`                            | qBittorrent, Transmission, helpers; opens their peer ports              |
 | `apps/utilities`       | `myConfig.apps.utilities.*`                                  | Electronics, flashing, math, maps, system/security tools, antivirus      |
 | `apps/virtualization`  | `myConfig.apps.utilities.kvm.host`, `myConfig.apps.microvm.host` | KVM/libvirt host and MicroVM host (examples need host secrets)       |
@@ -514,13 +512,18 @@ turn a single group off in its `configuration.nix`.
 Defined in `devshells/`, each provides an isolated environment for a specific stack.
 
 ```bash
+nix develop              # tools for this repository
 nix develop .#gcc        # GCC 15 + CMake/GDB/Ninja toolchain
 ```
 
 | Devshell              | Description                                          |
 | --------------------- | ---------------------------------------------------- |
+| `default`             | Colmena, sops, age, ssh-to-age, mkpasswd, jq, linters |
 | `devshells/qt6`       | Qt6 + CMake/GCC 15/GDB/Ninja toolchain               |
-| `devshells/gcc`       | GCC 15 + CMake/GDB/Ninja toolchain                   |
+| `devshells/gcc`       | GCC 15 + CMake/GDB/Ninja toolchain, Protocol Buffers |
+| `devshells/clang`     | Clang/LLVM (clangStdenv) + CMake/LLDB/Ninja, lld, clang-tools, Protocol Buffers |
+| `devshells/wasm`      | WebAssembly: Emscripten, wasmi, wasmer               |
+| `devshells/embedded`  | Low-level and embedded: tinycc, sdcc, nasm, byacc, dtc |
 | `devshells/raylib`    | raylib + raylib-cpp C++ game development environment |
 | `devshells/python313` | Python 3.13 toolchain                                |
 | `devshells/python2`   | Python 2 toolchain                                   |

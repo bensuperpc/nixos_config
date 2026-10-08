@@ -1,15 +1,17 @@
 { pkgs }:
 
-pkgs.mkShell {
+(pkgs.mkShell.override { stdenv = pkgs.clangStdenv; }) {
   nativeBuildInputs = with pkgs; [
     makeWrapper
   ];
   packages = with pkgs; [
     cmake
     ninja
-    gcc
+    llvm
+    lld
+    lldb
+    clang-tools
     valgrind
-    gdb
     protobuf
     protobufc
     nanopb
@@ -24,7 +26,7 @@ pkgs.mkShell {
   ];
 
   shellHook = ''
-    echo "Welcome to your Nix-managed GCC environment!"
-    gcc --version
+    echo "Welcome to your Nix-managed Clang/LLVM environment!"
+    clang --version
   '';
 }

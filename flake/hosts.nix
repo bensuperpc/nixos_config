@@ -21,19 +21,18 @@ let
     ) nixpkgsSources
   );
 
-  moduleHelpers = import ./lib/module-helpers.nix { inherit lib; };
+  moduleHelpers = import ../lib/module-helpers.nix { inherit lib; };
 
   specialArgs = { inherit inputs moduleHelpers; };
 
-  mkHostConfig = import ./lib/mksystem.nix {
+  mkHostConfig = import ../lib/mksystem.nix {
     inherit
       inputs
-      lib
       moduleHelpers
       pkgsCache
       ;
   };
-  hosts = import ./systems/systems.nix { inherit lib; };
+  hosts = import ../systems/systems.nix { inherit lib; };
 
   hostConfigs = lib.mapAttrs mkHostConfig hosts;
   deployableHostConfigs = lib.filterAttrs (_: cfg: cfg.host.ip != null) hostConfigs;

@@ -15,13 +15,11 @@ let
       manpages = {
         description = "Install manual pages and related documentation sets";
         packages = with pkgs; [
-          man
           stdmanpages
           llvm-manpages
           clang-manpages
           man-pages
           man-pages-posix
-          texinfo
         ];
       };
       generators = {

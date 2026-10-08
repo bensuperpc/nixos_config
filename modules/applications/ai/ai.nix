@@ -7,7 +7,6 @@
 
 let
   cfg = config.myConfig.apps.ai;
-  llamaCppFixed = pkgs.llama-cpp.override { nodejs_latest = pkgs.nodejs_22; };
 
   generated = moduleHelpers.mkPackageGroupModule {
     inherit cfg;
@@ -15,10 +14,8 @@ let
       enable = {
         description = "Install AI tools";
         packages = with pkgs; [
-          ollama
           ollama-vulkan
-          llamaCppFixed
-          (llamaCppFixed.override { vulkanSupport = true; })
+          llama-cpp
         ];
       };
     };

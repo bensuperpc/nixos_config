@@ -1,28 +1,24 @@
+{ moduleHelpers, ... }:
 {
-  lib,
-  ...
-}:
-{
-
-  myConfig.apps.files = {
+  myConfig.apps.files = moduleHelpers.mkDefaults {
     backup = {
-      core = lib.mkDefault true;
-      profileManager = lib.mkDefault true;
-      gui = lib.mkDefault true;
+      core = true;
+      profileManager = true;
+      gui = true;
     };
 
     sync = {
-      transfer = lib.mkDefault true;
-      peerToPeer = lib.mkDefault true;
-      networkShares = lib.mkDefault true;
-      mobile = lib.mkDefault true;
+      transfer = true;
+      peerToPeer = true;
+      networkShares = true;
+      mobile = true;
     };
 
-    crypto.enable = lib.mkDefault true;
+    crypto.enable = true;
 
     tools = {
-      search = lib.mkDefault true;
-      navigation = lib.mkDefault true;
+      search = true;
+      navigation = true;
     };
   };
 }

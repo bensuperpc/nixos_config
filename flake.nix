@@ -2,7 +2,7 @@
   description = "Bensuperpc's Multi-Host NixOS configuration";
 
   inputs = {
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-2605.url = "github:NixOS/nixpkgs/nixos-26.05";
     nixpkgs.follows = "nixpkgs-unstable";
 
@@ -69,8 +69,8 @@
     inputs@{ flake-parts, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
       imports = [
-        ./flake-module.nix # package sets, hosts (nixosConfigurations, colmenaHive)
-        ./flake/dev.nix # formatter, devShells
+        ./flake/hosts.nix # package sets, hosts (nixosConfigurations, colmenaHive)
+        ./flake/dev.nix # formatter, packages, devShells
         ./flake/checks.nix # checks (= CI)
       ];
       systems = [

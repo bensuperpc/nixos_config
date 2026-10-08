@@ -3,72 +3,53 @@
   config,
   lib,
   pkgs,
+  moduleHelpers,
   ...
 }:
 
 let
-  variant = config.myConfig.drivers.gpu.intel;
-  isIntel = variant != "none";
+  cfg = config.myConfig.drivers.gpu.intel;
 in
 {
-  options.myConfig.drivers.gpu.intel = lib.mkOption {
-    type = lib.types.enum [
-      "none"
-      "old"
-      "skylake"
-      "xe"
-    ];
-    default = "none";
-    description = ''
-      Intel iGPU driver variant:
-        none     - no Intel GPU driver
-        old      - iHD/VA-API for Haswell and older
-        skylake  - iHD for Skylake to Comet Lake
-        xe       - Xe driver for Alder Lake and newer
-    '';
+  options.myConfig.drivers.gpu.intel = {
+    enable = moduleHelpers.mkDisabledOption "Enable Intel GPU driver stack.";
+
+    generation = lib.mkOption {
+      type = lib.types.enum [
+        "old"
+        "skylake"
+        "xe"
+      ];
+      default = "skylake";
+      description = ''
+        Intel iGPU generation:
+          old      - i965 VA-API driver for Haswell and older
+          skylake  - iHD for Broadwell/Skylake to Comet Lake
+          xe       - iHD + VPL for Alder Lake and newer
+      '';
+    };
   };
 
-  config = lib.mkMerge [
-    (lib.mkIf isIntel {
-      hardware.graphics = {
-        enable = true;
-        enable32Bit = true;
-        extraPackages = with pkgs; [
-          libvdpau-va-gl
-          libva
-          libva-vdpau-driver
-          intel-vaapi-driver
-        ];
-      };
-      environment.systemPackages = with pkgs; [
-        intel-gpu-tools
-        mesa
-      ];
-    })
-
-    (lib.mkIf (variant == "old") {
-      hardware.graphics.extraPackages = with pkgs; [ ];
-    })
-
-    (lib.mkIf (variant == "skylake") {
-      hardware.graphics.extraPackages = with pkgs; [
-        intel-media-driver
-        intel-compute-runtime-legacy1
-      ];
-    })
-
-    (lib.mkIf (variant == "xe") {
-      hardware.graphics.extraPackages = with pkgs; [
-        intel-media-driver
-        vpl-gpu-rt
-        intel-compute-runtime
-      ];
-      # Disable for now
-      # boot.kernelParams = [
-      #   "i915.force_probe=!*"
-      #   "xe.force_probe=*"
-      # ];
-      # boot.initrd.kernelModules = [ "xe" ];
-    })
-  ];
+  config = lib.mkIf cfg.enable {
+    hardware.graphics = {
+      enable = true;
+      extraPackages =
+        with pkgs;
+        [ libvdpau-va-gl ]
+        ++ {
+          old = [ intel-vaapi-driver ];
+          skylake = [
+            intel-media-driver
+            intel-compute-runtime-legacy1
+          ];
+          xe = [
+            intel-media-driver
+            vpl-gpu-rt
+            intel-compute-runtime
+          ];
+        }
+        .${cfg.generation};
+    };
+    environment.systemPackages = [ pkgs.intel-gpu-tools ];
+  };
 }

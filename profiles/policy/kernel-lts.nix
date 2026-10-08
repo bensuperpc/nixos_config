@@ -1,3 +1,3 @@
 _: {
-  myConfig.boot.kernel = "lts";
+  myConfig.system.kernel = "lts";
 }

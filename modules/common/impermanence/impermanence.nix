@@ -8,34 +8,20 @@
 let
   cfg = config.myConfig.system.impermanence;
 
-  persistDirectoriesDefault = [
+  persistDirectoriesBase = [
     "/var/lib/nixos"
-    "/var/lib/libvirt"
-    "/var/lib/microvms"
-    "/var/lib/bluetooth"
-    "/var/lib/syncthing"
-    "/var/lib/clamav"
-    "/var/lib/NetworkManager"
-    "/etc/NetworkManager/system-connections"
-    # Docker/Podman
-    "/var/lib/docker"
-    "/var/lib/containers"
-    "/var/lib/flatpak"
-    "/var/lib/cups"
-    "/var/lib/fail2ban"
-    "/var/lib/fwupd"
-    "/var/lib/AccountsService"
     "/var/lib/systemd/timers"
-    "/var/lib/power-profiles-daemon"
-    "/var/lib/boltd"
-    "/var/lib/unbound"
-    "/etc/secureboot"
-    # Caddy
-    "/var/lib/acme"
-    "/var/lib/caddy"
-  ];
+    "/var/lib/systemd/pstore"
+    "/var/lib/lastlog"
+    "/var/lib/logrotate"
+  ]
+  ++ lib.optional config.systemd.coredump.enable "/var/lib/systemd/coredump"
+  ++ lib.optional config.services.upower.enable "/var/lib/upower"
+  ++ lib.optional config.services.accounts-daemon.enable "/var/lib/AccountsService"
+  ++ lib.optional config.services.hardware.bolt.enable "/var/lib/boltd"
+  ++ lib.optional (config.security.acme.certs != { }) "/var/lib/acme";
 
-  persistFilesDefault = [
+  persistFilesBase = [
     "/etc/machine-id"
     "/etc/adjtime"
 
@@ -50,14 +36,14 @@ in
     enable = moduleHelpers.mkDisabledOption "opt-in persistence via /persist";
 
     persistDirectories = lib.mkOption {
-      type = lib.types.listOf lib.types.str;
-      default = persistDirectoriesDefault;
-      description = "System directories bind-mounted from /persist.";
+      type = lib.types.listOf (lib.types.either lib.types.str lib.types.attrs);
+      default = [ ];
+      description = "System directories bind-mounted from /persist (path, or impermanence attribute set to set the owner). Each module adds its own.";
     };
 
     persistFiles = lib.mkOption {
       type = lib.types.listOf lib.types.str;
-      default = persistFilesDefault;
+      default = [ ];
       description = "System files bind-mounted from /persist.";
     };
 
@@ -84,35 +70,47 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable {
-    environment.persistence."/persist" = {
-      hideMounts = true;
+  config = lib.mkMerge [
+    {
+      myConfig.system.impermanence = {
+        persistDirectories = persistDirectoriesBase;
+        persistFiles = persistFilesBase;
+      };
+    }
+    (lib.mkIf cfg.enable {
+      environment.persistence."/persist" = {
+        hideMounts = true;
 
-      directories = cfg.persistDirectories;
-      files = cfg.persistFiles;
-    };
+        directories = cfg.persistDirectories;
+        files = cfg.persistFiles;
+      };
 
-    fileSystems."/persist".neededForBoot = true;
-    fileSystems."/var/log".neededForBoot = true;
+      fileSystems."/persist".neededForBoot = true;
+      fileSystems."/var/log".neededForBoot = true;
 
-    # Without this, sudo lectures after every boot.
-    security.sudo.extraConfig = ''
-      Defaults lecture = never
-    '';
+      # logrotate replaces its state file on every run, which a single bind-mounted file does not survive.
+      services.logrotate.extraArgs = [
+        "--state"
+        "/var/lib/logrotate/logrotate.status"
+      ];
 
-    # sops runs before the /persist bind mounts, so it must read the host key from /persist directly.
-    sops.age.sshKeyPaths = [ "/persist/etc/ssh/ssh_host_ed25519_key" ];
+      security.sudo.extraConfig = ''
+        Defaults lecture = never
+      '';
 
-    assertions = [
-      {
-        assertion = lib.elem "/var/lib/nixos" cfg.persistDirectories;
-        message = "impermanence: /var/lib/nixos must be persisted.";
-      }
-      {
-        # Losing it makes every secret undecryptable.
-        assertion = lib.elem "/etc/ssh/ssh_host_ed25519_key" cfg.persistFiles;
-        message = "impermanence: /etc/ssh/ssh_host_ed25519_key must be persisted, sops decrypts with it.";
-      }
-    ];
-  };
+      # sops runs before the /persist bind mounts, so it must read the host key from /persist directly.
+      sops.age.sshKeyPaths = [ "/persist/etc/ssh/ssh_host_ed25519_key" ];
+
+      assertions = [
+        {
+          assertion = lib.elem "/var/lib/nixos" cfg.persistDirectories;
+          message = "impermanence: /var/lib/nixos must be persisted.";
+        }
+        {
+          assertion = lib.elem "/etc/ssh/ssh_host_ed25519_key" cfg.persistFiles;
+          message = "impermanence: /etc/ssh/ssh_host_ed25519_key must be persisted, sops decrypts with it.";
+        }
+      ];
+    })
+  ];
 }

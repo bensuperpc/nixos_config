@@ -67,7 +67,7 @@
           {
             iconTasks = {
               launchers =
-                lib.optional osConfig.myConfig.apps.network.browser.core "applications:torbrowser.desktop"
+                lib.optional osConfig.myConfig.apps.network.browser.privacy "applications:torbrowser.desktop"
                 ++ lib.optional (config.myConfig.apps.firefox.enable or false) "applications:firefox.desktop"
                 ++ [
                   "applications:org.kde.konsole.desktop"

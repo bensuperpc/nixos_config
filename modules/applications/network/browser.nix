@@ -13,19 +13,25 @@ let
     inherit cfg;
     groups = {
       core = {
-        description = "Install core browsers";
-        packages = with pkgs; [ tor-browser ];
+        description = "Install Firefox and Chromium (with system Chromium policies)";
+        packages = with pkgs; [
+          firefox
+          chromium
+        ];
+      };
+      privacy = {
+        description = "Install privacy-oriented browsers (Tor Browser, LibreWolf)";
+        packages = with pkgs; [
+          tor-browser
+          librewolf
+        ];
       };
       extra = {
         description = "Install extra browsers";
         packages = with pkgs; [
-          firefox
-          chromium
-          ungoogled-chromium
           brave
           # ladybird # CVE-2026-58592
           servo
-          librewolf
           dillo
         ];
       };
@@ -47,7 +53,7 @@ in
   config = lib.mkMerge [
     generated.config
     (lib.mkIf cfg.core {
-      # Policies only (/etc/chromium/policies): the package and its extensions come from Home Manager.
+      # Policies only (/etc/chromium/policies): extensions come from Home Manager.
       programs.chromium = {
         enable = true;
         #homepageLocation = "";

@@ -10,10 +10,7 @@
 let
   cfg = config.myConfig.system.ssh;
 
-  sshPackages = with pkgs; [
-    openssh
-    sshfs
-  ];
+  sshPackages = [ pkgs.sshfs ];
 in
 {
   options.myConfig.system.ssh = {
@@ -53,6 +50,10 @@ in
           PermitRootLogin = "no";
         };
       };
+
+      myConfig.system.impermanence.persistDirectories = lib.mkIf cfg.fail2ban.enable [
+        "/var/lib/fail2ban"
+      ];
 
       services.fail2ban = lib.mkIf cfg.fail2ban.enable {
         enable = true;

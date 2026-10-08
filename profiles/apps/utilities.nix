@@ -1,33 +1,29 @@
+{ moduleHelpers, ... }:
 {
-  lib,
-  ...
-}:
-{
-
-  myConfig.apps.utilities = {
+  myConfig.apps.utilities = moduleHelpers.mkDefaults {
     electronic = {
-      design = lib.mkDefault true;
-      diagnostics = lib.mkDefault true;
+      design = true;
+      diagnostics = true;
     };
-    flashing.enable = lib.mkDefault true;
+    flashing.enable = true;
 
     math = {
-      geometry = lib.mkDefault true;
-      plotting = lib.mkDefault true;
+      geometry = true;
+      plotting = true;
     };
-    geography.enable = lib.mkDefault true;
+    geography.enable = true;
 
     tools = {
-      system = lib.mkDefault true;
-      network = lib.mkDefault true;
-      cli = lib.mkDefault true;
-      security = lib.mkDefault true;
-      archive = lib.mkDefault true;
-      crackingPassword = lib.mkDefault true;
+      system = true;
+      network = true;
+      cli = true;
+      security = true;
+      archive = true;
+      crackingPassword = true;
     };
 
-    compress.enable = lib.mkDefault true;
+    compress.enable = true;
 
-    antivirus.enable = lib.mkDefault true;
+    antivirus.enable = true;
   };
 }

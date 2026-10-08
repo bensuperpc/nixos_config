@@ -8,8 +8,7 @@
   users = [ "bensuperpc" ];
   deployUser = "bensuperpc";
 
-  appProfiles = [ ];
-  platformProfiles = [
+  profiles = [
     "platform/gpu-amd"
     "platform/cpu-amd"
     "platform/tpm"

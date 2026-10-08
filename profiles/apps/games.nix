@@ -1,38 +1,37 @@
+{ moduleHelpers, ... }:
 {
-  lib,
-  ...
-}:
-{
+  myConfig = moduleHelpers.mkDefaults {
+    gui.plasma.games = true;
 
-  myConfig.apps.games = {
-    emulator = {
-      nintendo = lib.mkDefault true;
-      sony = lib.mkDefault true;
-      retro = lib.mkDefault true;
-      xbox = lib.mkDefault true;
-      sega = lib.mkDefault true;
-    };
+    apps.games = {
+      emulator = {
+        nintendo = true;
+        sony = true;
+        retro = true;
+        xbox = true;
+        sega = true;
+      };
 
-    steam = {
-      client = lib.mkDefault true;
-      performanceTools = lib.mkDefault true;
-      protonGE = lib.mkDefault true;
-      ntsync = lib.mkDefault true;
-    };
+      steam = {
+        client = true;
+        performanceTools = true;
+        protonGE = true;
+        ntsync = true;
+      };
 
-    minecraft = {
-      launcher = lib.mkDefault true;
-      jres = lib.mkDefault true;
-      tools = lib.mkDefault true;
-    };
+      minecraft = {
+        launcher = true;
+        tools = true;
+      };
 
-    games = {
-      fps = lib.mkDefault true;
-      arcade = lib.mkDefault true;
-      sandbox = lib.mkDefault true;
-      strategy = lib.mkDefault true;
-      others = lib.mkDefault true;
-      launchers = lib.mkDefault true;
+      games = {
+        fps = true;
+        arcade = true;
+        sandbox = true;
+        strategy = true;
+        others = true;
+        launchers = true;
+      };
     };
   };
 }

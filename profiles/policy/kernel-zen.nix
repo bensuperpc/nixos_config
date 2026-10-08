@@ -1,3 +1,3 @@
 _: {
-  myConfig.boot.kernel = "zen";
+  myConfig.system.kernel = "zen";
 }

@@ -1,13 +1,9 @@
+{ moduleHelpers, ... }:
 {
-  lib,
-  ...
-}:
-{
-
-  myConfig.apps.network.communication = {
-    chat = lib.mkDefault true;
-    voice = lib.mkDefault true;
-    mail = lib.mkDefault true;
-    terminal = lib.mkDefault true;
+  myConfig.apps.network.communication = moduleHelpers.mkDefaults {
+    chat = true;
+    voice = true;
+    mail = true;
+    terminal = true;
   };
 }

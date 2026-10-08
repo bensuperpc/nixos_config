@@ -6,5 +6,5 @@
   users = [ "bensuperpc" ];
   deployUser = "bensuperpc";
 
-  platformProfiles = [ "platform/gpu-intel-skylake" ];
+  profiles = [ "platform/gpu-intel-skylake" ];
 }

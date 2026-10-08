@@ -23,11 +23,16 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable {
-    services = {
-      power-profiles-daemon.enable = cfg.backend == "power-profiles-daemon";
-      tuned.enable = cfg.backend == "tuned";
-      tlp.enable = cfg.backend == "tlp";
-    };
-  };
+  config = lib.mkMerge [
+    (lib.mkIf cfg.enable {
+      services = {
+        power-profiles-daemon.enable = cfg.backend == "power-profiles-daemon";
+        tuned.enable = cfg.backend == "tuned";
+        tlp.enable = cfg.backend == "tlp";
+      };
+    })
+    (lib.mkIf config.services.power-profiles-daemon.enable {
+      myConfig.system.impermanence.persistDirectories = [ "/var/lib/power-profiles-daemon" ];
+    })
+  ];
 }

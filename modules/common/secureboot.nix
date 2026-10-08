@@ -14,13 +14,15 @@ in
 
     pkiBundle = lib.mkOption {
       type = lib.types.str;
-      default = "/etc/secureboot";
+      default = "/var/lib/sbctl";
       description = "Path to the sbctl PKI bundle used to sign the Lanzaboote stub and kernel.";
     };
   };
 
   config = lib.mkIf cfg.enable {
     boot.loader.systemd-boot.enable = lib.mkForce false;
+
+    myConfig.system.impermanence.persistDirectories = [ cfg.pkiBundle ];
 
     boot.lanzaboote = {
       enable = true;

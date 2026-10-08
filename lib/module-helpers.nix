@@ -24,6 +24,7 @@ let
         environment.systemPackages = enabledPackages;
       };
     };
+  mkDefaults = lib.mapAttrsRecursive (_: lib.mkDefault);
 in
 {
   inherit
@@ -31,5 +32,6 @@ in
     mkEnabledOption
     mkDisabledOption
     mkPackageGroupModule
+    mkDefaults
     ;
 }

@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ moduleHelpers, ... }:
 {
-  myConfig.apps.ai.enable = lib.mkDefault true;
+  myConfig.apps.ai = moduleHelpers.mkDefaults { enable = true; };
 }

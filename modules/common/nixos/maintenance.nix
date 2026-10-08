@@ -7,9 +7,7 @@
 
 let
   cfg = config.myConfig.system.nixos;
-  autoUpgradeDates = [
-    "03:00"
-  ];
+  autoUpgradeDates = "03:00";
 in
 {
   options.myConfig.system.nixos = {
@@ -37,7 +35,7 @@ in
           # };
           runGarbageCollection = true;
           persistent = true;
-          flake = "github:bensuperpc/nixos_config";
+          inherit (config.programs.nh) flake;
           randomizedDelaySec = "45min";
         };
       };

@@ -16,10 +16,7 @@ let
         packages = with pkgs; [
           zip
           unrar
-          gnutar
           unzip
-          gzip
-          lzlib
           lz4
           minizip-ng
           p7zip

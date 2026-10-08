@@ -10,7 +10,9 @@ let
 in
 {
   options.myConfig.apps.desktop.flatpak = {
-    enable = moduleHelpers.mkDisabledOption "Enable Flatpak with declarative app management (nix-flatpak)";
+    enable = moduleHelpers.mkBoolOption (
+      config.myConfig.gui.desktop != "none"
+    ) "Flatpak with declarative app management (nix-flatpak), on by default with a desktop environment";
 
     packages = lib.mkOption {
       type = lib.types.listOf lib.types.str;
@@ -24,6 +26,8 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    myConfig.system.impermanence.persistDirectories = [ "/var/lib/flatpak" ];
+
     services.flatpak = {
       enable = true;
       update.onActivation = true;

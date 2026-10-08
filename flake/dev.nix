@@ -1,4 +1,4 @@
-# Development outputs: formatter (`nix fmt`) and devshells (`nix develop .#<name>`).
+# Development outputs: formatter (`nix fmt`), packages and devshells (`nix develop .#<name>`).
 { inputs, ... }:
 {
   perSystem =
@@ -10,6 +10,8 @@
     }:
     {
       formatter = pkgs.nixfmt-tree;
+
+      packages = import ../pkgs pkgs;
 
       devShells = import ../devshells {
         inherit pkgsSets;

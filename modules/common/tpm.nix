@@ -10,7 +10,7 @@ let
 in
 {
   options.myConfig.system.tpm = {
-    enable = moduleHelpers.mkEnabledOption "TPM 2.0 support";
+    enable = moduleHelpers.mkDisabledOption "TPM 2.0 support";
   };
 
   config = lib.mkIf cfg.enable {

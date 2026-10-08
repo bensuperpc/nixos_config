@@ -22,24 +22,16 @@ let
           debugedit
           fakeroot
           file
-          findutils
           flex
-          gawk
           gcc
           gettext
-          gnugrep
           groff
-          gzip
           libtool
           m4
           gnumake
           cmake
-          patch
           pkgconf
-          gnused
-          sudo
           texinfo
-          which
           ninja
         ];
       };

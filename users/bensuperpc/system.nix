@@ -1,22 +1,28 @@
 {
   config,
+  lib,
   pkgs,
-  userVars,
   ...
 }:
+let
+  userVars = import ./variables.nix;
+  passwordSecret = "${userVars.user}/password";
+in
 {
   users.groups.${userVars.user} = { };
 
-  sops.secrets."bensuperpc/password".neededForUsers = true;
+  sops.secrets.${passwordSecret}.neededForUsers = true;
 
   users.users.${userVars.user} = {
     isNormalUser = true;
     description = userVars.fullName;
     group = userVars.user;
-    inherit (userVars) extraGroups;
+    extraGroups =
+      userVars.extraGroups
+      ++ lib.optional config.virtualisation.docker.enable "docker"
+      ++ lib.optional config.virtualisation.libvirtd.enable "libvirtd";
     openssh.authorizedKeys.keys = userVars.sshPubKeyAccess;
-    shell = pkgs.zsh;
-    hashedPasswordFile = config.sops.secrets."bensuperpc/password".path;
+    hashedPasswordFile = config.sops.secrets.${passwordSecret}.path;
   };
 
   security.sudo.extraRules = [

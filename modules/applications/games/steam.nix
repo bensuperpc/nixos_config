@@ -18,7 +18,7 @@ let
     groups = {
       client = {
         description = "Install and configure Steam client";
-        packages = with pkgs; [ steam-run ];
+        packages = [ ];
       };
       performanceTools = {
         description = "Install MangoHud and GameMode";

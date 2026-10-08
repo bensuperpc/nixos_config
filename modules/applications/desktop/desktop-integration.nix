@@ -10,15 +10,13 @@ let
 in
 {
   options.myConfig.apps.desktop = {
-    integration.enable = moduleHelpers.mkDisabledOption "desktop-oriented apps services (Flatpak, udisks2, gvfs, devmon)";
+    integration.enable = moduleHelpers.mkBoolOption (
+      config.myConfig.gui.desktop != "none"
+    ) "desktop-oriented services (udisks2, gvfs, devmon), on by default with a desktop environment";
   };
 
   config = lib.mkMerge [
     {
-      myConfig.apps.desktop.integration.enable = lib.mkDefault (config.myConfig.gui.desktop != "none");
-
-      services.logrotate.enable = true;
-
       programs.gnupg.agent = {
         enable = true;
         enableSSHSupport = true;
@@ -26,8 +24,6 @@ in
     }
     (lib.mkIf cfg.enable {
       services = {
-        flatpak.enable = true;
-
         # Enable udisks2 for automounting and managing disks.
         devmon.enable = true;
         udisks2.enable = true;

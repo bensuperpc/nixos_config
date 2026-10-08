@@ -13,10 +13,7 @@ in
     moduleHelpers.mkDisabledOption "Enable software GPU driver stack.";
 
   config = lib.mkIf cfg.enable {
-    hardware.graphics = {
-      enable = true;
-      enable32Bit = true;
-    };
+    hardware.graphics.enable = true;
     environment.variables = {
       LIBGL_ALWAYS_SOFTWARE = "1";
     };

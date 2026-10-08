@@ -1,5 +1,6 @@
 {
   config,
+  lib,
   pkgs,
   moduleHelpers,
   ...
@@ -26,7 +27,6 @@ let
         packages = with pkgs; [
           vulkan-tools
           vulkan-cts
-          mesa.opencl
           mesa-demos
           virtualgl
         ];
@@ -47,5 +47,10 @@ let
 in
 {
   options.myConfig.apps.development.dev = generated.options;
-  inherit (generated) config;
+  config = lib.mkMerge [
+    generated.config
+    (lib.mkIf cfg.graphics {
+      hardware.graphics.extraPackages = [ pkgs.mesa.opencl ];
+    })
+  ];
 }

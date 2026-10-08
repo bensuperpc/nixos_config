@@ -6,7 +6,8 @@
   users = [ "bensuperpc" ];
   deployUser = "bensuperpc";
 
-  appProfiles = [
+  profiles = [
+    "platform/gpu-intel-skylake"
     "apps/dev-all"
     "apps/games"
     "apps/docker"
@@ -15,5 +16,4 @@
     "apps/torrent"
     "apps/files"
   ];
-  platformProfiles = [ "platform/gpu-intel-skylake" ];
 }

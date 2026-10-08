@@ -20,6 +20,8 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    myConfig.system.impermanence.persistDirectories = [ config.services.unbound.stateDir ];
+
     services = {
       resolved.enable = false;
 

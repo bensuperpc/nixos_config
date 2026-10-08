@@ -17,13 +17,11 @@ let
           wireshark
           openvpn
           inetutils
-          iproute2
           ethtool
           dig
           iperf3
           nmap
           traceroute
-          mtr
         ];
       };
     };

@@ -1,7 +1,3 @@
-{ lib, ... }:
-{
-  myConfig.gui = {
-    desktop = "lxqt";
-    extraPackages = lib.mkDefault true;
-  };
+_: {
+  myConfig.gui.desktop = "lxqt";
 }

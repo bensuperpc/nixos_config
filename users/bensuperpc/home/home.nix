@@ -17,12 +17,6 @@ let
 in
 {
   home = {
-    username = userVars.user;
-    homeDirectory = "/home/${userVars.user}";
-
-    packages = with pkgs; [
-    ];
-
     file = {
       "test_home.txt" = {
         source = ./asset/test_home.txt;

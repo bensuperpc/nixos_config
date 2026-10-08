@@ -2,198 +2,184 @@
   config,
   lib,
   pkgs,
+  moduleHelpers,
   ...
 }:
 
 let
   cfg = config.myConfig.gui;
+
+  # Only what services.desktopManager.plasma6 does not already install.
+  generated = moduleHelpers.mkPackageGroupModule {
+    cfg = cfg.plasma;
+    groups = {
+      integration = {
+        description = "Install Plasma themes, KIO helpers, system tools and KDE Connect";
+        packages = with pkgs; [
+          kdePackages.breeze-plymouth
+          kdePackages.oxygen
+          kdePackages.oxygen-icons
+          kdePackages.oxygen-sounds
+
+          kdePackages.kholidays
+          kdePackages.kidletime
+          kdePackages.knewstuff
+          kdePackages.krunner
+          kdePackages.kpipewire
+          kdePackages.kaccounts-integration
+          kdePackages.kio-gdrive
+          kdePackages.kio-snapshot
+          kdePackages.kdialog
+
+          kdePackages.plasma-disks
+          kdePackages.plasma-thunderbolt
+          kdePackages.plasma-welcome
+          kdePackages.wacomtablet
+          kdePackages.partitionmanager
+          kdePackages.filelight
+          kdePackages.isoimagewriter
+          kdePackages.kdf
+          kdePackages.kcron
+          kdePackages.ksystemlog
+          kdePackages.kjournald
+          kdePackages.kbackup
+          kdePackages.kup
+          kdePackages.kleopatra
+          kdePackages.yakuake
+
+          wayland-utils
+          wl-clipboard
+          flatpak-xdg-utils
+        ];
+      };
+      utilities = {
+        description = "Install KDE utilities, accessibility, PIM and network applications";
+        packages = with pkgs.kdePackages; [
+          kcalc
+          kcharselect
+          kclock
+          kcolorchooser
+          kolourpaint
+          kfind
+          kalarm
+          klevernotes
+          korganizer
+          calligra
+          # neochat # Unsafe due olm dependency
+
+          kmag
+          kmousetool
+          kmouth
+
+          kget
+          krfb
+          ktorrent
+          konqueror
+        ];
+      };
+      multimedia = {
+        description = "Install KDE multimedia, scanning and optical media applications";
+        packages = with pkgs.kdePackages; [
+          dragon
+          kamoso
+          krecorder
+          kwave
+          kmix
+          koko
+          kimageannotator
+          skanpage
+          k3b
+          audex
+          audiocd-kio
+        ];
+      };
+      education = {
+        description = "Install KDE education and science applications";
+        packages = with pkgs.kdePackages; [
+          # itinerary # Unsafe due olm dependency
+          step
+          kig
+          kgeography
+          klettres
+          kbruch
+          kalk
+          kalgebra
+          cantor
+          artikulate
+          marble
+          kwordquiz
+          blinken
+        ];
+      };
+      games = {
+        description = "Install KDE games";
+        packages = with pkgs.kdePackages; [
+          kblackbox
+          kblocks
+          kbreakout
+          kigo
+          kmahjongg
+          kmines
+          kollision
+          kpat
+          ksudoku
+          ktuberling
+          skladnik
+          picmi
+          palapeli
+          lskat
+          kubrick
+          kdiamond
+          ksirk
+          klickety
+          klines
+          granatier
+        ];
+      };
+      development = {
+        description = "Install KDE development tools (KDevelop, Umbrello, Lokalize…)";
+        packages = with pkgs; [
+          kdePackages.kdevelop
+          kdePackages.umbrello
+          kdePackages.massif-visualizer
+          kdePackages.lokalize
+          kdiff3
+        ];
+      };
+    };
+  };
 in
 {
-  config = lib.mkIf (cfg.desktop == "plasma") {
-    # Enable the KDE Plasma Desktop Environment.
-    services = {
-      desktopManager.plasma6 = {
-        enable = true;
-        enableQt5Integration = true;
-      };
+  options.myConfig.gui.plasma = generated.options;
 
-      displayManager = {
-        plasma-login-manager = {
-          enable = true;
-          settings = {
+  config = lib.mkIf (cfg.desktop == "plasma") (
+    lib.mkMerge [
+      generated.config
+      {
+        # Greeter state (last user and session).
+        myConfig.system.impermanence.persistDirectories = [
+          {
+            directory = "/var/lib/plasmalogin";
+            user = "plasmalogin";
+            group = "plasmalogin";
+            mode = "0750";
+          }
+        ];
+
+        services = {
+          desktopManager.plasma6 = {
+            enable = true;
+            enableQt5Integration = true;
           };
+
+          displayManager.plasma-login-manager.enable = true;
+
+          xserver.enable = true;
         };
-        autoLogin = {
-          enable = false;
-          user = "";
-        };
-      };
 
-      xserver.enable = true;
-    };
-
-    # Installs KDE Connect and opens its TCP/UDP 1714-1764 range.
-    programs.kdeconnect.enable = cfg.extraPackages;
-
-    environment.systemPackages =
-      with pkgs;
-      lib.optionals cfg.extraPackages [
-        # Theme and icons
-        kdePackages.breeze
-        kdePackages.breeze-gtk
-        kdePackages.breeze-icons
-        kdePackages.breeze-plymouth
-        kdePackages.oxygen
-        kdePackages.oxygen-icons
-        kdePackages.oxygen-sounds
-
-        kdePackages.kholidays
-        kdePackages.kidletime
-        kdePackages.knewstuff
-        kdePackages.dolphin-plugins
-        kdePackages.dolphin
-        kdePackages.kio-snapshot
-
-        # Desktop integration and shell
-        kdePackages.flatpak-kcm
-        kdePackages.plasma-browser-integration
-        kdePackages.plasma-keyboard
-        kdePackages.plasma-thunderbolt
-        kdePackages.plasma-welcome
-        kdePackages.qtvirtualkeyboard
-        kdePackages.sddm-kcm
-
-        # Hardware and power management
-        kdePackages.bluedevil
-        kdePackages.plasma-disks
-        kdePackages.powerdevil
-        kdePackages.wacomtablet
-
-        # File manager and KIO helpers
-        kdePackages.kio-admin
-        kdePackages.kio-extras
-        kdePackages.kio-fuse
-        kdePackages.kio-gdrive
-
-        # Productivity and utilities
-        hardinfo2
-        kdiff3
-        kdePackages.ark
-        kdePackages.discover
-        kdePackages.filelight
-        kdePackages.isoimagewriter
-        kdePackages.kate
-        kdePackages.kcalc
-        kdePackages.kcharselect
-        kdePackages.kclock
-        kdePackages.kcolorchooser
-        kdePackages.kdevelop
-        kdePackages.kdialog
-        kdePackages.kfind
-        kdePackages.kget
-        kdePackages.kleopatra
-        kdePackages.kolourpaint
-        kdePackages.ksystemlog
-        kdePackages.kwallet
-        kdePackages.kwalletmanager
-        kdePackages.partitionmanager
-        kdePackages.umbrello
-        kdePackages.yakuake
-        # kdePackages.neochat # Unsafe due olm dependency
-        kdePackages.massif-visualizer
-        kdePackages.marble
-        kdePackages.lokalize
-        kdePackages.ksystemstats
-        kdePackages.krunner
-        kdePackages.krfb
-        kdePackages.korganizer
-        kdePackages.konsole
-        kdePackages.konqueror
-        kdePackages.kmouth
-        kdePackages.kmousetool
-        kdePackages.kmag
-        kdePackages.klevernotes
-        kdePackages.kjournald
-        kdePackages.kdf
-        kdePackages.kcron
-        kdePackages.kbackup
-        kdePackages.kalarm
-        kdePackages.kaccounts-integration
-        kdePackages.calligra
-        kdePackages.baloo
-        kdePackages.akonadi
-
-        # Printing and scanning
-        kdePackages.skanpage
-        kdePackages.print-manager
-
-        # Multimedia and graphics
-        kdePackages.elisa
-        kdePackages.gwenview
-        kdePackages.kdegraphics-thumbnailers
-        kdePackages.kdenlive
-        kdePackages.kimageannotator
-        kdePackages.koko
-        kdePackages.kwave
-        kdePackages.spectacle
-        kdePackages.okular
-        kdePackages.kup
-        kdePackages.krecorder
-        kdePackages.kpipewire
-        kdePackages.kmix
-        kdePackages.kamoso
-        kdePackages.k3b
-        kdePackages.dragon
-        # CD/DVD
-        kdePackages.audex
-        kdePackages.audiocd-kio
-
-        # Communication and networking
-        kdePackages.kdepim-runtime
-        kdePackages.ktorrent
-
-        # Education and science
-        # kdePackages.itinerary # Unsafe due olm dependency
-        kdePackages.step
-        kdePackages.kig
-        kdePackages.kgeography
-        kdePackages.klettres
-        kdePackages.kbruch
-        kdePackages.kalk
-        kdePackages.kalgebra
-        kdePackages.cantor
-        kdePackages.artikulate
-
-        # Games
-        kdePackages.kblackbox
-        kdePackages.kblocks
-        kdePackages.kbreakout
-        kdePackages.kigo
-        kdePackages.kmahjongg
-        kdePackages.kmines
-        kdePackages.kollision
-        kdePackages.kpat
-        kdePackages.ksudoku
-        kdePackages.ktuberling
-        kdePackages.skladnik
-        kdePackages.picmi
-        kdePackages.palapeli
-        kdePackages.lskat
-        kdePackages.kwordquiz
-        kdePackages.kubrick
-        kdePackages.kdiamond
-        kdePackages.ksirk
-        kdePackages.klickety
-        kdePackages.klines
-        kdePackages.granatier
-        kdePackages.blinken
-
-        # Wayland utilities
-        wayland-utils
-        wl-clipboard
-        # xdg-utils
-        xdg-utils
-        flatpak-xdg-utils
-      ];
-  };
+        # Installs KDE Connect and opens its TCP/UDP 1714-1764 range.
+        programs.kdeconnect.enable = cfg.plasma.integration;
+      }
+    ]
+  );
 }

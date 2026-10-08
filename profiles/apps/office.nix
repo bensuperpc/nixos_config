@@ -1,19 +1,15 @@
+{ moduleHelpers, ... }:
 {
-  lib,
-  ...
-}:
-{
-
-  myConfig.apps.desktop = {
+  myConfig.apps.desktop = moduleHelpers.mkDefaults {
     office = {
-      suite = lib.mkDefault true;
-      writing = lib.mkDefault true;
-      notes = lib.mkDefault true;
+      suite = true;
+      writing = true;
+      notes = true;
     };
 
-    printing.enable = lib.mkDefault true;
-    printing3d.enable = lib.mkDefault true;
+    printing.enable = true;
+    printing3d.enable = true;
 
-    fonts.nerdFonts = lib.mkDefault true;
+    fonts.nerdFonts = true;
   };
 }

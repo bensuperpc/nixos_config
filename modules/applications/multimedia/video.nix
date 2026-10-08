@@ -45,7 +45,6 @@ let
         description = "Install video/audio codec tooling";
         packages = with pkgs; [
           ffmpeg-full
-          dav1d
           svt-av1
           svt-av1-hdr
           rav1e
@@ -59,9 +58,7 @@ let
           libcamera
           openjph
           x264
-          openh264
           x265
-          xvidcore
           libheif
           libde265
         ];
@@ -69,12 +66,8 @@ let
       opticalMedia = {
         description = "Install DVD and Blu-ray tooling";
         packages = with pkgs; [
-          libdvdcss
-          libdvdnav
-          libdvdread
           mkvtoolnix
           libaacs
-          libbdplus
         ];
       };
       downloaders = {

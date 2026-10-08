@@ -1,37 +1,34 @@
-{
-  lib,
-  ...
-}:
-
+{ moduleHelpers, ... }:
 {
   # Preset for content creation workloads.
-  myConfig.apps.multimedia = {
+  myConfig.apps.multimedia = moduleHelpers.mkDefaults {
     video = {
-      editing = lib.mkDefault true;
-      playback = lib.mkDefault true;
-      codecs = lib.mkDefault true;
-      opticalMedia = lib.mkDefault true;
-      downloaders = lib.mkDefault true;
+      editing = true;
+      playback = true;
+      codecs = true;
+      opticalMedia = true;
+      downloaders = true;
     };
 
     audio = {
-      editing = lib.mkDefault true;
-      conversion = lib.mkDefault true;
-      library = lib.mkDefault true;
-      playback = lib.mkDefault true;
+      editing = true;
+      conversion = true;
+      library = true;
+      playback = true;
     };
 
     image = {
-      editing = lib.mkDefault true;
-      graphing = lib.mkDefault true;
-      management = lib.mkDefault true;
-      formats = lib.mkDefault true;
-      utilities = lib.mkDefault true;
+      editing = true;
+      graphing = true;
+      management = true;
+      formats = true;
+      utilities = true;
+      animation = true;
     };
 
     documents = {
-      reading = lib.mkDefault true;
-      pdf = lib.mkDefault true;
+      reading = true;
+      pdf = true;
     };
   };
 }

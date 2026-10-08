@@ -33,6 +33,8 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    myConfig.system.impermanence.persistDirectories = [ "/var/lib/cups" ];
+
     # services.avahi = {
     #   enable = true;
     #   nssmdns4 = true;

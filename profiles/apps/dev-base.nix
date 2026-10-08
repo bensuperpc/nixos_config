@@ -1,10 +1,4 @@
+{ moduleHelpers, ... }:
 {
-  lib,
-  ...
-}:
-{
-
-  myConfig.apps.development.dev = {
-    base = lib.mkDefault true;
-  };
+  myConfig.apps.development.dev = moduleHelpers.mkDefaults { base = true; };
 }

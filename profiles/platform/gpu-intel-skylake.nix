@@ -1,3 +1,6 @@
 _: {
-  myConfig.drivers.gpu.intel = "skylake";
+  myConfig.drivers.gpu.intel = {
+    enable = true;
+    generation = "skylake";
+  };
 }

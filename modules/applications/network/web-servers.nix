@@ -49,6 +49,8 @@ in
         traefik.enable = lib.mkIf cfg.services.traefik true;
         haproxy.enable = lib.mkIf cfg.services.haproxy true;
       };
+
+      myConfig.system.impermanence.persistDirectories = lib.mkIf cfg.services.caddy [ "/var/lib/caddy" ];
     }
   ];
 }

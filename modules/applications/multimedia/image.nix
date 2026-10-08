@@ -38,8 +38,6 @@ let
           photoprism
           kphotoalbum
           vipsdisp
-          gallery-dl
-          rawtherapee
         ];
       };
       formats = {

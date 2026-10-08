@@ -35,6 +35,11 @@ in
   config = lib.mkMerge [
     generated.config
     (lib.mkIf cfg.enable {
+      myConfig.system.impermanence.persistDirectories = [
+        "/var/lib/docker"
+        "/var/lib/containers"
+      ];
+
       virtualisation = {
         containers.enable = true;
         docker = {

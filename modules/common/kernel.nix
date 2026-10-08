@@ -9,20 +9,18 @@ let
   kernelMap = {
     latest = pkgs.linuxPackages_latest;
     zen = pkgs.linuxPackages_zen;
-    hardened = pkgs.linuxPackages_latest_hardened;
-    libre = pkgs.linuxPackages_latest-libre;
     lts = pkgs.linuxPackages;
   };
 in
 {
-  options.myConfig.boot.kernel = lib.mkOption {
+  options.myConfig.system.kernel = lib.mkOption {
     type = lib.types.enum (builtins.attrNames kernelMap);
     default = "latest";
-    description = "Kernel variant to use (latest, zen, hardened, libre, lts).";
+    description = "Kernel variant to use (latest, zen, lts).";
   };
 
   config = {
-    boot.kernelPackages = lib.mkOverride 50 kernelMap.${config.myConfig.boot.kernel};
+    boot.kernelPackages = kernelMap.${config.myConfig.system.kernel};
     security = {
       # Needed for KDE/GNOME GUI.
       polkit.enable = true;

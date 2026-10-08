@@ -45,6 +45,8 @@ in
   config = lib.mkMerge [
     generated.config
     (lib.mkIf cfg.peerToPeer {
+      myConfig.system.impermanence.persistDirectories = [ "/var/lib/syncthing" ];
+
       services.syncthing = {
         enable = true;
         # openDefaultPorts = true;

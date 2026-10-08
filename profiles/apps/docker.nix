@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ moduleHelpers, ... }:
 {
-  myConfig.apps.docker.enable = lib.mkDefault true;
+  myConfig.apps.docker = moduleHelpers.mkDefaults { enable = true; };
 }

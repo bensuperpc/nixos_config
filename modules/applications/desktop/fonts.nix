@@ -20,7 +20,7 @@ in
 {
   options.myConfig.apps.desktop.fonts = {
     enable = moduleHelpers.mkEnabledOption "Noto fonts and fontconfig";
-    nerdFonts = moduleHelpers.mkDisabledOption "Install the Nerd Fonts package set";
+    nerdFonts = moduleHelpers.mkDisabledOption "Install a selection of Nerd Fonts";
   };
 
   config = lib.mkIf cfg.enable {
@@ -31,7 +31,13 @@ in
         defaultFonts
         # More info: https://nixos.wiki/wiki/Fonts
         ++ lib.optionals cfg.nerdFonts (
-          builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts)
+          with pkgs.nerd-fonts;
+          [
+            jetbrains-mono
+            fira-code
+            hack
+            symbols-only
+          ]
         );
     };
   };

@@ -1,3 +1,6 @@
 _: {
-  myConfig.drivers.gpu.intel = "old";
+  myConfig.drivers.gpu.intel = {
+    enable = true;
+    generation = "old";
+  };
 }

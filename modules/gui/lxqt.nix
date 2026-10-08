@@ -10,6 +10,8 @@ let
 in
 {
   config = lib.mkIf (cfg.desktop == "lxqt") {
+    myConfig.system.impermanence.persistDirectories = [ "/var/lib/sddm" ];
+
     services = {
       xserver = {
         enable = true;
@@ -19,11 +21,9 @@ in
       displayManager.sddm.enable = true;
     };
 
-    environment.systemPackages =
-      with pkgs;
-      lib.optionals cfg.extraPackages [
-        xdg-utils
-        flatpak-xdg-utils
-      ];
+    environment.systemPackages = with pkgs; [
+      xdg-utils
+      flatpak-xdg-utils
+    ];
   };
 }

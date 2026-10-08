@@ -1,5 +1,7 @@
-{ lib, ... }:
+{ moduleHelpers, ... }:
 {
-  myConfig.apps.network.cli.enable = lib.mkDefault true;
-  myConfig.apps.desktop.terminal.enable = lib.mkDefault true;
+  myConfig.apps = moduleHelpers.mkDefaults {
+    network.cli.enable = true;
+    desktop.terminal.enable = true;
+  };
 }

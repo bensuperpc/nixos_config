@@ -1,6 +1,5 @@
 {
   inputs,
-  lib,
   moduleHelpers,
   pkgsCache,
 }:
@@ -14,19 +13,9 @@ let
     else
       throw "Host '${name}' is missing ${what}: ${toString path}";
 
-  # Import profiles from normalized host schema.
-  profilesModules = map (p: requirePath "profile" ../profiles/${p}.nix) cfg.allProfiles;
+  profilesModules = map (p: requirePath "profile" ../profiles/${p}.nix) cfg.profiles;
 
-  # Variables of every user of the host, keyed by user name.
-  varsUsers = lib.genAttrs cfg.users (
-    u: import (requirePath "user variables" ../users/${u}/variables.nix)
-  );
-
-  # Wrap each user module to inject its own variables as a NixOS module argument.
-  usersModules = map (u: {
-    _module.args.userVars = varsUsers.${u};
-    imports = [ (requirePath "user system module" ../users/${u}/system.nix) ];
-  }) cfg.users;
+  usersModules = map (u: requirePath "user system module" ../users/${u}/system.nix) cfg.users;
 
   varsHost = {
     name = cfg.systemName;
@@ -70,7 +59,7 @@ let
             ;
         };
       };
-      _module.args = { inherit pkgsSets varsHost varsUsers; };
+      _module.args = { inherit pkgsSets varsHost; };
     }
     ../modules
   ]

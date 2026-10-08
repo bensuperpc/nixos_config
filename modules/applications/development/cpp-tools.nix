@@ -25,7 +25,6 @@ let
         description = "Install C/C++ build systems and linkers";
         packages = with pkgs; [
           cmake
-          lomiri.cmake-extras
           meson
           mold
           gnumake
@@ -47,7 +46,6 @@ let
           lldb
           ltrace
           valgrind
-          libexecinfo
         ];
       };
     };

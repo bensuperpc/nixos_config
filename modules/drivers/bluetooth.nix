@@ -15,10 +15,7 @@ let
     groups = {
       enable = {
         description = "Enable Bluetooth stack and tools.";
-        packages = with pkgs; [
-          bluez
-          bluez-tools
-        ];
+        packages = [ pkgs.bluez-tools ];
       };
     };
   };
@@ -29,6 +26,11 @@ in
   config = lib.mkMerge [
     generated.config
     (lib.mkIf cfg.enable {
+      myConfig.system.impermanence.persistDirectories = [
+        "/var/lib/bluetooth"
+        "/var/lib/systemd/rfkill"
+      ];
+
       hardware.bluetooth = {
         enable = true;
         powerOnBoot = true;

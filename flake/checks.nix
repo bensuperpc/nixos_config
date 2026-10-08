@@ -58,7 +58,7 @@
     in
     {
       checks =
-        import ../modules/applications/custom/packages pkgs
+        import ../pkgs pkgs
         // lint
         // {
           colmena-parity = colmenaParity;

@@ -1,7 +1,12 @@
-{ lib, ... }:
+{ moduleHelpers, ... }:
 {
   myConfig.gui = {
     desktop = "plasma";
-    extraPackages = lib.mkDefault true;
+    plasma = moduleHelpers.mkDefaults {
+      integration = true;
+      utilities = true;
+      multimedia = true;
+      education = true;
+    };
   };
 }

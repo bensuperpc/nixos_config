@@ -117,8 +117,5 @@ in
           enabledPythonPackages
       )
     ];
-    environment.shellAliases = {
-      python = "python3.13";
-    };
   };
 }

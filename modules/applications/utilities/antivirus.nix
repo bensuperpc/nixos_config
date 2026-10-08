@@ -1,5 +1,6 @@
 {
   config,
+  lib,
   pkgs,
   moduleHelpers,
   ...
@@ -20,5 +21,10 @@ let
 in
 {
   options.myConfig.apps.utilities.antivirus = generated.options;
-  inherit (generated) config;
+  config = lib.mkMerge [
+    generated.config
+    (lib.mkIf cfg.enable {
+      myConfig.system.impermanence.persistDirectories = [ "/var/lib/clamav" ];
+    })
+  ];
 }

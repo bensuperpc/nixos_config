@@ -21,6 +21,8 @@ in
 
   config = lib.mkMerge [
     (lib.mkIf cfg.host {
+      myConfig.system.impermanence.persistDirectories = [ "/var/lib/microvms" ];
+
       microvm.host.enable = true;
     })
     (lib.mkIf cfg.examples.test {

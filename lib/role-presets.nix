@@ -34,24 +34,15 @@ let
       "apps/ai"
     ];
 
-  mkGraphicalRole = appProfiles: {
-    platformProfiles = kdePlasma;
-    inherit appProfiles;
-    policyProfiles = latestKernel;
-  };
+  mkGraphicalRole = apps: kdePlasma ++ apps ++ latestKernel;
 in
 {
-  minimal = {
-    platformProfiles = [ ];
-    appProfiles = [ ];
-    policyProfiles = [ ];
-  };
+  minimal = [ ];
 
-  server = {
-    platformProfiles = [ "platform/no-gui" ];
-    appProfiles = [ "apps/docker" ];
-    policyProfiles = [ ];
-  };
+  server = [
+    "platform/no-gui"
+    "apps/docker"
+  ];
 
   desktop = mkGraphicalRole desktopApps;
   workstation = mkGraphicalRole workstationApps;

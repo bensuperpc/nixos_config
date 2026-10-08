@@ -23,7 +23,6 @@ let
           virt-manager
           virt-viewer
           qemu
-          spice
           spice-gtk
         ];
       };
@@ -38,6 +37,8 @@ in
   config = lib.mkMerge [
     generated.config
     (lib.mkIf generated.anyEnabled {
+      myConfig.system.impermanence.persistDirectories = [ "/var/lib/libvirt" ];
+
       virtualisation.libvirtd = {
         enable = true;
         allowedBridges = [ "virbr0" ];

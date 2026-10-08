@@ -14,6 +14,11 @@ in
     servers = ntpServers;
   };
 
+  myConfig.system.impermanence.persistDirectories = [
+    "/var/lib/NetworkManager"
+    "/etc/NetworkManager/system-connections"
+  ];
+
   networking = {
     hostName = varsHost.name;
     networkmanager = {

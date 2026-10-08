@@ -36,7 +36,6 @@ let
           yq
           dos2unix
           fdupes
-          flex
           help2man
           onboard
           jp2a

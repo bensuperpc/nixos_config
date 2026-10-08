@@ -1,7 +1,7 @@
 { pkgs }:
 
 let
-  raylib-cpp = pkgs.callPackage ../modules/applications/custom/packages/raylib-cpp.nix { };
+  raylib-cpp = pkgs.callPackage ../pkgs/raylib-cpp.nix { };
 in
 pkgs.mkShell {
   nativeBuildInputs = with pkgs; [

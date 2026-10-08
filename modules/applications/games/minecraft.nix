@@ -13,28 +13,14 @@ let
     inherit cfg;
     groups = {
       launcher = {
-        description = "Install Prism Launcher and default Java runtime";
-        packages = with pkgs; [
-          prismlauncher
-          jre25_minimal # 26.1+
-        ];
-      };
-      jres = {
-        description = "Install multiple Java runtimes for modpack compatibility";
-        packages = with pkgs; [
-          jre8 # MC 1.12-1.16 (older works but with some issues)
-          jre11_minimal
-          jre17_minimal # MC 1.18-1.19
-          jre21_minimal # MC 1.20-1.21
-        ];
+        description = "Install Prism Launcher (bundles its own JDKs)";
+        packages = with pkgs; [ prismlauncher ];
       };
       tools = {
         description = "Install Minecraft tools";
         packages = with pkgs; [
           mcaselector
           worldpainter
-          # Minecraft font
-          minecraftia
         ];
       };
     };
@@ -44,8 +30,8 @@ in
   options.myConfig.apps.games.minecraft = generated.options;
   config = lib.mkMerge [
     generated.config
-    (lib.mkIf generated.anyEnabled {
-      programs.java.enable = true;
+    (lib.mkIf cfg.tools {
+      fonts.packages = [ pkgs.minecraftia ];
     })
   ];
 }

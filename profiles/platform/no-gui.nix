@@ -19,6 +19,7 @@ in
     {
       assertion =
         !apps.network.browser.core
+        && !apps.network.browser.privacy
         && !apps.network.browser.extra
         && !apps.network.communication.chat
         && !apps.network.communication.voice
