@@ -16,6 +16,7 @@ This repository contains my personal NixOS flake used to manage my desktops, ser
 - Profile-driven capabilities via a single `profiles` list (`platform/*`, `apps/*`, `policy/*`)
 - Shared user configuration across hosts via `users/<name>/`
 - Deterministic package versions + individual packages pinned to the stable channel via `pkgsSets`
+- Per-host nixpkgs channel (`unstable` by default, `stable-2605`)
 - Devshells for C/C++ (GCC, Clang), WebAssembly, embedded compilers, Qt6, raylib, Python 3.13 and 2, Rust, Java 21, and ESP-IDF (ESP32-C5/C6/P4)
 - Makefile helpers for common maintenance, validation, and deployment tasks
 - `microvm.nix` host support (WIP) for running lightweight VMs
@@ -401,8 +402,8 @@ make <host>.boot   # deploy with Colmena (boot, then reboot), hosts with an `ip`
 Modules receive the following extra arguments:
 
 - `inputs`, `moduleHelpers` (`specialArgs`)
-- `varsHost`: host metadata (`name`, `role`, `users`, `deployUser`, `ip`, `port`, `ageRecipient`)
-- `pkgsSets.<channel>`: per-channel package sets (`stable-2605`, `unstable`) resolved once per architecture
+- `varsHost`: host metadata (`name`, `role`, `channel`, `users`, `deployUser`, `ip`, `port`, `ageRecipient`)
+- `pkgsSets.<channel>`: per-channel package sets (`stable-2605`, `unstable`) resolved once per architecture, available whatever the host `channel` (`pkgs` follows the host `channel`)
 - `userVars` (Home Manager modules of a user only): values from that user's `users/<name>/variables.nix`
 
 Invariants that matter (key-only SSH, firewall, bootloader, headless platform, impermanence

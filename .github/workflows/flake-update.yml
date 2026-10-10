@@ -1,0 +1,64 @@
+name: Flake update
+
+on:
+  schedule:
+    - cron: "20 0 * * 0"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+env:
+  BASE: dev
+  BRANCH: flake-lock-update
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BASE }}
+      - uses: DeterminateSystems/nix-installer-action@v23
+      - uses: DeterminateSystems/magic-nix-cache-action@v15
+        with:
+          use-flakehub: false
+      - name: Update flake.lock
+        id: update
+        run: |
+          nix flake update 2>&1 | tee "$RUNNER_TEMP/update.log"
+          if git diff --quiet flake.lock; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.update.outputs.changed == 'true'
+        run: nix flake check -L
+      - name: Open pull request
+        if: steps.update.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -C "$BRANCH"
+          git commit -m "Update flake.lock $(date +%d-%m-%Y)" flake.lock
+          git push --force origin "$BRANCH"
+
+          open=$(gh pr list --head "$BRANCH" --base "$BASE" --state open --json number --jq length)
+          if [ "$open" = "0" ]; then
+            {
+              echo '`nix flake check` passed on this lock file.'
+              echo
+              echo '```'
+              cat "$RUNNER_TEMP/update.log"
+              echo '```'
+            } > "$RUNNER_TEMP/body.md"
+            gh pr create --base "$BASE" --head "$BRANCH" \
+              --title "Update flake.lock" --body-file "$RUNNER_TEMP/body.md"
+          fi

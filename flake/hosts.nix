@@ -4,21 +4,26 @@
   ...
 }:
 let
-  # Map of nixpkgs source inputs, keyed by channel name.
-  nixpkgsSources = {
-    stable-2605 = inputs.nixpkgs-2605;
-    unstable = inputs.nixpkgs-unstable;
+  channels = {
+    stable-2605 = {
+      nixpkgs = inputs.nixpkgs-2605;
+      homeManager = inputs.home-manager-2605;
+    };
+    unstable = {
+      nixpkgs = inputs.nixpkgs-unstable;
+      homeManager = inputs.home-manager;
+    };
   };
 
   pkgsCache = lib.genAttrs [ "x86_64-linux" "aarch64-linux" ] (
     system:
     lib.mapAttrs (
-      _: src:
-      import src {
+      _: channel:
+      import channel.nixpkgs {
         inherit system;
         config.allowUnfree = true;
       }
-    ) nixpkgsSources
+    ) channels
   );
 
   moduleHelpers = import ../lib/module-helpers.nix { inherit lib; };
@@ -30,18 +35,22 @@ let
       inputs
       moduleHelpers
       pkgsCache
+      channels
       ;
   };
-  hosts = import ../systems/systems.nix { inherit lib; };
+  hosts = import ../systems/systems.nix {
+    inherit lib;
+    channels = lib.attrNames channels;
+  };
 
   hostConfigs = lib.mapAttrs mkHostConfig hosts;
   deployableHostConfigs = lib.filterAttrs (_: cfg: cfg.host.ip != null) hostConfigs;
 
-  nixosSystemParity = {
-    nixpkgs.flake.source = inputs.nixpkgs.outPath;
+  nixosSystemParity = nixpkgs: {
+    nixpkgs.flake.source = nixpkgs.outPath;
     system.nixos = {
-      versionSuffix = inputs.nixpkgs.lib.trivial.versionSuffix;
-      revision = inputs.nixpkgs.lib.trivial.revisionWithDefault null;
+      versionSuffix = nixpkgs.lib.trivial.versionSuffix;
+      revision = nixpkgs.lib.trivial.revisionWithDefault null;
     };
   };
 in
@@ -49,7 +58,7 @@ in
   flake = {
     nixosConfigurations = lib.mapAttrs (
       _: cfg:
-      lib.nixosSystem {
+      channels.${cfg.channel}.nixpkgs.lib.nixosSystem {
         inherit (cfg) system modules;
         inherit specialArgs;
       }
@@ -59,7 +68,7 @@ in
       {
         meta = {
           nixpkgs = pkgsCache.x86_64-linux.unstable;
-          nodeNixpkgs = lib.mapAttrs (_: cfg: pkgsCache.${cfg.system}.unstable) deployableHostConfigs;
+          nodeNixpkgs = lib.mapAttrs (_: cfg: pkgsCache.${cfg.system}.${cfg.channel}) deployableHostConfigs;
           inherit specialArgs;
         };
       }
@@ -72,12 +81,10 @@ in
           # `colmena apply-local --sudo` on the host itself (needs a local checkout).
           allowLocalDeployment = true;
         };
-        imports = cfg.modules ++ [ nixosSystemParity ];
+        imports = cfg.modules ++ [ (nixosSystemParity channels.${cfg.channel}.nixpkgs) ];
       }) deployableHostConfigs
     );
   };
-
-  # Per-channel package sets, a module argument of the perSystem modules (flake/dev.nix).
   perSystem =
     { system, ... }:
     {

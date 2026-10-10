@@ -1,7 +1,7 @@
-{ lib }:
+{ lib, channels }:
 
 let
-  hostSchema = import ../lib/host-schema.nix { inherit lib; };
+  hostSchema = import ../lib/host-schema.nix { inherit lib channels; };
 
   hosts = {
     "server-1-m710q" = import ./server-1-m710q/definition.nix;

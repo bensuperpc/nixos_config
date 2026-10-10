@@ -22,8 +22,7 @@ in
   config = lib.mkMerge [
     (lib.mkIf cfg.host {
       myConfig.system.impermanence.persistDirectories = [ "/var/lib/microvms" ];
-
-      microvm.host.enable = true;
+      microvm.host.enable = cfg.host;
     })
     (lib.mkIf cfg.examples.test {
       microvm.vms = dockerTest;
