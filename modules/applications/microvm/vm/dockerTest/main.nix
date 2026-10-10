@@ -1,4 +1,8 @@
-{ pkgsSets }:
+{
+  pkgsSets,
+  authorizedKeys,
+  passwordSecret,
+}:
 
 let
   containers = import ./containers.nix { pkgs = pkgsSets.stable-2605; };
@@ -31,9 +35,11 @@ in
               mountPoint = "/mnt/shared";
               tag = "shared";
               proto = "virtiofs";
+              readOnly = true;
             }
           ];
           writableStoreOverlay = "/nix/.rw-store";
+          credentialFiles.root-password-hash = passwordSecret.path;
           interfaces = [
             {
               type = "user";
@@ -50,6 +56,7 @@ in
             }
             {
               from = "host";
+              host.address = "127.0.0.1";
               host.port = 8080;
               guest.port = 80;
             }
@@ -77,10 +84,19 @@ in
 
         services.openssh = {
           enable = true;
-          settings.PermitRootLogin = "yes";
+          settings = {
+            PermitRootLogin = "prohibit-password";
+            PasswordAuthentication = false;
+            KbdInteractiveAuthentication = false;
+          };
         };
 
-        users.users.root.hashedPasswordFile = "/mnt/shared/root-password-hash";
+        boot.initrd.availableKernelModules = [ "qemu_fw_cfg" ];
+
+        users.users.root = {
+          openssh.authorizedKeys.keys = authorizedKeys;
+          hashedPasswordFile = "/run/credentials/@system/root-password-hash";
+        };
 
         virtualisation = {
           containers.enable = true;

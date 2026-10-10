@@ -3,7 +3,6 @@
 pkgs.mkShell {
   nativeBuildInputs = with pkgs; [
     qt6.wrapQtAppsHook
-    makeWrapper
   ];
   packages = with pkgs; [
     cmake
@@ -52,10 +51,17 @@ pkgs.mkShell {
     ]);
 
   shellHook = ''
-    bashdir=$(mktemp -d)
-    makeWrapper "$(type -p bash)" "$bashdir/bash" "''${qtWrapperArgs[@]}"
-    trap 'rm -rf "$bashdir"' EXIT
-
-    exec "$bashdir/bash"
+    exportQtWrapperArgs() {
+      while [ $# -gt 0 ]; do
+        if [ "$1" = --prefix ]; then
+          export "$2=$4''${!2:+$3''${!2}}"
+          shift 4
+        else
+          shift
+        fi
+      done
+    }
+    exportQtWrapperArgs "''${qtWrapperArgs[@]}"
+    unset -f exportQtWrapperArgs
   '';
 }

@@ -1,7 +1,7 @@
-{ lib }:
+{ lib, channels }:
 
 let
-  hostSchema = import ../lib/host-schema.nix { inherit lib; };
+  hostSchema = import ../lib/host-schema.nix { inherit lib channels; };
 
   hosts = {
     "server-1-m710q" = import ./server-1-m710q/definition.nix;
@@ -11,8 +11,5 @@ let
     "fluttershy" = import ./fluttershy/definition.nix;
     "pinkie-pie" = import ./pinkie-pie/definition.nix;
   };
-
-  # Keep incomplete hosts in inventory files while excluding them from global eval/build.
-  activeHosts = lib.filterAttrs (_: host: host.enabled or true) hosts;
 in
-hostSchema.normalizeHosts activeHosts
+hostSchema.normalizeHosts hosts

@@ -41,20 +41,25 @@ let
   };
 in
 {
-  options.myConfig.apps.files.sync = generated.options;
+  options.myConfig.apps.files.sync = generated.options // {
+    openFirewall = moduleHelpers.mkDisabledOption "Open the Syncthing (22000, 21027) and LocalSend (53317) ports in the firewall";
+  };
+
   config = lib.mkMerge [
     generated.config
     (lib.mkIf cfg.peerToPeer {
-      myConfig.system.impermanence.persistDirectories = [ "/var/lib/syncthing" ];
-
-      services.syncthing = {
-        enable = true;
-        # openDefaultPorts = true;
-      };
-
       programs.localsend = {
         enable = true;
-        openFirewall = true;
+        inherit (cfg) openFirewall;
+      };
+    })
+    (lib.mkIf (cfg.peerToPeer && cfg.openFirewall) {
+      networking.firewall = {
+        allowedTCPPorts = [ 22000 ];
+        allowedUDPPorts = [
+          22000
+          21027
+        ];
       };
     })
   ];

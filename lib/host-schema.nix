@@ -1,4 +1,4 @@
-{ lib }:
+{ lib, channels }:
 
 let
   rolePresets = import ./role-presets.nix;
@@ -17,6 +17,11 @@ let
           default = "minimal";
         };
         system = lib.mkOption { type = lib.types.str; };
+        channel = lib.mkOption {
+          type = lib.types.enum channels;
+          default = "unstable";
+          description = "nixpkgs channel (and matching Home Manager release) the host is built from.";
+        };
         systemName = lib.mkOption {
           type = lib.types.str;
           default = name;
@@ -72,6 +77,7 @@ let
       inherit (host)
         role
         system
+        channel
         systemName
         ip
         port

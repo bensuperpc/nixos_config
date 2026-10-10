@@ -2,7 +2,7 @@ HASH := \#
 
 NIX := nix --extra-experimental-features "nix-command flakes"
 
-SERVERS ?= $(shell $(NIX) eval --raw .$(HASH)nixosConfigurations --apply 'c: toString (builtins.attrNames c)' 2>/dev/null)
+SERVERS ?= $(shell $(NIX) eval --raw .$(HASH)nixosConfigurations --apply 'c: toString (builtins.attrNames c)' --no-warn-dirty)
 
 COLMENA_FLAGS := --show-trace --verbose
 # --no-build-on-target
@@ -11,7 +11,7 @@ COLMENA_BUILD_FLAGS ?=
 .PHONY: update check fmt gc build-all all-systems
 
 build-all:
-	@$(NIX) run github:Mic92/nix-fast-build -- \
+	@$(NIX) run --inputs-from . nixpkgs$(HASH)nix-fast-build -- \
 		--flake ".$(HASH)nixosConfigurations" \
 		--select "configs: builtins.mapAttrs (name: cfg: cfg.config.system.build.toplevel) configs" \
 		--skip-cached
@@ -51,7 +51,7 @@ $(1).vm:
 	@$(NIX) build .$(HASH)nixosConfigurations.$(1).config.system.build.vm --show-trace
 
 $(1).sbom: $(1).build
-	@$(NIX) run nixpkgs$(HASH)sbomnix -- "./result-$(1)" \
+	@$(NIX) run --inputs-from . nixpkgs$(HASH)sbomnix -- "./result-$(1)" \
 		--csv "sbom-$(1).csv" \
 		--cdx "sbom-$(1).cdx.json" \
 		--spdx "sbom-$(1).spdx.json"

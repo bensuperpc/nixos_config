@@ -43,9 +43,6 @@ in
                 type = "luks";
                 name = "cryptroot";
                 extraOpenArgs = [
-                  "--allow-discards"
-                  "--perf-no_read_workqueue"
-                  "--perf-no_write_workqueue"
                 ];
                 extraFormatArgs = [
                   "--pbkdf"
@@ -56,6 +53,8 @@ in
                   "512"
                 ];
                 settings = {
+                  allowDiscards = true;
+                  bypassWorkqueues = true;
                   crypttabExtraOpts = [
                     "fido2-device=auto"
                     "tpm2-device=auto"

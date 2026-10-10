@@ -1,7 +1,7 @@
 { pkgs }:
 
 let
-  my-python = pkgs.python3.withPackages (
+  my-python = pkgs.python313.withPackages (
     ps: with ps; [
       pandas
       requests

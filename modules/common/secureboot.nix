@@ -19,14 +19,17 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable {
-    boot.loader.systemd-boot.enable = lib.mkForce false;
+  config = lib.mkMerge [
+    {
+      myConfig.system.impermanence.persistDirectories = [ cfg.pkiBundle ];
+    }
+    (lib.mkIf cfg.enable {
+      boot.loader.systemd-boot.enable = lib.mkForce false;
 
-    myConfig.system.impermanence.persistDirectories = [ cfg.pkiBundle ];
-
-    boot.lanzaboote = {
-      enable = true;
-      inherit (cfg) pkiBundle;
-    };
-  };
+      boot.lanzaboote = {
+        enable = true;
+        inherit (cfg) pkiBundle;
+      };
+    })
+  ];
 }

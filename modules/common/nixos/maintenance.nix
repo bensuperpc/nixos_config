@@ -20,7 +20,7 @@ in
       programs.nh.clean = {
         enable = true;
         dates = "daily";
-        extraArgs = "--keep 5 --keep-since 30d";
+        extraArgs = "--keep 3 --keep-since 7d";
       };
     })
     (lib.mkIf cfg.autoUpgrade.enable {

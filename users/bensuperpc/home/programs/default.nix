@@ -13,6 +13,7 @@
     ./chromium.nix
     ./firefox.nix
     ./flatpak.nix
+    ./syncthing.nix
     ./shell.nix
   ];
 

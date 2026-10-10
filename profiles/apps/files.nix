@@ -12,6 +12,7 @@
       peerToPeer = true;
       networkShares = true;
       mobile = true;
+      openFirewall = true;
     };
 
     crypto.enable = true;

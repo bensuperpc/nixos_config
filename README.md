@@ -16,6 +16,7 @@ This repository contains my personal NixOS flake used to manage my desktops, ser
 - Profile-driven capabilities via a single `profiles` list (`platform/*`, `apps/*`, `policy/*`)
 - Shared user configuration across hosts via `users/<name>/`
 - Deterministic package versions + individual packages pinned to the stable channel via `pkgsSets`
+- Per-host nixpkgs channel (`unstable` by default, `stable-2605`)
 - Devshells for C/C++ (GCC, Clang), WebAssembly, embedded compilers, Qt6, raylib, Python 3.13 and 2, Rust, Java 21, and ESP-IDF (ESP32-C5/C6/P4)
 - Makefile helpers for common maintenance, validation, and deployment tasks
 - `microvm.nix` host support (WIP) for running lightweight VMs
@@ -67,7 +68,7 @@ This repository contains my personal NixOS flake used to manage my desktops, ser
 
 ## Host Inventory
 
-Every `systems/<host>/definition.nix` is a host (discovered by `systems/systems.nix`, checked against the options of `lib/host-schema.nix`).
+Every `systems/<host>/definition.nix` is a host (listed in `systems/systems.nix`, checked against the options of `lib/host-schema.nix`).
 
 - `enabled = true` (default): host is included in global eval/build outputs.
 - `enabled = false`: host stays in inventory but is excluded from global eval/build outputs.
@@ -136,7 +137,7 @@ colmena apply --on server-1-m710q --show-trace --verbose
 To deploy a host from itself instead (local checkout needed, no SSH): `git clone` the repository on it, then:
 
 ```bash
-nix run nixpkgs#colmena -- apply-local --sudo
+nix run --inputs-from . nixpkgs#colmena -- apply-local --sudo
 ```
 
 ## Installation
@@ -159,10 +160,10 @@ sudo nixos-generate-config --show-hardware-config > ./systems/server-1-m710q/har
 
 Flakes only see files tracked by git: `git add` every new or regenerated file under `systems/<host>/` before running `disko` or `nixos-install`.
 
-Update the `device` field in `systems/server-1-m710q/disko.nix` to match the target disk (e.g. `/dev/disk/by-id/nvme-SAMSUNG_MZVLB256HAHQ-000H1_S425NA0K888091` or `/dev/nvme0n1`), then run the following command from the repository root (**this will format the entire target disk**) and enter the LUKS passphrase when prompted.
+Update the `device` field in `systems/server-1-m710q/disko.nix` to match the target disk (e.g. `/dev/disk/by-id/nvme-SAMSUNG_MZVLB256HAHQ-000H1_S425NA0K888091` or `/dev/nvme0n1`), then run the following command from the repository root (**this will format the entire target disk**) and enter the LUKS passphrase when prompted (`--inputs-from .` runs the disko revision locked in `flake.lock`, the same as the module).
 
 ```bash
-sudo nix run --extra-experimental-features "nix-command flakes" github:nix-community/disko -- --mode destroy,format,mount ./systems/server-1-m710q/disko.nix
+sudo nix run --extra-experimental-features "nix-command flakes" --inputs-from . disko -- --mode destroy,format,mount ./systems/server-1-m710q/disko.nix
 ```
 
 ### Enroll the host in sops-nix
@@ -244,7 +245,7 @@ Secrets live in `systems/<host>/secrets.yaml` (one file per host, no shared file
 several hosts is copied into each file). Run these from the repository root on the admin PC:
 
 ```bash
-nix shell nixpkgs#sops nixpkgs#jq nixpkgs#mkpasswd
+nix --extra-experimental-features "nix-command flakes" shell nixpkgs#sops nixpkgs#jq nixpkgs#mkpasswd
 export SOPS_AGE_KEY_FILE=~/.config/sops/age/keys.txt
 F=systems/server-1-m710q/secrets.yaml
 ```
@@ -277,8 +278,7 @@ file (no decryption involved). Removing a value from the file therefore also mea
 available (`SOPS_AGE_KEY_FILE` pointing to it).
 
 
-### Insrall the system
-
+### Install the system
 
 ```bash
 sudo nixos-install --flake .#server-1-m710q --root /mnt --no-root-passwd --show-trace
@@ -290,32 +290,40 @@ Skip this subsection if this host won't use `platform/secureboot`, go straight t
 
 **Do this before enrolling TPM2**
 
-`platform/secureboot` swaps `systemd-boot` for [Lanzaboote](https://github.com/nix-community/lanzaboote), which signs the boot stub and kernel so the firmware can verify them. 
+`platform/secureboot` swaps `systemd-boot` for [Lanzaboote](https://github.com/nix-community/lanzaboote), which signs the boot stub and kernel so the firmware can verify them.
 
-1. In bios, put Secure Boot into **Setup Mode** (clear/reset the platform key)
-2. Still on `systemd-boot`, create and enroll a keypair with `sbctl` (already installed by default, see [modules/common/boot.nix](modules/common/boot.nix)):
+The keys are enrolled in the firmware last, once everything on the ESP is signed:
+
+1. Still on `systemd-boot`, create the keys with `sbctl` (already installed by default, see [modules/common/boot.nix](modules/common/boot.nix)). With impermanence, `/var/lib/sbctl` must be the bind mount from `/persist` (it is on every host, with or without the profile): keys created outside of it are lost at the next reboot.
 
 ```bash
+findmnt /var/lib/sbctl   # impermanence only: must list a mount
 sudo sbctl create-keys
-sudo sbctl enroll-keys --microsoft
 ```
 
-3. Add `"platform/secureboot"` to the host's `profiles` in `systems/<host>/definition.nix`.
-4. Rebuild and switch, this is the step that actually signs the Lanzaboote stub and kernel with the keys enrolled in step 2:
+2. Add `"platform/secureboot"` to the host's `profiles` in `systems/<host>/definition.nix`.
+3. Rebuild and switch, this is the step that signs the Lanzaboote stub and kernels with the keys of step 1, then check the result (the kernel images under `/boot/EFI/nixos/` are expected to stay unsigned):
 
 ```bash
 sudo nixos-rebuild switch --flake .#<host>
+sudo sbctl verify
 ```
 
-5. Re-enable Secure Boot enforcement in firmware if step 1 disabled it, then reboot.
-6. Verify:
+4. Reboot into the firmware setup and put Secure Boot into **Setup Mode** (clear/reset the platform key).
+5. Boot the system and enroll the keys:
+
+```bash
+sudo sbctl enroll-keys --microsoft
+```
+
+6. Reboot (enable Secure Boot enforcement in the firmware if it did not do it itself), then verify:
 
 ```bash
 sbctl status
 bootctl status
 ```
 
-`myConfig.system.secureboot.pkiBundle` must match the path `sbctl` wrote the keys to (`/var/lib/sbctl`, the default, unless `sbctl` is configured otherwise). With impermanence, that directory is persisted as soon as the profile is enabled, so add it before rebooting.
+`myConfig.system.secureboot.pkiBundle` must match the path `sbctl` wrote the keys to (`/var/lib/sbctl`, the default, unless `sbctl` is configured otherwise).
 
 ### Enroll TPM2 for LUKS auto-unlock
 
@@ -333,7 +341,7 @@ Without a PIN, only enroll the TPM on machines where physical theft is not part 
 sudo systemd-cryptenroll /dev/disk/by-partlabel/luks --tpm2-device=auto --tpm2-pcrs=0+1+2+7
 ```
 
-If Secure Boot keys or enforcement change later (re-running `sbctl enroll-keys`, toggling it in firmware), PCR 7 changes and auto-unlock stops working until you wipe and re-enroll:
+PCR 0, 1 and 2 measure the firmware code, its settings and the option ROMs, PCR 7 the Secure Boot state. After a firmware update (`fwupdmgr` included), a BIOS setting change or a Secure Boot change (re-running `sbctl enroll-keys`, toggling it in firmware), auto-unlock stops working: the boot falls back to the LUKS passphrase prompt (a headless host waits there) until you wipe and re-enroll:
 
 ```bash
 sudo systemd-cryptenroll /dev/disk/by-partlabel/luks --wipe-slot=tpm2
@@ -401,14 +409,15 @@ make <host>.boot   # deploy with Colmena (boot, then reboot), hosts with an `ip`
 Modules receive the following extra arguments:
 
 - `inputs`, `moduleHelpers` (`specialArgs`)
-- `varsHost`: host metadata (`name`, `role`, `users`, `deployUser`, `ip`, `port`, `ageRecipient`)
-- `pkgsSets.<channel>`: per-channel package sets (`stable-2605`, `unstable`) resolved once per architecture
+- `varsHost`: host metadata (`name`, `role`, `channel`, `users`, `deployUser`, `ip`, `port`, `ageRecipient`)
+- `pkgsSets.<channel>`: per-channel package sets (`stable-2605`, `unstable`) resolved once per architecture, available whatever the host `channel` (`pkgs` follows the host `channel`)
 - `userVars` (Home Manager modules of a user only): values from that user's `users/<name>/variables.nix`
 
-Invariants that matter (key-only SSH, firewall, bootloader, headless platform, impermanence
-prerequisites, sops enrollment) are NixOS `assertions` in the module that owns them, so they apply
-however the feature was enabled. Profiles only set options, with `lib.mkDefault` (`moduleHelpers.mkDefaults`)
-for app toggles so a host can override them in its `configuration.nix`.
+Invariants that matter (key-only SSH, firewall, bootloader, impermanence prerequisites, sops
+enrollment) are NixOS `assertions` in the module that owns them, so they apply however the feature
+was enabled. Profiles only set options, with `lib.mkDefault` (`moduleHelpers.mkDefaults`) for app
+toggles so a host can override them in its `configuration.nix`; `platform/no-gui` is the exception
+and carries the headless assertions itself.
 
 Locale and timezone settings use native NixOS options with `lib.mkDefault` in `modules/common/locales.nix`, per-host overrides go directly in `systems/<host>/configuration.nix` using the standard NixOS option names:
 
@@ -497,14 +506,14 @@ turn a single group off in its `configuration.nix`.
 | `apps/dev-base`        | `myConfig.apps.development.dev.base`                         | Base development tools only                                              |
 | `apps/dev-cpp`         | `myConfig.apps.development.cppTools.*`                       | C/C++ build systems, caching, quality and debugging tools                |
 | `apps/docker`          | `myConfig.apps.docker.enable`                                | Docker and Compose                                                       |
-| `apps/files`           | `myConfig.apps.files.*`                                      | Backup, sync, VeraCrypt, file search/navigation                          |
+| `apps/files`           | `myConfig.apps.files.*`                                      | Backup, sync, VeraCrypt, file search/navigation; opens the Syncthing and LocalSend ports |
 | `apps/games`           | `myConfig.apps.games.*`, `myConfig.gui.plasma.games`         | Steam, emulators, Minecraft, games                                       |
 | `apps/multimedia`      | `myConfig.apps.multimedia.*`                                 | Video, audio, image and document tools                                   |
 | `apps/network-servers` | `myConfig.apps.network.servers.{core,reverseProxy}`          | Nginx, Caddy, Traefik, HAProxy packages (services stay off)             |
 | `apps/office`          | `myConfig.apps.desktop.{office,printing,printing3d,fonts}`   | Office suite, notes, printing, 3D printing, a selection of Nerd Fonts    |
 | `apps/torrent`         | `myConfig.apps.network.torrent.*`                            | qBittorrent, Transmission, helpers; opens their peer ports              |
 | `apps/utilities`       | `myConfig.apps.utilities.*`                                  | Electronics, flashing, math, maps, system/security tools, antivirus      |
-| `apps/virtualization`  | `myConfig.apps.utilities.kvm.host`, `myConfig.apps.microvm.host` | KVM/libvirt host and MicroVM host (examples need host secrets)       |
+| `apps/virtualization`  | `myConfig.apps.utilities.kvm.host`, `myConfig.apps.microvm.host` | KVM/libvirt host and MicroVM host (examples are enabled per host)    |
 
 
 ## Development Shells

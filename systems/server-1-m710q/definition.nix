@@ -5,7 +5,7 @@
   ip = "192.168.1.26";
   port = 22;
 
-  # ssh-to-age of the host key, must match .sops.yaml (checked at evaluation time).
+  # ssh-to-age of the host key, must be a recipient of secrets.yaml (checked at evaluation time).
   ageRecipient = "age17ht0wefecdy2ef04e6gjr3zkakj8uzffx47q9dss2mnssurqn9pq02kjcf";
 
   users = [ "bensuperpc" ];

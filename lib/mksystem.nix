@@ -2,6 +2,7 @@
   inputs,
   moduleHelpers,
   pkgsCache,
+  channels,
 }:
 
 name: cfg:
@@ -21,6 +22,7 @@ let
     name = cfg.systemName;
     inherit (cfg)
       role
+      channel
       users
       deployUser
       ip
@@ -34,7 +36,7 @@ let
 
   modules = [
     (requirePath "system configuration" ../systems/${cfg.systemName}/configuration.nix)
-    inputs.home-manager.nixosModules.home-manager
+    channels.${cfg.channel}.homeManager.nixosModules.home-manager
     inputs.impermanence.nixosModules.impermanence
     inputs.disko.nixosModules.disko
     inputs.sops-nix.nixosModules.sops
@@ -69,5 +71,5 @@ in
 {
   inherit modules;
   host = varsHost;
-  inherit (cfg) system;
+  inherit (cfg) system channel;
 }
