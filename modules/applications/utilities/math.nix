@@ -1,6 +1,7 @@
 {
   config,
   pkgs,
+  pkgsSets,
   moduleHelpers,
   ...
 }:
@@ -17,9 +18,9 @@ let
       };
       plotting = {
         description = "Install mathematical plotting and graphing tools";
-        packages = with pkgs; [
-          mathgl
-          mathmod
+        packages = [
+          pkgs.mathgl
+          pkgsSets.stable-2605.mathmod # Broken with GCC 16 on unstable
         ];
       };
     };

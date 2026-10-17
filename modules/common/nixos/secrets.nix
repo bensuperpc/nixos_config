@@ -8,7 +8,10 @@ let
   hasHostSopsFile = builtins.pathExists hostSopsFile;
 in
 {
-  sops.defaultSopsFile = lib.mkIf hasHostSopsFile hostSopsFile;
+  sops = {
+    defaultSopsFile = lib.mkIf hasHostSopsFile hostSopsFile;
+    gnupg.sshKeyPaths = [ ];
+  };
 
   assertions = [
     {

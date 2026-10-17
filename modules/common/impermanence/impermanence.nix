@@ -98,7 +98,6 @@ in
         Defaults lecture = never
       '';
 
-      # sops runs before the /persist bind mounts, so it must read the host key from /persist directly.
       sops.age.sshKeyPaths = [ "/persist/etc/ssh/ssh_host_ed25519_key" ];
 
       assertions = [

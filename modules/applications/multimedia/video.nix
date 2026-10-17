@@ -19,7 +19,6 @@ let
             obs-studio
             handbrake
             video-compare
-            video2x
             kdePackages.kdenlive
             shotcut
             losslesscut
@@ -27,6 +26,7 @@ let
           ])
           ++ (with pkgsSets.stable-2605; [
             subtitleedit
+            video2x # Broken with GCC 16 on unstable
           ]);
       };
       playback = {

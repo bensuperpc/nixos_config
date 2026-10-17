@@ -1,6 +1,5 @@
 {
   config,
-  lib,
   pkgs,
   moduleHelpers,
   ...
@@ -53,10 +52,5 @@ let
 in
 {
   options.myConfig.apps.development.cppTools = generated.options;
-  config = lib.mkMerge [
-    generated.config
-    (lib.mkIf cfg.caching {
-      programs.ccache.enable = true;
-    })
-  ];
+  inherit (generated) config;
 }

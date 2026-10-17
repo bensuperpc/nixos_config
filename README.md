@@ -274,8 +274,15 @@ file (no decryption involved). Removing a value from the file therefore also mea
 `sops.secrets` declaration.
 
 **Rotating the admin key**: generate a new key, put its public key in place of `&admin_bensuperpc` in
-`.sops.yaml`, then run `sops updatekeys -y` on every `systems/*/secrets.yaml` while the old key is still
-available (`SOPS_AGE_KEY_FILE` pointing to it).
+`.sops.yaml`, then for every `systems/*/secrets.yaml`:
+
+```bash
+SOPS_AGE_KEY_FILE=/path/to/old/keys.txt sops updatekeys -y $F   # new recipients, same data key
+sops rotate -i $F                                              # new data key, with the new key
+```
+
+`updatekeys` alone keeps the data key, which the old key can still unwrap. If the old key leaked, also
+change the secret values: it decrypts them in every past revision of the file.
 
 
 ### Install the system
