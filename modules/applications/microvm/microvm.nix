@@ -3,24 +3,38 @@
   lib,
   moduleHelpers,
   pkgsSets,
-  varsHost,
   ...
 }:
 
 let
   cfg = config.myConfig.apps.microvm;
-  dockerTest = import ./vm/dockerTest/main.nix {
-    inherit pkgsSets;
-    authorizedKeys = config.users.users.${varsHost.deployUser}.openssh.authorizedKeys.keys;
-    passwordSecret = config.sops.secrets."microvm/dockerTest/root-password";
+
+  mkVm = name: {
+    autostart = true;
+    restartIfChanged = true;
+    pkgs = pkgsSets.stable-2605;
+    config.imports = [
+      (import ./vm/common.nix {
+        inherit name;
+        inherit (cfg) authorizedKeys;
+        passwordHashFile = config.sops.secrets."microvm/${name}/root-password".path;
+      })
+      ./vm/${name}/main.nix
+    ];
   };
 in
 {
   options.myConfig.apps.microvm = {
     host = moduleHelpers.mkDisabledOption "Enable the MicroVM host service (microvm-host)";
 
-    examples = {
-      test = moduleHelpers.mkDisabledOption "Test the MicroVM host service with a networked VM.";
+    authorizedKeys = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [ ];
+      description = "SSH public keys allowed to log in as root on the MicroVMs.";
+    };
+
+    vms = {
+      dockerTest = moduleHelpers.mkDisabledOption "Test VM running Docker containers.";
     };
   };
 
@@ -31,17 +45,21 @@ in
     (lib.mkIf cfg.host {
       myConfig.system.impermanence.persistDirectories = [ "/var/lib/microvms" ];
     })
-    (lib.mkIf cfg.examples.test {
-      microvm.vms = dockerTest;
+    (lib.mkIf cfg.vms.dockerTest {
+      microvm.vms.dockerTest = mkVm "dockerTest";
 
       sops.secrets."microvm/dockerTest/root-password".owner = "microvm";
-
+      # networking.firewall.allowedTCPPorts = [
+      #   8080
+      # ];
+    })
+    {
       assertions = [
         {
-          assertion = cfg.host;
-          message = "myConfig.apps.microvm.examples.* require myConfig.apps.microvm.host = true.";
+          assertion = config.microvm.vms == { } || cfg.host;
+          message = "myConfig.apps.microvm.vms.* require myConfig.apps.microvm.host = true.";
         }
       ];
-    })
+    }
   ];
 }

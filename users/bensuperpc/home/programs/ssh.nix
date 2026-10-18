@@ -29,8 +29,8 @@ let
       HostName = host;
       User = userVars.user;
       Port = port;
-      Compression = true;
       IdentityFile = "~/.ssh/${key}";
+      Compression = true;
     };
 in
 {
@@ -45,6 +45,15 @@ in
       "*" = {
         ServerAliveInterval = 60;
         IdentityFile = "~/.ssh/${userVars.defaultOnlineSSHKeyName}";
+        Compression = true;
+      };
+      dockerTest = {
+        HostName = "127.0.0.1";
+        Port = 2222;
+        User = "root";
+        IdentityFile = "~/.ssh/${userVars.localSSHKeyName}";
+        StrictHostKeyChecking = "no";
+        UserKnownHostsFile = "/dev/null";
       };
     }
     // lib.mapAttrs mkHost hosts;

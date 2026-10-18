@@ -34,7 +34,7 @@ let
           kdePackages.plasma-disks
           kdePackages.plasma-thunderbolt
           kdePackages.plasma-welcome
-          kdePackages.wacomtablet
+          # kdePackages.wacomtablet
           kdePackages.partitionmanager
           kdePackages.filelight
           kdePackages.isoimagewriter
