@@ -1,10 +1,4 @@
-{
-  name,
-  authorizedKeys,
-  passwordHashFile,
-}:
 _: {
-  networking.hostName = name;
   system.stateVersion = "26.05";
 
   microvm = {
@@ -27,7 +21,6 @@ _: {
         direct = true;
       }
     ];
-    credentialFiles.root-password-hash = passwordHashFile;
   };
 
   networking.firewall.allowedTCPPorts = [ 22 ];
@@ -43,8 +36,5 @@ _: {
 
   boot.initrd.availableKernelModules = [ "qemu_fw_cfg" ];
 
-  users.users.root = {
-    openssh.authorizedKeys.keys = authorizedKeys;
-    hashedPasswordFile = "/run/credentials/@system/root-password-hash";
-  };
+  users.users.root.hashedPasswordFile = "/run/credentials/@system/root-password-hash";
 }
