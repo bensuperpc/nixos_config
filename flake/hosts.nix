@@ -78,7 +78,6 @@ in
           targetUser = cfg.host.deployUser;
           targetPort = cfg.host.port;
           buildOnTarget = true;
-          # `colmena apply-local --sudo` on the host itself (needs a local checkout).
           allowLocalDeployment = true;
         };
         imports = cfg.modules ++ [ (nixosSystemParity channels.${cfg.channel}.nixpkgs) ];

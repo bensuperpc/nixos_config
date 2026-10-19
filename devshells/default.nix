@@ -1,6 +1,5 @@
 {
   pkgsSets,
-  espIdf,
   ...
 }:
 let
@@ -8,21 +7,7 @@ let
   inherit (pkgsSets) unstable;
 in
 {
-  # Tools to work on this repository: `nix develop`.
-  default = unstable.mkShellNoCC {
-    packages = with unstable; [
-      colmena
-      sops
-      age
-      ssh-to-age
-      mkpasswd
-      jq
-      nixfmt-tree
-      deadnix
-      statix
-    ];
-  };
-
+  default = import ./base.nix { pkgs = stable; };
   qt6 = import ./qt6.nix { pkgs = stable; };
   gcc = import ./gcc.nix { pkgs = stable; };
   clang = import ./clang.nix { pkgs = stable; };
@@ -34,18 +19,3 @@ in
   java = import ./java.nix { pkgs = stable; };
   raylib = import ./raylib.nix { pkgs = unstable; };
 }
-// builtins.listToAttrs (
-  map
-    (target: {
-      name = target;
-      value = import ./esp-idf.nix {
-        pkgs = stable;
-        inherit espIdf target;
-      };
-    })
-    [
-      "esp32c5"
-      "esp32c6"
-      "esp32p4"
-    ]
-)

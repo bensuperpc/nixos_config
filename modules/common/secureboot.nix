@@ -10,7 +10,7 @@ let
 in
 {
   options.myConfig.system.secureboot = {
-    enable = moduleHelpers.mkDisabledOption "Secure Boot via Lanzaboote. Requires sbctl key enrollment on the target machine before the first switch, see README.";
+    enable = moduleHelpers.mkDisabledOption "Secure Boot via Lanzaboote, requires sbctl key enrollment on the target machine before the first switch, see doc/installation.md.";
 
     pkiBundle = lib.mkOption {
       type = lib.types.str;

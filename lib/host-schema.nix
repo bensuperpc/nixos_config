@@ -48,7 +48,7 @@ let
         };
         ageRecipient = lib.mkOption {
           type = lib.types.str;
-          default = throw "Host '${name}' is missing 'ageRecipient': enroll it in sops (README) or keep enabled = false until then.";
+          default = throw "Host '${name}' is missing 'ageRecipient': enroll it in sops (doc/installation.md) or keep enabled = false until then.";
         };
         profiles = lib.mkOption {
           type = lib.types.listOf lib.types.str;

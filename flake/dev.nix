@@ -1,4 +1,3 @@
-# Development outputs: formatter (`nix fmt`), packages and devshells (`nix develop .#<name>`).
 { inputs, ... }:
 {
   perSystem =
@@ -15,7 +14,6 @@
 
       devShells = import ../devshells {
         inherit pkgsSets;
-        espIdf = inputs.nixpkgs-esp-dev.packages.${system}.esp-idf-riscv;
       };
     };
 }

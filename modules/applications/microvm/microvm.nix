@@ -9,17 +9,25 @@
 let
   cfg = config.myConfig.apps.microvm;
 
+  vmDescriptions = {
+    dockerTest = "Test VM running Docker containers.";
+  };
+
+  enabledVms = lib.filter (name: cfg.vms.${name}) (lib.attrNames vmDescriptions);
+
   mkVm = name: {
     autostart = true;
     restartIfChanged = true;
     pkgs = pkgsSets.stable-2605;
     config.imports = [
-      (import ./vm/common.nix {
-        inherit name;
-        inherit (cfg) authorizedKeys;
-        passwordHashFile = config.sops.secrets."microvm/${name}/root-password".path;
-      })
+      ./vm/common.nix
       ./vm/${name}/main.nix
+      {
+        networking.hostName = name;
+        users.users.root.openssh.authorizedKeys.keys = cfg.authorizedKeys;
+        microvm.credentialFiles.root-password-hash =
+          config.sops.secrets."microvm/${name}/root-password".path;
+      }
     ];
   };
 in
@@ -33,25 +41,25 @@ in
       description = "SSH public keys allowed to log in as root on the MicroVMs.";
     };
 
-    vms = {
-      dockerTest = moduleHelpers.mkDisabledOption "Test VM running Docker containers.";
-    };
+    vms = lib.mapAttrs (_: moduleHelpers.mkDisabledOption) vmDescriptions;
   };
 
   config = lib.mkMerge [
     {
       microvm.host.enable = cfg.host;
+      microvm.vms = lib.genAttrs enabledVms mkVm;
+
+      sops.secrets = lib.genAttrs' enabledVms (
+        name: lib.nameValuePair "microvm/${name}/root-password" { owner = "microvm"; }
+      );
     }
     (lib.mkIf cfg.host {
       myConfig.system.impermanence.persistDirectories = [ "/var/lib/microvms" ];
     })
     (lib.mkIf cfg.vms.dockerTest {
-      microvm.vms.dockerTest = mkVm "dockerTest";
-
-      sops.secrets."microvm/dockerTest/root-password".owner = "microvm";
-      # networking.firewall.allowedTCPPorts = [
-      #   8080
-      # ];
+      networking.firewall.allowedTCPPorts = [
+        8080
+      ];
     })
     {
       assertions = [

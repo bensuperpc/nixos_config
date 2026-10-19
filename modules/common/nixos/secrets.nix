@@ -18,7 +18,7 @@ in
       assertion =
         hasHostSopsFile
         && lib.hasInfix "recipient: ${varsHost.ageRecipient}" (builtins.readFile hostSopsFile);
-      message = "Host '${varsHost.name}': systems/${varsHost.name}/secrets.yaml is missing or not encrypted for its ageRecipient (see README, sops enrollment).";
+      message = "Host '${varsHost.name}': systems/${varsHost.name}/secrets.yaml is missing or not encrypted for its ageRecipient (see doc/installation.md, sops enrollment).";
     }
   ];
 }
