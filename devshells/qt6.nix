@@ -31,6 +31,8 @@ pkgs.mkShell {
       qtpositioning
       qtshadertools
       qtnetworkauth
+      qtwebsockets
+      qthttpserver
       qtsvg
       qtmultimedia
       qtimageformats

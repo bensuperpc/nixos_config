@@ -2,12 +2,14 @@
   config,
   lib,
   pkgs,
+  utils,
   ...
 }:
 
 let
   cfg = config.myConfig.system.impermanence;
   inherit (cfg) rollback;
+  deviceUnit = "${utils.escapeSystemdPath rollback.device}.device";
 in
 {
   config = lib.mkIf (cfg.enable && rollback.enable) {
@@ -21,7 +23,11 @@ in
     boot.initrd.systemd.services.rollback = {
       description = "Rollback the btrfs root subvolume to its blank snapshot";
       wantedBy = [ "initrd.target" ];
-      after = [ "cryptsetup.target" ];
+      requires = [ deviceUnit ];
+      after = [
+        deviceUnit
+        "cryptsetup.target"
+      ];
       before = [ "sysroot.mount" ];
 
       unitConfig.DefaultDependencies = "no";

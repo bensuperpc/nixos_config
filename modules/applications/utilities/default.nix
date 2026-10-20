@@ -5,6 +5,7 @@
 {
   imports = [
     ./antivirus.nix
+    ./binfmt.nix
     ./compress.nix
     ./electronic.nix
     ./flashing.nix

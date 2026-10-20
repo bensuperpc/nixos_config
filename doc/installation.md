@@ -100,8 +100,7 @@ then redo steps 1 and 3 with it (replace the old key in `.sops.yaml` and `ageRec
 
 ## Managing secrets
 
-Secrets live in `systems/<host>/secrets.yaml` (one file per host, no shared file: a secret needed on
-several hosts is copied into each file). Run these from the repository root on the admin PC:
+Secrets live in `systems/<host>/secrets.yaml`, Run these from the repository root on the admin PC:
 
 ```bash
 nix --extra-experimental-features "nix-command flakes" shell nixpkgs#sops nixpkgs#jq nixpkgs#mkpasswd

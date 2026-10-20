@@ -4,7 +4,6 @@
     {
       pkgs,
       pkgsSets,
-      system,
       ...
     }:
     {

@@ -20,6 +20,10 @@
       url = "github:nix-community/lanzaboote/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # lanzaboote-stable = {
+    #   url = "github:nix-community/lanzaboote/latest";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
 
     nix-flatpak = {
       url = "github:gmodena/nix-flatpak/main";
@@ -33,6 +37,7 @@
       url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs-2605";
     };
+
     plasma-manager = {
       url = "github:nix-community/plasma-manager/trunk";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -44,12 +49,16 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
     };
+
     disko = {
       url = "github:nix-community/disko/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # disko-stable = {
+    #   url = "github:nix-community/disko/latest";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
 
-    # For secrets management
     sops-nix = {
       url = "github:Mic92/sops-nix/master";
       inputs.nixpkgs.follows = "nixpkgs";

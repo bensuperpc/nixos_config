@@ -12,6 +12,7 @@ nix develop .#gcc        # GCC 15 + CMake/GDB/Ninja toolchain
 | `.#default`    | Colmena, sops, age, ssh-to-age, mkpasswd, jq, linters                           |
 | `.#qt6`        | Qt6 + CMake/GCC 15/GDB/Ninja toolchain                                          |
 | `.#gcc`        | GCC 15 + CMake/GDB/Ninja toolchain, Protocol Buffers                            |
+| `.#gcc-arm64`  | GCC 15 cross-compiler to aarch64-linux, CMake toolchain file, qemu-user, GDB    |
 | `.#clang`      | Clang/LLVM (clangStdenv) + CMake/LLDB/Ninja, lld, clang-tools, Protocol Buffers |
 | `.#wasm`       | WebAssembly: Emscripten, wasmi, wasmer                                          |
 | `.#embedded`   | Low-level and embedded: tinycc, sdcc, nasm, byacc, dtc                          |

@@ -10,6 +10,7 @@ in
   default = import ./base.nix { pkgs = stable; };
   qt6 = import ./qt6.nix { pkgs = stable; };
   gcc = import ./gcc.nix { pkgs = stable; };
+  gcc-arm64 = import ./gcc-arm64.nix { pkgs = stable; };
   clang = import ./clang.nix { pkgs = stable; };
   wasm = import ./wasm.nix { pkgs = stable; };
   embedded = import ./embedded.nix { pkgs = stable; };
