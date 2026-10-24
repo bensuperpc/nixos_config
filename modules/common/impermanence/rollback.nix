@@ -13,13 +13,6 @@ let
 in
 {
   config = lib.mkIf (cfg.enable && rollback.enable) {
-    assertions = [
-      {
-        assertion = config.boot.initrd.systemd.enable;
-        message = "myConfig.system.impermanence.rollback needs boot.initrd.systemd.enable = true.";
-      }
-    ];
-
     boot.initrd.systemd.services.rollback = {
       description = "Rollback the btrfs root subvolume to its blank snapshot";
       wantedBy = [ "initrd.target" ];
