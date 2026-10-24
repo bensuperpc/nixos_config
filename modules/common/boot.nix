@@ -24,7 +24,6 @@ in
     };
     initrd = {
       systemd = {
-        enable = true;
         # Disable for security reasons
         emergencyAccess = false;
       };
