@@ -8,6 +8,7 @@ pkgs.mkShell {
     cmake
     ninja
     gcc
+    gbenchmark
     valgrind
     gdb
     protobuf

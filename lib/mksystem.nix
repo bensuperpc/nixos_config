@@ -51,6 +51,7 @@ let
         sharedModules = [
           inputs.plasma-manager.homeModules.plasma-manager
           inputs.nix-flatpak.homeManagerModules.nix-flatpak
+          inputs.sops-nix.homeManagerModules.sops
         ];
         extraSpecialArgs = {
           inherit

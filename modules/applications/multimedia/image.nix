@@ -2,6 +2,7 @@
   config,
   pkgs,
   moduleHelpers,
+  pkgsSets,
   ...
 }:
 
@@ -33,12 +34,15 @@ let
       };
       management = {
         description = "Install photo management and viewing tools";
-        packages = with pkgs; [
-          digikam
-          photoprism
-          kphotoalbum
-          vipsdisp
-        ];
+        packages =
+          (with pkgs; [
+            digikam
+            photoprism
+            vipsdisp
+          ])
+          ++ (with pkgsSets.stable-2605; [
+            kphotoalbum
+          ]);
       };
       formats = {
         description = "Install image format conversion and codec tools";

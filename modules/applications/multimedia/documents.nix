@@ -2,6 +2,7 @@
   config,
   pkgs,
   moduleHelpers,
+  pkgsSets,
   ...
 }:
 
@@ -13,7 +14,9 @@ let
     groups = {
       reading = {
         description = "Install e-book reading tools";
-        packages = with pkgs; [ calibre ];
+        packages = with pkgsSets.stable-2605; [
+          calibre
+        ];
       };
       pdf = {
         description = "Install PDF tooling";

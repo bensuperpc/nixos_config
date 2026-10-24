@@ -2,6 +2,7 @@
   config,
   pkgs,
   moduleHelpers,
+  pkgsSets,
   ...
 }:
 
@@ -24,11 +25,14 @@ let
       };
       analysis = {
         description = "Install Nix store and derivation inspection tools";
-        packages = with pkgs; [
-          nix-tree
-          nix-diff
-          sbomnix
-        ];
+        packages =
+          (with pkgs; [
+            nix-tree
+            nix-diff
+          ])
+          ++ (with pkgsSets.stable-2605; [
+            sbomnix
+          ]);
       };
     };
   };

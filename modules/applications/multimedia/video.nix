@@ -17,7 +17,6 @@ let
         packages =
           (with pkgs; [
             obs-studio
-            handbrake
             video-compare
             kdePackages.kdenlive
             shotcut
@@ -27,6 +26,7 @@ let
           ++ (with pkgsSets.stable-2605; [
             subtitleedit
             video2x # Broken with GCC 16 on unstable
+            handbrake
           ]);
       };
       playback = {
