@@ -1,9 +1,17 @@
-_: {
+{ vmName, ... }:
+{
   system.stateVersion = "26.05";
 
   microvm = {
     hypervisor = "qemu";
     shares = [
+      {
+        source = "/var/lib/microvms/${vmName}/shared";
+        mountPoint = "/mnt/shared";
+        tag = "shared";
+        proto = "virtiofs";
+        readOnly = true;
+      }
       {
         source = "/nix/store";
         mountPoint = "/nix/.ro-store";
@@ -35,6 +43,8 @@ _: {
   };
 
   boot.initrd.availableKernelModules = [ "qemu_fw_cfg" ];
+
+  networking.hostName = vmName;
 
   users.users.root.hashedPasswordFile = "/run/credentials/@system/root-password-hash";
 }

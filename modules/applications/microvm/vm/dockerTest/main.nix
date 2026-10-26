@@ -4,13 +4,6 @@
     vcpu = 2;
     mem = 1024;
     shares = [
-      {
-        source = "/var/lib/microvms/dockerTest/shared";
-        mountPoint = "/mnt/shared";
-        tag = "shared";
-        proto = "virtiofs";
-        readOnly = true;
-      }
     ];
     interfaces = [
       {

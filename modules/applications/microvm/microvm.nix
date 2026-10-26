@@ -13,20 +13,20 @@ let
     dockerTest = "Test VM running Docker containers.";
   };
 
-  enabledVms = lib.filter (name: cfg.vms.${name}) (lib.attrNames vmDescriptions);
+  enabledVms = lib.filter (vmName: cfg.vms.${vmName}) (lib.attrNames vmDescriptions);
 
-  mkVm = name: {
+  mkVm = vmName: {
     autostart = true;
     restartIfChanged = true;
     pkgs = pkgsSets.stable-2605;
     config.imports = [
       ./vm/common.nix
-      ./vm/${name}/main.nix
+      { _module.args.vmName = vmName; }
+      ./vm/${vmName}/main.nix
       {
-        networking.hostName = name;
         users.users.root.openssh.authorizedKeys.keys = cfg.authorizedKeys;
         microvm.credentialFiles.root-password-hash =
-          config.sops.secrets."microvm/${name}/root-password".path;
+          config.sops.secrets."microvm/${vmName}/root-password".path;
       }
     ];
   };
@@ -50,7 +50,7 @@ in
       microvm.vms = lib.genAttrs enabledVms mkVm;
 
       sops.secrets = lib.genAttrs' enabledVms (
-        name: lib.nameValuePair "microvm/${name}/root-password" { owner = "microvm"; }
+        vmName: lib.nameValuePair "microvm/${vmName}/root-password" { owner = "microvm"; }
       );
     }
     (lib.mkIf cfg.host {
