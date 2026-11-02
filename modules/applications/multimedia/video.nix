@@ -20,13 +20,13 @@ let
             video-compare
             kdePackages.kdenlive
             shotcut
-            losslesscut
             # natron # Broken
           ])
           ++ (with pkgsSets.stable-2605; [
             subtitleedit
             video2x # Broken with GCC 16 on unstable
             handbrake
+            # losslesscut
           ]);
       };
       playback = {

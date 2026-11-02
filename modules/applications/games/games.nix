@@ -56,11 +56,14 @@ let
       };
       launchers = {
         description = "Install game store launchers (Heroic, Lutris)";
-        packages = with pkgs; [
-          heroic
-          lgogdownloader
-          lutris
-        ];
+        packages =
+          (with pkgs; [
+            heroic
+            lgogdownloader
+          ])
+          ++ (with pkgsSets.stable-2605; [
+            lutris
+          ]);
       };
     };
   };

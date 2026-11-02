@@ -2,6 +2,7 @@
   config,
   pkgs,
   moduleHelpers,
+  pkgsSets,
   ...
 }:
 
@@ -32,10 +33,13 @@ let
       };
       sega = {
         description = "Install Sega family emulators";
-        packages = with pkgs; [
-          kega-fusion # Sega Genesis/Mega Drive, Sega CD, 32X
-          # yabause # Sega Saturn
-        ];
+        packages =
+          (with pkgs; [
+          ])
+          ++ (with pkgsSets.stable-2605; [
+            kega-fusion # Sega Genesis/Mega Drive, Sega CD, 32X
+            yabause # Sega Saturn
+          ]);
       };
       sony = {
         description = "Install Sony family emulators";
