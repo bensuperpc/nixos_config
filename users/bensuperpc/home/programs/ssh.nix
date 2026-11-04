@@ -47,13 +47,15 @@ in
         IdentityFile = "~/.ssh/${userVars.defaultOnlineSSHKeyName}";
         Compression = true;
       };
-      dockerTest = {
-        HostName = "127.0.0.1";
-        Port = 2222;
+      edge = {
+        HostName = "10.0.0.1";
         User = "root";
         IdentityFile = "~/.ssh/${userVars.localSSHKeyName}";
-        StrictHostKeyChecking = "no";
-        UserKnownHostsFile = "/dev/null";
+      };
+      torrent = {
+        HostName = "10.0.0.2";
+        User = "root";
+        IdentityFile = "~/.ssh/${userVars.localSSHKeyName}";
       };
     }
     // lib.mapAttrs mkHost hosts;

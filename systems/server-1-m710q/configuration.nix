@@ -8,7 +8,10 @@ _: {
   ];
 
   myConfig.apps.microvm = {
-    vms.dockerTest = true;
+    vms = {
+      edge = true;
+      torrent = true;
+    };
     authorizedKeys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFyA0hju3CFIBjcjtlcNpuTKN+owszgOS8HZ747PDVO6 bensuperpc@server-1-m710q"
     ];
