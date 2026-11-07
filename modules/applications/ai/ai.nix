@@ -16,6 +16,7 @@ let
         packages = with pkgs; [
           ollama-vulkan
           llama-cpp
+          vllm
         ];
       };
     };
