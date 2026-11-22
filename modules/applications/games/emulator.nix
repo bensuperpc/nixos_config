@@ -16,7 +16,8 @@ let
         description = "Install Nintendo family emulators";
         packages = with pkgs; [
           dolphin-emu # Nintendo GameCube/Wii
-          simple64 # Nintendo 64
+          #simple64 # Nintendo 64
+          rmg # Nintendo 64
           mupen64plus # Nintendo 64
           n64recomp # Nintendo 64
           snes9x # Super Nintendo Entertainment System

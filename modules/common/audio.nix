@@ -2,6 +2,7 @@
   config,
   lib,
   moduleHelpers,
+  pkgs,
   ...
 }:
 
@@ -14,6 +15,10 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+
+    environment.systemPackages = with pkgs; [
+      pipewire.jack
+    ];
     security.rtkit.enable = true;
     services.pulseaudio.enable = false;
     services.pipewire = {
@@ -22,7 +27,6 @@ in
       alsa.support32Bit = true;
       pulse.enable = true;
       wireplumber.enable = true;
-      jack.enable = true;
     };
   };
 }
